@@ -40,62 +40,62 @@ jobs:
       - name: Build the web app
         run: flutter build web -t lib/startup/main_prod.dart
       
-      # Deploy to Heroku
-      - name: Deploy Web App to Heroku (Production Environment)
-        id: deploy1
-        continue-on-error: true
-        uses: gonuit/heroku-docker-deploy@v1.3.2
-        with:
-          email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME_WEB }}
-          dockerfile_directory: ./app
-          dockerfile_name: Dockerfile
-          docker_options: "--no-cache"
-          process_type: web
+      # # Deploy to Heroku
+      # - name: Deploy Web App to Heroku (Production Environment)
+      #   id: deploy1
+      #   continue-on-error: true
+      #   uses: gonuit/heroku-docker-deploy@v1.3.2
+      #   with:
+      #     email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
+      #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+      #     heroku_app_name: ${{ secrets.HEROKU_APP_NAME_WEB }}
+      #     dockerfile_directory: ./app
+      #     dockerfile_name: Dockerfile
+      #     docker_options: "--no-cache"
+      #     process_type: web
 
-      # Deploy to Heroku
-      - name: Deploy Web App to Heroku (Production Environment) - Retry 1
-        if: steps.deploy1.outcome=='failure'
-        id: retry1
-        continue-on-error: true
-        uses: gonuit/heroku-docker-deploy@v1.3.2
-        with:
-          email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME_WEB }}
-          dockerfile_directory: ./app
-          dockerfile_name: Dockerfile
-          docker_options: "--no-cache"
-          process_type: web
+      # # Deploy to Heroku
+      # - name: Deploy Web App to Heroku (Production Environment) - Retry 1
+      #   if: steps.deploy1.outcome=='failure'
+      #   id: retry1
+      #   continue-on-error: true
+      #   uses: gonuit/heroku-docker-deploy@v1.3.2
+      #   with:
+      #     email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
+      #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+      #     heroku_app_name: ${{ secrets.HEROKU_APP_NAME_WEB }}
+      #     dockerfile_directory: ./app
+      #     dockerfile_name: Dockerfile
+      #     docker_options: "--no-cache"
+      #     process_type: web
 
-        # Deploy to Heroku
-      - name: Deploy Web App to Heroku (Production Environment) - Retry 2
-        if: steps.retry1.outcome=='failure'
-        id: retry2
-        continue-on-error: true
-        uses: gonuit/heroku-docker-deploy@v1.3.2
-        with:
-          email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME_WEB }}
-          dockerfile_directory: ./app
-          dockerfile_name: Dockerfile
-          docker_options: "--no-cache"
-          process_type: web
+      #   # Deploy to Heroku
+      # - name: Deploy Web App to Heroku (Production Environment) - Retry 2
+      #   if: steps.retry1.outcome=='failure'
+      #   id: retry2
+      #   continue-on-error: true
+      #   uses: gonuit/heroku-docker-deploy@v1.3.2
+      #   with:
+      #     email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
+      #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+      #     heroku_app_name: ${{ secrets.HEROKU_APP_NAME_WEB }}
+      #     dockerfile_directory: ./app
+      #     dockerfile_name: Dockerfile
+      #     docker_options: "--no-cache"
+      #     process_type: web
 
-        # Deploy to Heroku
-      - name: Deploy Web App to Heroku (Production Environment) - Final Retry
-        if: steps.retry2.outcome=='failure'
-        uses: gonuit/heroku-docker-deploy@v1.3.2
-        with:
-          email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME_WEB }}
-          dockerfile_directory: ./app
-          dockerfile_name: Dockerfile
-          docker_options: "--no-cache"
-          process_type: web
+      #   # Deploy to Heroku
+      # - name: Deploy Web App to Heroku (Production Environment) - Final Retry
+      #   if: steps.retry2.outcome=='failure'
+      #   uses: gonuit/heroku-docker-deploy@v1.3.2
+      #   with:
+      #     email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
+      #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+      #     heroku_app_name: ${{ secrets.HEROKU_APP_NAME_WEB }}
+      #     dockerfile_directory: ./app
+      #     dockerfile_name: Dockerfile
+      #     docker_options: "--no-cache"
+      #     process_type: web
 
       # Setup Java environment in order to build the Android app.
       - name: Setup the Java environment to build the Android app
