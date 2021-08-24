@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "build": "app\\web",
+    "public": "build",
     "ignore": [
       "firebase.json",
       "**/.*",
