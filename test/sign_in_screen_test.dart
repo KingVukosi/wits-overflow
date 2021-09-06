@@ -6,7 +6,7 @@ import 'package:wits_overflow/startup/wits_overflow_app.dart';
 void main(){
   testWidgets("The sign in screen displays the accurate number of widgets, each with accurate corresponding image/text", (WidgetTester tester) async{
     
-    ///act
+    //act
     await tester.pumpWidget(WitsOverflowApp());
     final witsLogoFinder = find.byType(Image);
     final appNameFinder = find.text("Wits Overflow");
