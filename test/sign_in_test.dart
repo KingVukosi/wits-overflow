@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 
+
 main() {
   // Mock sign in with Google.
 
@@ -26,12 +27,16 @@ main() {
       displayName: 'Bob',
     );
     final auth = MockFirebaseAuth(mockUser: mockUser);
-    final result = await auth.signInWithCredential(credential);
+    await auth.signInWithCredential(credential);
 
     final firestore = FakeFirebaseFirestore();
     WitsOverflowData witsOverflowData = WitsOverflowData();
-    witsOverflowData.initialize(firestore: firestore, auth: auth);
+    witsOverflowData.initialize(firestore:firestore, auth:auth);
     User? user = witsOverflowData.getCurrentUser();
+
+
+    expect(user?.uid, 'someuid');
+
   });
 
   // late MockGoogleSignIn googleSignIn;
@@ -62,4 +67,5 @@ main() {
   //   final signInAccountSecondAttempt = await googleSignIn.signIn();
   //   expect(signInAccountSecondAttempt, isNotNull);
   // });
+
 }

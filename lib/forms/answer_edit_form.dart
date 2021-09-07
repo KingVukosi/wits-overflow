@@ -19,32 +19,26 @@ class AnswerEditForm extends StatefulWidget {
   final _firestore;
   final _auth;
 
-  AnswerEditForm(
-      {required this.questionId,
-      required this.answerId,
-      required this.body,
-      firestore,
-      auth})
-      : this._firestore =
-            firestore == null ? FirebaseFirestore.instance : firestore,
-        this._auth = firestore == null ? FirebaseAuth.instance : firestore;
+  AnswerEditForm({required this.questionId, required this.answerId, required this.body, firestore, auth}) :
+        this._firestore = firestore == null ? FirebaseFirestore.instance: firestore,
+        this._auth = firestore == null ? FirebaseAuth.instance: firestore;
 
   @override
   _AnswerEditFormState createState() {
-    return _AnswerEditFormState(this.questionId, answerId, this.body,
-        firestore: this._firestore, auth: this._auth);
+    return _AnswerEditFormState(this.questionId, answerId, this.body, firestore: this._firestore, auth: this._auth);
   }
 }
+
 
 class _AnswerEditFormState extends State<AnswerEditForm> {
   final _formKey = GlobalKey<FormState>();
   final String questionId;
   final String answerId;
   final String body;
-  String? _body;
+  // String? _body;
 
   bool isBusy = true;
-  Map<String, dynamic>? question;
+  Map<String, dynamic> ? question;
 
   late TextEditingController bodyController;
 
@@ -52,10 +46,8 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
   late var _firestore;
   late var _auth;
 
-  _AnswerEditFormState(this.questionId, this.answerId, this.body,
-      {firestore, auth}) {
-    this._firestore =
-        firestore == null ? FirebaseFirestore.instance : firestore;
+  _AnswerEditFormState(this.questionId, this.answerId, this.body, {firestore, auth}){
+    this._firestore = firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
     witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
 
@@ -64,7 +56,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
     this.getData();
   }
 
-  void getData() async {
+  void getData() async{
     this.question = await witsOverflowData.fetchQuestion(questionId);
 
     setState(() {
@@ -72,29 +64,30 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
     });
   }
 
-  void submitAnswer(String body) async {
+
+  void submitAnswer(String body) async{
+
     setState(() {
       isBusy = true;
     });
 
     String editorId = witsOverflowData.getCurrentUser()!.uid;
-    Map<String, dynamic>? editedAnswer = await witsOverflowData.editAnswer(
-        questionId: this.questionId,
-        answerId: this.answerId,
-        body: body,
-        editorId: editorId,
-        editedAt: DateTime.now());
+    Map<String, dynamic>? editedAnswer = await witsOverflowData.editAnswer(questionId: this.questionId, answerId: this.answerId, body: body, editorId: editorId,editedAt: DateTime.now());
 
-    if (editedAnswer == null) {
+    if(editedAnswer == null){
       showNotification(this.context, 'Something went wrong', type: 'error');
-    } else {
+    }
+    else{
       showNotification(this.context, 'Successful');
 
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) {
-          return QuestionAndAnswersScreen(this.questionId);
-        },
-      ));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context){
+            return QuestionAndAnswersScreen(this.questionId);
+          },
+        )
+      );
     }
 
     setState(() {
@@ -123,12 +116,13 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
           Container(
             padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
             color: Color.fromARGB(100, 220, 220, 220),
-            child: Text(
+            child:Text(
               'Question',
               style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w600,
-                  color: Color.fromARGB(100, 16, 16, 16)),
+                  color: Color.fromARGB(100, 16, 16, 16)
+              ),
             ),
           ),
           Container(
@@ -157,9 +151,11 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
                       color: Color.fromARGB(1000, 70, 70, 70),
+
                     ),
                   ),
                 ),
+
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
                   // color: Colors.black12,
@@ -173,17 +169,20 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
               ],
             ),
           ),
+
           Container(
             padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
             color: Color.fromARGB(100, 220, 220, 220),
-            child: Text(
+            child:Text(
               'Edit answer',
               style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w600,
-                  color: Color.fromARGB(100, 16, 16, 16)),
+                fontSize: 25,
+                fontWeight: FontWeight.w600,
+                color: Color.fromARGB(100, 16, 16, 16)
+              ),
             ),
           ),
+
           Center(
             child: Form(
               key: _formKey,
@@ -204,6 +203,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'Answer',
+
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -213,13 +213,15 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                         },
                       ),
                     ),
+
                     Container(
+
                       width: double.infinity,
                       // color:Color.fromARGB(1000, 100, 100, 100),
                       // alignment: Alignment.bottomCenter,
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: (){
                           this.submitAnswer(bodyController.text.toString());
                         },
                         child: Text('Sumbit'),
@@ -230,8 +232,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
               ),
             ),
           ),
-        ],
-      ),
+        ],),
     );
   }
 }

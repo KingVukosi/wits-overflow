@@ -9,7 +9,6 @@ import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
 import 'package:wits_overflow/utils/exceptions.dart';
-
 // -----------------------------------------------------------------------------
 //                      QUESTION CREATE FORM
 // -----------------------------------------------------------------------------
@@ -21,17 +20,13 @@ class QuestionAnswerForm extends StatefulWidget {
   final _firestore;
   final _auth;
 
-  QuestionAnswerForm(this.questionId, this.questionTitle, this.questionBody,
-      {firestore, auth})
-      : this._firestore =
-            firestore == null ? FirebaseFirestore.instance : firestore,
+  QuestionAnswerForm(this.questionId, this.questionTitle, this.questionBody, {firestore, auth}):
+        this._firestore = firestore == null ? FirebaseFirestore.instance : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
   _QuestionAnswerFormState createState() {
-    return _QuestionAnswerFormState(
-        this.questionId, this.questionTitle, this.questionBody,
-        firestore: this._firestore, auth: this._auth);
+    return _QuestionAnswerFormState(this.questionId, this.questionTitle, this.questionBody, firestore: this._firestore, auth: this._auth);
   }
 }
 
@@ -45,7 +40,7 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
   final String questionBody;
 
   bool isBusy = true;
-  Map<String, dynamic>? question;
+  Map<String, dynamic> ? question;
 
   final bodyController = TextEditingController();
 
@@ -53,17 +48,15 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
   late var _auth;
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
-  _QuestionAnswerFormState(
-      this.questionId, this.questionTitle, this.questionBody,
-      {firestore, auth}) {
-    this._firestore =
-        firestore == null ? FirebaseFirestore.instance : firestore;
+
+  _QuestionAnswerFormState(this.questionId, this.questionTitle, this.questionBody, {firestore, auth}){
+    this._firestore = firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
     witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
     this.getData();
   }
 
-  void getData() async {
+  void getData() async{
     this.question = await witsOverflowData.fetchQuestion(this.questionId);
 
     setState(() {
@@ -72,37 +65,42 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
   }
 
   Future<void> submitAnswer(String body) async {
+
     setState(() {
       isBusy = true;
     });
 
-    try {
+    try{
       String authorId = witsOverflowData.getCurrentUser()!.uid;
-      Map<String, dynamic>? answer = await witsOverflowData.postAnswer(
-          questionId: this.questionId, authorId: authorId, body: body);
+      Map<String, dynamic>? answer = await witsOverflowData.postAnswer(questionId: this.questionId, authorId: authorId, body: body);
 
-      if (answer == null) {
-        showNotification(this.context, 'Something went wrong', type: 'error');
-      } else {
+      if(answer == null){
+        showNotification(this.context, 'Something went wrong', type:'error');
+      }
+      else{
+
         showNotification(this.context, 'Successfully posted your answer');
 
-        Navigator.push(context, MaterialPageRoute(
-          builder: (context) {
-            return QuestionAndAnswersScreen(this.questionId);
-          },
-        ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context){
+              return QuestionAndAnswersScreen(this.questionId);
+            },
+          )
+        );
       }
-    } on UseQuestionAnswerExist {
-      showNotification(
-          this.context, 'You have existing answer for this question',
-          type: 'error');
+
+    }
+    on UseQuestionAnswerExist{
+      showNotification(this.context, 'You have existing answer for this question', type: 'error');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: include courses dropdown list
-    if (this.isBusy) {
+    if(this.isBusy){
       print('[_QuestionAnswerFormState-> PAGE IS LOADING]');
       return WitsOverflowScaffold(
         auth: this._auth,

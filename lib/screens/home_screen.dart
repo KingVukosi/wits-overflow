@@ -15,15 +15,13 @@ class HomeScreen extends StatefulWidget {
   String? module;
   late var _firestore;
   late var _auth;
-  HomeScreen({Key? key, this.module, firestore, auth})
-      : this._firestore =
-            firestore == null ? FirebaseFirestore.instance : firestore,
-        this._auth = auth == null ? FirebaseAuth.instance : auth,
+  HomeScreen({Key? key, this.module, firestore, auth}) :
+        this._firestore = firestore == null ?  FirebaseFirestore.instance : firestore,
+        this._auth = auth == null ?  FirebaseAuth.instance : auth,
         super(key: key);
 
   @override
-  HomeScreenState createState() =>
-      HomeScreenState(firestore: this._firestore, auth: this._auth);
+  HomeScreenState createState() => HomeScreenState(firestore: this._firestore, auth: this._auth);
 }
 
 class HomeScreenState extends State<HomeScreen> {
@@ -33,13 +31,10 @@ class HomeScreenState extends State<HomeScreen> {
   late var _firestore;
   late var _auth;
 
-  HomeScreenState({firestore, auth}) {
-    this._firestore =
-        firestore == null ? FirebaseFirestore.instance : firestore;
-    this._auth = firestore == null ? FirebaseAuth.instance : auth;
-    this
-        .witsOverflowData
-        .initialize(firestore: this._firestore, auth: this._auth);
+  HomeScreenState({firestore, auth}){
+    this._firestore = firestore == null ?  FirebaseFirestore.instance : firestore;
+    this._auth = firestore == null ?  FirebaseAuth.instance : auth;
+    this.witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
   }
 
   @override
@@ -47,8 +42,9 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  void getData() {
+  void getData(){
     questions = witsOverflowData.fetchQuestions();
+
   }
 
   @override
@@ -77,10 +73,7 @@ class HomeScreenState extends State<HomeScreen> {
             children: [
               RecentActivityTab(),
               FavouritesTab(),
-              MyPostsTab(
-                firestore: this._firestore,
-                auth: this._auth,
-              ),
+              MyPostsTab(firestore: this._firestore, auth: this._auth,),
             ],
           ),
         ),

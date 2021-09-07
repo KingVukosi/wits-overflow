@@ -8,20 +8,18 @@ import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserInfoScreen extends StatefulWidget {
+
   final _firestore;
   final _auth;
 
-  UserInfoScreen({firestore, auth})
-      : this._firestore =
-            firestore == null ? FirebaseFirestore.instance : firestore,
-        this._auth = auth == null ? FirebaseAuth.instance : auth;
+  UserInfoScreen({firestore, auth}) : this._firestore = firestore == null ? FirebaseFirestore.instance : firestore, this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
-  _UserInfoScreenState createState() =>
-      _UserInfoScreenState(firestore: this._firestore, auth: this._auth);
+  _UserInfoScreenState createState() => _UserInfoScreenState(firestore: this._firestore, auth: this._auth);
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
+  
   late String userId;
 
   int questionCount = 0;
@@ -37,21 +35,21 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   late var _firestore;
   late var _auth;
 
-  _UserInfoScreenState({firestore, auth}) {
-    this._firestore =
-        firestore == null ? FirebaseFirestore.instance : firestore;
+  _UserInfoScreenState({firestore, auth}){
+    this._firestore = firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
     witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
     this.userId = witsOverflowData.getCurrentUser()!.uid;
   }
 
   getData() async {
+
     this.questionCount = 0;
     this.answerCount = 0;
     this.favoriteCount = 0;
 
-    List<Map<String, dynamic>> userQuestions =
-        await witsOverflowData.fetchUserQuestions(userId: userId);
+
+    List<Map<String, dynamic>> userQuestions = await witsOverflowData.fetchUserQuestions(userId: userId);
     this.questionCount = userQuestions.length;
     // await FirebaseFirestore
     //     .instance
@@ -63,9 +61,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     //       this.questionCount += docs.size;
     //     });
 
+
     // get answers that the user has posted
-    List<Map<String, dynamic>> userAnswers =
-        await witsOverflowData.fetchUserAnswers(userId: userId);
+    List<Map<String, dynamic>> userAnswers = await witsOverflowData.fetchUserAnswers(userId: userId);
     this.answerCount = userAnswers.length;
     // witsOverflowData.fetchUserQuestions(userId: this.userId)
 
@@ -83,9 +81,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     //   });
     // });
 
+
     // get user favourite questions
-    List<Map<String, dynamic>> userFavouriteQuestions =
-        await witsOverflowData.fetchUserFavouriteQuestions(userId: userId);
+    List<Map<String, dynamic>> userFavouriteQuestions = await witsOverflowData.fetchUserFavouriteQuestions(userId: userId);
     this.favoriteCount = userFavouriteQuestions.length;
 
     // await FirebaseFirestore.instance
@@ -147,9 +145,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       body: Container(
         child: Column(
           children: [
-            SizedBox(
-              height: 5,
-            ),
+
+            SizedBox(height: 5,),
 
             // user profile image
             Container(
@@ -159,10 +156,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    // Change code to get profile image of user
-                    image: NetworkImage(
-                        witsOverflowData.getCurrentUser()!.photoURL!),
-                    fit: BoxFit.fill),
+                  // Change code to get profile image of user
+                  image: NetworkImage(
+                    witsOverflowData.getCurrentUser()!.photoURL!
+                  ),
+                  fit: BoxFit.fill
+                ),
               ),
             ),
 
@@ -178,27 +177,26 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 ),
               ),
               subtitle: Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(15.0),
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.blue,
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(6),
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(15.0),
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                  color: Colors.blue,
+                  width: 1,
                   ),
-                  child: Text(
-                    authorName,
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  )),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  authorName,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                )
+              ),
             ),
 
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20,),
 
             // user email address
             ListTile(
@@ -212,68 +210,85 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 ),
               ),
               subtitle: Container(
-                  padding: EdgeInsets.all(15.0),
-                  alignment: Alignment.center,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.blue,
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    authorEmail,
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  )),
-            ),
-
-            SizedBox(
-              height: 30,
-            ),
-
-            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                width: 150,
+                padding: EdgeInsets.all(15.0),
                 alignment: Alignment.center,
-                padding: EdgeInsets.all(10.0),
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                  color: Colors.blue,
+                  width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(6),
+                ),
                 child: Text(
-                  "PROFILE HISTORY",
+                  authorEmail,
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                )
+              ),
+            ),
+
+            SizedBox(height: 30,),
+
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 150,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(10.0),
+                  child: Text(
+                    "PROFILE HISTORY",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-            ]),
+              ]
+            ),
 
             // user meta information
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  SizedBox(height: 20),
-                  Text("questions asked"),
-                  SizedBox(height: 10),
-                  Text("questions answered"),
-                  SizedBox(height: 10),
-                  Text("favourite courses"),
-                  SizedBox(height: 10),
-                ]),
-                SizedBox(
-                  width: 240,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+
+                    Text("questions asked"),
+
+                    SizedBox(height: 10),
+
+                    Text("questions answered"),
+
+                    SizedBox(height: 10),
+
+                    Text("favourite courses"),
+
+                    SizedBox(height: 10),
+                  ]
                 ),
+
+                SizedBox(width:  240,),
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     SizedBox(height: 40),
+
                     Text(this.questionCount.toString()),
+                    
                     SizedBox(height: 10),
+
                     Text(this.answerCount.toString()),
+
                     SizedBox(height: 10),
+
                     Text(this.favoriteCount.toString()),
+
                     SizedBox(height: 10),
                   ],
                 )
@@ -281,14 +296,14 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             ),
 
             SizedBox(height: 30),
-
+                
             _isSigningOut
                 ? CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   )
                 : Container(
-                    alignment: Alignment.center,
-                    child: TextButton.icon(
+                  alignment: Alignment.center,
+                  child: TextButton.icon(
                       icon: Icon(Icons.power_settings_new_outlined),
                       label: Text("logout"),
                       style: ButtonStyle(
@@ -309,8 +324,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         Navigator.of(context)
                             .pushReplacement(_routeToSignInScreen());
                       },
-                    ),
-                  ),
+                      ),
+                ),
           ],
         ),
       ),

@@ -1,8 +1,11 @@
+
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
 
-Future<MockFirebaseAuth> loginUser(MockUser mockUser) async {
+Future<MockFirebaseAuth> loginUser(MockUser mockUser) async{
   final googleSignIn = MockGoogleSignIn();
   final signinAccount = await googleSignIn.signIn();
   final googleAuth = await signinAccount?.authentication;
@@ -12,7 +15,8 @@ Future<MockFirebaseAuth> loginUser(MockUser mockUser) async {
   );
 
   final auth = MockFirebaseAuth(mockUser: mockUser);
-  final result = await auth.signInWithCredential(credential);
+  await auth.signInWithCredential(credential);
 
   return auth;
+
 }
