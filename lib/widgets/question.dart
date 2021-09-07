@@ -1,6 +1,3 @@
-
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,10 +14,7 @@ import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 
-
-class QuestionWidget extends StatelessWidget{
-
-
+class QuestionWidget extends StatelessWidget {
   final int votes;
   final String id;
   final String title;
@@ -41,27 +35,28 @@ class QuestionWidget extends StatelessWidget{
     required this.authorDisplayName,
     firestore,
     auth,
-  }){
-    this._firestore = firestore == null ? FirebaseFirestore.instance : firestore;
+  }) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
-    this.witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
-
+    this
+        .witsOverflowData
+        .initialize(firestore: this._firestore, auth: this._auth);
   }
 
-
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(width: 1, color: Color.fromRGBO(228, 230, 232, 1.0)),
+              bottom: BorderSide(
+                  width: 1, color: Color.fromRGBO(228, 230, 232, 1.0)),
             ),
           ),
           // padding: EdgeInsets.fromLTRB(10, 10, 10, 5),
-          child:Row(
+          child: Row(
             children: <Widget>[
-
               /// up vote button, down vote button
               /// number of votes
               Column(
@@ -72,7 +67,6 @@ class QuestionWidget extends StatelessWidget{
                     child: Column(
                       // mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-
                         TextButton(
                           onPressed: () {
                             WitsOverflowData().voteQuestion(
@@ -87,51 +81,47 @@ class QuestionWidget extends StatelessWidget{
                             padding: EdgeInsets.all(0.5),
                             // backgroundColor: Colors.black12,
                           ),
-
                           child: SvgPicture.asset(
                             'assets/icons/caret_up.svg',
                             semanticsLabel: 'Feed button',
                             placeholderBuilder: (context) {
-                              return Icon(Icons.error, color: Colors.deepOrange);
+                              return Icon(Icons.error,
+                                  color: Colors.deepOrange);
                             },
                             height: 12.5,
                           ),
                         ),
-
                         Text(
                           // this.questionVotes!.docs.length.toString(),
                           this.votes.toString(),
                           style: TextStyle(
-                            // backgroundColor: Colors.black12,
-                            // fontSize: 20,
-                          ),
+                              // backgroundColor: Colors.black12,
+                              // fontSize: 20,
+                              ),
                         ),
-
                         TextButton(
-
                           onPressed: () {
                             WitsOverflowData().voteQuestion(
-                              context: context,
-                              questionId: this.id,
-                              value: -1,
-                              userId: witsOverflowData.getCurrentUser()!.uid);
+                                context: context,
+                                questionId: this.id,
+                                value: -1,
+                                userId: witsOverflowData.getCurrentUser()!.uid);
                           },
                           style: TextButton.styleFrom(
                             minimumSize: Size(0, 0),
                             padding: EdgeInsets.all(0.5),
                             // backgroundColor: Colors.black12,
                           ),
-
                           child: SvgPicture.asset(
                             'assets/icons/caret_down.svg',
                             semanticsLabel: 'Feed button',
                             placeholderBuilder: (context) {
-                              return Icon(Icons.error, color: Colors.deepOrange);
+                              return Icon(Icons.error,
+                                  color: Colors.deepOrange);
                             },
                             height: 12.5,
                           ),
                         ),
-
                       ],
                     ),
                   ),
@@ -177,7 +167,6 @@ class QuestionWidget extends StatelessWidget{
           ),
         ),
 
-
         /// question body
         Container(
           width: double.infinity,
@@ -202,7 +191,6 @@ class QuestionWidget extends StatelessWidget{
             // crossAxisAlignment: CrossAxisAlignment.start,
             // mainAxisSize: MainAxisSize.,
             children: [
-
               Row(
                 children: [
                   SizedBox(
@@ -221,12 +209,11 @@ class QuestionWidget extends StatelessWidget{
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      onPressed: (){
+                      onPressed: () {
                         print('[SHARE ANSWER BUTTON PRESSED]');
                       },
                     ),
                   ),
-
                   SizedBox(
                     width: 50,
                     height: 25,
@@ -243,13 +230,11 @@ class QuestionWidget extends StatelessWidget{
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      onPressed: (){
+                      onPressed: () {
                         print('[SHARE ANSWER BUTTON PRESSED]');
                       },
-
                     ),
                   ),
-
                   SizedBox(
                     width: 50,
                     height: 25,
@@ -266,21 +251,22 @@ class QuestionWidget extends StatelessWidget{
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      onPressed: (){
+                      onPressed: () {
                         print('[SHARE ANSWER BUTTON PRESSED]');
                       },
-
                     ),
                   ),
                 ],
               ),
-
               Container(
                 child: SizedBox(
                   width: 100,
                   height: 30,
                   child: TextButton.icon(
-                    icon: Icon(Icons.favorite, size: 17.5,),
+                    icon: Icon(
+                      Icons.favorite,
+                      size: 17.5,
+                    ),
                     label: Text(
                       "",
                       style: TextStyle(
@@ -288,10 +274,13 @@ class QuestionWidget extends StatelessWidget{
                       ),
                     ),
                     onPressed: () => {
-                      this.witsOverflowData.addFavouriteQuestion(
-                        userId: witsOverflowData.getCurrentUser()!.uid,
-                        questionId: this.id,
-                      ).then((result) {
+                      this
+                          .witsOverflowData
+                          .addFavouriteQuestion(
+                            userId: witsOverflowData.getCurrentUser()!.uid,
+                            questionId: this.id,
+                          )
+                          .then((result) {
                         showNotification(context, 'Favourite added.');
                       })
                     },
@@ -324,26 +313,21 @@ class QuestionWidget extends StatelessWidget{
                         child: Image(
                             height: 25,
                             width: 25,
-
-                            image: AssetImage('assets/images/default_avatar.png'))
-                    ),
+                            image: AssetImage(
+                                'assets/images/default_avatar.png'))),
 
                     // user information (display name, metadata)
                     Column(
                       children: [
                         // user display name
-                        Text(
-                            this.authorDisplayName,
+                        Text(this.authorDisplayName,
                             // this.questionUser!.get('displayName'),
                             style: TextStyle(
                               color: Colors.blue,
-                            )
-                        ),
+                            )),
                         // user metadata
                         Row(
-                          children: [
-
-                          ],
+                          children: [],
                         ),
                       ],
                     ),
@@ -366,7 +350,8 @@ class QuestionWidget extends StatelessWidget{
                     ),
                     Text(
                       // formatDateTime(DateTime.fromMillisecondsSinceEpoch((this.question!.get('createdAt') as Timestamp).millisecondsSinceEpoch)),
-                      formatDateTime(DateTime.fromMillisecondsSinceEpoch((this.createdAt).millisecondsSinceEpoch)),
+                      formatDateTime(DateTime.fromMillisecondsSinceEpoch(
+                          (this.createdAt).millisecondsSinceEpoch)),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -378,14 +363,9 @@ class QuestionWidget extends StatelessWidget{
           ),
         ),
 
-
         /// user who updated question
-        Container(
-
-
-        ),
+        Container(),
       ],
     );
   }
-
 }
