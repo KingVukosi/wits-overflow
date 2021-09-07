@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:wits_overflow/screens/home_screen.dart';
 //import 'package:wits_overflow/screens/home_screen.dart';
@@ -12,6 +11,7 @@ import 'package:wits_overflow/screens/home_screen.dart';
 import 'package:wits_overflow/utils/storage.dart';
 
 // import 'package:wits_overflow/screens/api_request_example.dart';
+
 class Authentication {
   static Future<FirebaseApp> initializeFirebase({
     required BuildContext context,
@@ -26,8 +26,8 @@ class Authentication {
           //builder: (context) => UserInfoScreen(
           //  user: user,
           //),
-          //builder: (context) => HomeScreen(),
           builder: (context) => HomeScreen(),
+          // builder: (context) => splashScreen(),
         ),
       );
     }
@@ -64,9 +64,6 @@ class Authentication {
     // if user is logging from mobile application
     else {
       final GoogleSignIn googleSignIn = GoogleSignIn();
-
-      // final GoogleSignInAccount? googleSignInAccount =
-      //     await googleSignIn.signIn();
 
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
