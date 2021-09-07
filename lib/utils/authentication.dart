@@ -23,10 +23,6 @@ class Authentication {
     if (user != null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          //builder: (context) => UserInfoScreen(
-          //  user: user,
-          //),
-          //builder: (context) => HomeScreen(),
           builder: (context) => HomeScreen(),
         ),
       );
