@@ -47,12 +47,5 @@ void main() {
 
       expect(find.byKey(ValueKey("Wits_logo")), findsOneWidget);
     });
-
-    testWidgets('find the wits logo in the sign in',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(testWidget);
-
-      expect(find.byKey(ValueKey("Wits_logo")), findsOneWidget);
-    });
   });
 }

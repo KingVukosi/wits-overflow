@@ -17,6 +17,7 @@ class MyPostsTab extends StatefulWidget {
 }
 
 class _MyPostsTabState extends State<MyPostsTab> {
+  // ignore: unused_field
   late bool _loading;
 
   @override
