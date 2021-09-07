@@ -18,6 +18,7 @@ void main() {
 
     //assert
     expect(witsLogoFinder, findsOneWidget);
+    expect(witsLogoFinder, findsOneWidget);
     expect(appNameFinder, findsOneWidget);
     expect(welcomeMessageFinder, findsOneWidget);
     expect(disclaimerFinder, findsOneWidget);
