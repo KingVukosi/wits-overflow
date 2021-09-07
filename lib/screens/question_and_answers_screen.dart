@@ -21,36 +21,42 @@ class QuestionAndAnswersScreen extends StatefulWidget {
   late final _firestore; // = FirebaseFirestore.instance;
   late final _auth;
 
-  QuestionAndAnswersScreen(this.id, {firestore, auth}):
-        this._firestore = firestore == null ? FirebaseFirestore.instance : firestore,
+  QuestionAndAnswersScreen(this.id, {firestore, auth})
+      : this._firestore =
+            firestore == null ? FirebaseFirestore.instance : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
-  _QuestionState createState() => _QuestionState(this.id, firestore: this._firestore, auth: this._auth);
+  _QuestionState createState() =>
+      _QuestionState(this.id, firestore: this._firestore, auth: this._auth);
 }
 
 class _QuestionState extends State<QuestionAndAnswersScreen> {
   final String id; // question id
 
-  Map<String, dynamic> ? question;
+  Map<String, dynamic>? question;
 
-  List<Map<String, dynamic>>  questionVotes = [];
-  List<Map<String, dynamic>>  questionComments = [];
-  List<Map<String, dynamic>>  questionAnswers = [];
+  List<Map<String, dynamic>> questionVotes = [];
+  List<Map<String, dynamic>> questionComments = [];
+  List<Map<String, dynamic>> questionAnswers = [];
 
-  Map<String, dynamic> ? questionUser;
+  Map<String, dynamic>? questionUser;
 
   // holds user information for each question comment
-  Map<String, Map<String, dynamic>> questionCommentsUsers = Map<String, Map<String, dynamic>>();
+  Map<String, Map<String, dynamic>> questionCommentsUsers =
+      Map<String, Map<String, dynamic>>();
 
   // holds user information for each question answer
-  Map<String, Map<String, dynamic>> questionAnswersUsers = Map<String, Map<String, dynamic>>();
+  Map<String, Map<String, dynamic>> questionAnswersUsers =
+      Map<String, Map<String, dynamic>>();
 
   // holds votes information for each answer
-  Map<String, List<Map<String, dynamic>>> questionAnswerVotes = Map<String, List<Map<String, dynamic>>>();
+  Map<String, List<Map<String, dynamic>>> questionAnswerVotes =
+      Map<String, List<Map<String, dynamic>>>();
 
   // holds votes information for each answer
-  Map<String, Map<String, dynamic>> questionAnswerEditors = Map<String, Map<String, dynamic>>();
+  Map<String, Map<String, dynamic>> questionAnswerEditors =
+      Map<String, Map<String, dynamic>>();
 
   bool isBusy = true;
 
@@ -59,8 +65,9 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
   late var _firestore;
   late var _auth;
 
-  _QuestionState(this.id, {firestore, auth}){
-    this._firestore = firestore == null ? FirebaseFirestore.instance : firestore;
+  _QuestionState(this.id, {firestore, auth}) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
     witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
     this.getData();
@@ -69,48 +76,52 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
 
   Future<void> getData() async {
     // retrieve necessary data from firebase to view this page
-    print('[-------------------------------------------- [RETRIEVING DATA FROM FIREBASE] --------------------------------------------]');
+    print(
+        '[-------------------------------------------- [RETRIEVING DATA FROM FIREBASE] --------------------------------------------]');
 
     // get votes information for each answer
-    Future<Map<String, List<Map<String, dynamic>>>> getAnswerVotes() async{
+    Future<Map<String, List<Map<String, dynamic>>>> getAnswerVotes() async {
       Map<String, List<Map<String, dynamic>>> answerVotes = Map();
-      for(var i = 0; i < this.questionAnswers.length; i++){
-        List<Map<String, dynamic>>? votes = await witsOverflowData.fetchQuestionAnswerVotes(this.id, this.questionAnswers[i]['id']);
+      for (var i = 0; i < this.questionAnswers.length; i++) {
+        List<Map<String, dynamic>>? votes = await witsOverflowData
+            .fetchQuestionAnswerVotes(this.id, this.questionAnswers[i]['id']);
         answerVotes.addAll({this.questionAnswers[i]['id']: votes!});
       }
       return answerVotes;
     }
 
     // get user information for each comment
-    Future<Map<String, Map<String, dynamic>>> getCommentsUsers() async{
+    Future<Map<String, Map<String, dynamic>>> getCommentsUsers() async {
       Map<String, Map<String, dynamic>> commentsUsers = Map();
-      for(var i = 0; i < this.questionComments.length; i++){
-        Map<String, dynamic>? user = await witsOverflowData.fetchUserInformation(this.questionComments[i]['authorId']);
+      for (var i = 0; i < this.questionComments.length; i++) {
+        Map<String, dynamic>? user = await witsOverflowData
+            .fetchUserInformation(this.questionComments[i]['authorId']);
         commentsUsers.addAll({this.questionComments[i]['id']: user!});
       }
       return commentsUsers;
     }
 
     // get user (author) information for each answer
-    Future<Map<String, Map<String, dynamic>>> getAnswersUsers() async{
+    Future<Map<String, Map<String, dynamic>>> getAnswersUsers() async {
       Map<String, Map<String, dynamic>> answersUsers = Map();
-      for(var i = 0; i < this.questionAnswers.length; i++){
-        Map<String, dynamic>? user = await witsOverflowData.fetchUserInformation(this.questionAnswers[i]['authorId']);
+      for (var i = 0; i < this.questionAnswers.length; i++) {
+        Map<String, dynamic>? user = await witsOverflowData
+            .fetchUserInformation(this.questionAnswers[i]['authorId']);
         answersUsers.addAll({this.questionAnswers[i]['id']: user!});
       }
       return answersUsers;
     }
 
-
     // for each answer, get user information the of the editor
-    Future<Map<String, Map<String, dynamic>>> getAnswerEditors() async{
+    Future<Map<String, Map<String, dynamic>>> getAnswerEditors() async {
       Map<String, Map<String, dynamic>> editors = {};
-      for(int i = 0; i < this.questionAnswers.length; i++){
+      for (int i = 0; i < this.questionAnswers.length; i++) {
         String? editorId = this.questionAnswers[i]['editorId'];
         String answerId = this.questionAnswers[i]['id'];
-        if(editorId != null){
-          Map<String, dynamic>? userInfo = await witsOverflowData.fetchUserInformation(editorId);
-          if(userInfo != null ){
+        if (editorId != null) {
+          Map<String, dynamic>? userInfo =
+              await witsOverflowData.fetchUserInformation(editorId);
+          if (userInfo != null) {
             editors.addAll({answerId: userInfo});
             print('[USER INFORMATION FOR ANSWER WITH ID: ${answerId}]');
           }
@@ -122,21 +133,28 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
     this.question = await witsOverflowData.fetchQuestion(this.id);
     print('[QUESTION ID: ${this.question?['id']}]');
 
-    List<Map<String, dynamic>>? fQuestionVotes = await witsOverflowData.fetchQuestionVotes(this.id);
+    List<Map<String, dynamic>>? fQuestionVotes =
+        await witsOverflowData.fetchQuestionVotes(this.id);
     this.questionVotes.addAll(fQuestionVotes == null ? [] : fQuestionVotes);
-    List<Map<String, dynamic>>? fQuestionComments = await witsOverflowData.fetchQuestionComments(this.id);
-    this.questionComments.addAll(fQuestionComments == null ? [] : fQuestionComments);
-    List<Map<String, dynamic>>? fQuestionAnswers = await witsOverflowData.fetchQuestionAnswers(this.id);
-    this.questionAnswers.addAll(fQuestionAnswers == null ? [] : fQuestionAnswers);
+    List<Map<String, dynamic>>? fQuestionComments =
+        await witsOverflowData.fetchQuestionComments(this.id);
+    this
+        .questionComments
+        .addAll(fQuestionComments == null ? [] : fQuestionComments);
+    List<Map<String, dynamic>>? fQuestionAnswers =
+        await witsOverflowData.fetchQuestionAnswers(this.id);
+    this
+        .questionAnswers
+        .addAll(fQuestionAnswers == null ? [] : fQuestionAnswers);
 
     this.questionAnswerVotes = await getAnswerVotes();
     this.questionAnswersUsers = await getAnswersUsers();
     this.questionAnswerEditors = await getAnswerEditors();
     this.questionCommentsUsers = await getCommentsUsers();
 
-
     // stores information of the user that first asked the question
-    this.questionUser = await witsOverflowData.fetchUserInformation(this.question!['authorId']);
+    this.questionUser =
+        await witsOverflowData.fetchUserInformation(this.question!['authorId']);
 
     print(
         '[-------------------------------------------- [RETRIEVED DATA FROM FIREBASE] --------------------------------------------]');
@@ -145,33 +163,36 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
     });
   }
 
-  Widget buildCommentsWidget(){
+  Widget buildCommentsWidget() {
     List<Widget> comments = <Widget>[];
-    for(var i = 0; i < this.questionComments.length; i++){
+    for (var i = 0; i < this.questionComments.length; i++) {
       Map<String, dynamic> questionComment = this.questionComments[i];
-      Map<String, dynamic> commentUser = this.questionCommentsUsers[questionComment['id']]!;
+      Map<String, dynamic> commentUser =
+          this.questionCommentsUsers[questionComment['id']]!;
       String displayName = commentUser['displayName'];
       String body = questionComment['body'];
-      comments.add(Comment(body: body, displayName: displayName, commentedAt: questionComment['commentedAt']));
+      comments.add(Comment(
+          body: body,
+          displayName: displayName,
+          commentedAt: questionComment['commentedAt']));
     }
 
-    comments.add(
-      Container(
-        child:TextButton(
-          child: Text('add comment'),
-          onPressed: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context){
-                  return QuestionCommentForm(this.question!['id'], this.question!['title'], question!['body']);
-                },
-              ),
-            );
-          },
-        ),
-      )
-    );
+    comments.add(Container(
+      child: TextButton(
+        child: Text('add comment'),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return QuestionCommentForm(this.question!['id'],
+                    this.question!['title'], question!['body']);
+              },
+            ),
+          );
+        },
+      ),
+    ));
 
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -184,15 +205,13 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
   void _addFavouriteQuestion() {
     User? currentUser = witsOverflowData.getCurrentUser();
     if (currentUser != null) {
-
       String questionId = this.id;
       String userId = currentUser.uid;
 
-      witsOverflowData.addFavouriteQuestion(
-        userId: userId, 
-        questionId: questionId
-      ).then((result) {
-          showNotification(context, 'Favourite added.');
+      witsOverflowData
+          .addFavouriteQuestion(userId: userId, questionId: questionId)
+          .then((result) {
+        showNotification(context, 'Favourite added.');
       });
     }
   }
@@ -239,7 +258,6 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
   //   });
   // }
 
-
   // QueryDocumentSnapshot getAnswer({required String answerId}){
   //   // returns answer (as QuerySnapsShot) from answers
   //   for(var i = 0; i < this.questionAnswers!.docs.length; i++){
@@ -250,16 +268,18 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
   //   throw Exception("Could not find answer(id: $answerId) from available answers");
   // }
 
-  Widget buildAnswersWidget(){
-
+  Widget buildAnswersWidget() {
     List<Widget> answers = <Widget>[];
-    for(var i = 0; i < this.questionAnswers.length; i++){
-      bool ? accepted = this.questionAnswers[i]['accepted'];
+    for (var i = 0; i < this.questionAnswers.length; i++) {
+      bool? accepted = this.questionAnswers[i]['accepted'];
       String answerId = this.questionAnswers[i]['id'];
       var editedAt = this.questionAnswers[i]['editedAt'];
-      String authorDisplayName = this.questionAnswersUsers[answerId]!['displayName'];
-      List<Map<String, dynamic>>? votes = this.questionAnswerVotes[this.questionAnswers[i]['id']];
-      String? editorDisplayName = this.questionAnswerEditors[answerId]?['displayName'];
+      String authorDisplayName =
+          this.questionAnswersUsers[answerId]!['displayName'];
+      List<Map<String, dynamic>>? votes =
+          this.questionAnswerVotes[this.questionAnswers[i]['id']];
+      String? editorDisplayName =
+          this.questionAnswerEditors[answerId]?['displayName'];
       // print('[editorDisplayName: $editorDisplayName, editedAt: ${editedAt?.toDate()}]');
       answers.add(
         Answer(
@@ -286,13 +306,12 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
         children: answers,
       ),
     );
-
   }
 
-  int _calculateVotes(List<Map<String, dynamic>> votes){
+  int _calculateVotes(List<Map<String, dynamic>> votes) {
     int v = 0;
-    for(var i = 0; i < votes.length; i++){
-      v+= (votes[i]['value']) as int;
+    for (var i = 0; i < votes.length; i++) {
+      v += (votes[i]['value']) as int;
     }
     return v;
   }
@@ -301,7 +320,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
   Widget build(BuildContext context) {
     //
     print('[this._firestore : ${this._firestore}]');
-    if(this.isBusy){
+    if (this.isBusy) {
       return WitsOverflowScaffold(
         firestore: this._firestore,
         auth: this._auth,
@@ -386,11 +405,12 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context){
-                                return QuestionAnswerForm(this.question!['id'], this.question!['title'], this.question!['body']);
-                              }
-                          ),
+                          MaterialPageRoute(builder: (context) {
+                            return QuestionAnswerForm(
+                                this.question!['id'],
+                                this.question!['title'],
+                                this.question!['body']);
+                          }),
                         );
                       },
                       child: Icon(Icons.add),

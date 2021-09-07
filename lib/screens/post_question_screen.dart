@@ -6,13 +6,14 @@ import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
 class PostQuestionScreen extends StatefulWidget {
-
-
   // late WitsOverflowData witsOverflowData;// = WitsOverflowData();
   late final _firestore;
   late final _auth;
 
-  PostQuestionScreen({firestore, auth}) : this._firestore = firestore == null ? FirebaseFirestore.instance : firestore, this._auth = auth == null ? FirebaseAuth.instance : auth{
+  PostQuestionScreen({firestore, auth})
+      : this._firestore =
+            firestore == null ? FirebaseFirestore.instance : firestore,
+        this._auth = auth == null ? FirebaseAuth.instance : auth {
     // this._firestore = firestore == null ? FirebaseFirestore.instance : firestore;
     // this._auth = auth == null ? FirebaseAuth.instance : auth;
     // witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
@@ -20,11 +21,11 @@ class PostQuestionScreen extends StatefulWidget {
   }
 
   @override
-  _PostQuestionScreenState createState() => _PostQuestionScreenState(firestore: this._firestore, auth: this._auth);
+  _PostQuestionScreenState createState() =>
+      _PostQuestionScreenState(firestore: this._firestore, auth: this._auth);
 }
 
 class _PostQuestionScreenState extends State<PostQuestionScreen> {
-
   late final Future<List<Map<String, dynamic>>> coursesFuture;
 
   late List<Map<String, dynamic>>? _courses;
@@ -44,8 +45,9 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   late final _auth;
   var _firestore;
 
-  _PostQuestionScreenState({firestore, auth}){
-    this._firestore = firestore == null ? FirebaseFirestore.instance : firestore;
+  _PostQuestionScreenState({firestore, auth}) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
     witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
   }
@@ -98,7 +100,6 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
 
   void _addQuestion() {
     if (_validQuestion()) {
-
       witsOverflowData.addQuestion({
         'createdAt': DateTime.now(),
         'courseId': _selectedCourseId,
@@ -159,122 +160,98 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   @override
   Widget build(BuildContext context) {
     return WitsOverflowScaffold(
-      auth: this._auth,
-      firestore: this._firestore,
-      body:
-      Container(
-        padding: EdgeInsets.all(10),
-        child: Form(
-        child: Column(children: [
+        auth: this._auth,
+        firestore: this._firestore,
+        body: Container(
+            padding: EdgeInsets.all(10),
+            child: Form(
+                child: Column(
+              children: [
+                FutureBuilder<List<Map<String, dynamic>>>(
+                    future: this.coursesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString());
+                      }
 
-          FutureBuilder<List<Map<String, dynamic>>>(
-            
-            future: this.coursesFuture,
-            builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        this._courses = snapshot.data;
 
-              if(snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              }
+                        return DropdownButtonFormField<String?>(
+                          onChanged: (String? courseId) {
+                            setState(() {
+                              _selectCourse(courseId);
+                            });
+                          },
+                          items: snapshot.data!.map((course) {
+                            return DropdownMenuItem<String?>(
+                                value: course['id'],
+                                child: Text(course['name']));
+                          }).toList(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                        );
+                      } else {
+                        return Text('Please load courses');
+                      }
+                    }),
+                Divider(color: Colors.white, height: 10),
+                FutureBuilder<List<Map<String, dynamic>>>(
+                    future: modulesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString());
+                      }
 
-              if (snapshot.hasData) {
+                      if (snapshot.hasData) {
+                        this._modules = snapshot.data;
 
-                this._courses = snapshot.data;
-
-                return DropdownButtonFormField<String?>(
-                  onChanged: (String? courseId) {
-                    setState(() { 
-                      _selectCourse(courseId);
-                    });
-                  },
-                  items: snapshot.data!.map((course) {
-                     return  DropdownMenuItem<String?>(value: course['id'], child: Text(course['name']) );
-                  }).toList(),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                );
-
-              } 
-              else {
-                return Text('Please load courses');
-              }
-
-            }
-          ),
-
-          Divider(color: Colors.white, height: 10),
-
-          FutureBuilder<List<Map<String, dynamic>>>(
-            
-            future: modulesFuture,
-            builder: (context, snapshot) {
-
-              if(snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              }
-
-              if (snapshot.hasData) {
-
-                this._modules = snapshot.data;
-
-                return DropdownButtonFormField<String?>(
-                  onChanged: (String? moduleId) {
-                    setState(() { 
-                      _selectModule(moduleId);
-                    });
-                  },
-                  items: snapshot.data!.map((module) {
-                     return  DropdownMenuItem<String?>(value: module['id'], child: Text(module['name']) );
-                  }).toList(),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                );
-
-              } 
-              else {
-                return Text('Please load courses');
-              }
-
-            }
-          ),
-
-          Divider(color: Colors.white, height: 10),
-
-          TextFormField(
-            controller: titleController,
-            decoration: InputDecoration(
-                labelText: 'Title',
-                alignLabelWithHint: true,
-                hintText: 'e.g. Is there a python function for...',
-                border: OutlineInputBorder()
-            ),
-          ),
-
-          Divider(color: Colors.white, height: 10),
-          
-          TextFormField(
-            controller: bodyController,
-            maxLines: 10,
-            decoration: InputDecoration(
-                labelText: 'Question',
-                alignLabelWithHint: true,
-                hintText: 'Include as much information as possible...',
-                border: OutlineInputBorder()
-            ),
-          ),
-
-          Divider(color: Colors.white, height: 10),
-
-          ElevatedButton.icon(
-              onPressed: () => {
-                this._addQuestion()
-              },
-              icon: Icon(Icons.post_add),
-              label: Text('Submit your question'),
-          )
-
-      ],))
-    ));
+                        return DropdownButtonFormField<String?>(
+                          onChanged: (String? moduleId) {
+                            setState(() {
+                              _selectModule(moduleId);
+                            });
+                          },
+                          items: snapshot.data!.map((module) {
+                            return DropdownMenuItem<String?>(
+                                value: module['id'],
+                                child: Text(module['name']));
+                          }).toList(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                        );
+                      } else {
+                        return Text('Please load courses');
+                      }
+                    }),
+                Divider(color: Colors.white, height: 10),
+                TextFormField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                      labelText: 'Title',
+                      alignLabelWithHint: true,
+                      hintText: 'e.g. Is there a python function for...',
+                      border: OutlineInputBorder()),
+                ),
+                Divider(color: Colors.white, height: 10),
+                TextFormField(
+                  controller: bodyController,
+                  maxLines: 10,
+                  decoration: InputDecoration(
+                      labelText: 'Question',
+                      alignLabelWithHint: true,
+                      hintText: 'Include as much information as possible...',
+                      border: OutlineInputBorder()),
+                ),
+                Divider(color: Colors.white, height: 10),
+                ElevatedButton.icon(
+                  onPressed: () => {this._addQuestion()},
+                  icon: Icon(Icons.post_add),
+                  label: Text('Submit your question'),
+                )
+              ],
+            ))));
   }
 }
