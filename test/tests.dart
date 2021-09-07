@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wits_overflow/screens/sign_in_screen.dart';
 
 void main() {
-  test("testing whether a user can sign in with a wits account", () async {});
-
   group("Testing the UI design of the sign-in screen", () {
     Widget testWidget = new MediaQuery(
         data: new MediaQueryData(),
