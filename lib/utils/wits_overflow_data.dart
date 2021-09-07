@@ -3,12 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wits_overflow/utils/functions.dart';
 
-
 /// before any class methods can be called, you have to
 /// call the initialize method first
 class WitsOverflowData {
-
-
   late var firestore;
   late var auth;
 
@@ -23,9 +20,7 @@ class WitsOverflowData {
   factory WitsOverflowData() => _singleton;
   WitsOverflowData._internal();
 
-
-  void initialize({firestore, auth}){
-
+  void initialize({firestore, auth}) {
     this.firestore = firestore == null ? FirebaseFirestore.instance : firestore;
     this.auth = auth == null ? FirebaseAuth.instance : auth;
 
@@ -36,12 +31,17 @@ class WitsOverflowData {
     this.users = this.firestore.collection('users');
   }
 
-  Future<List<Map<String, dynamic>>> fetchUserAnswers({required String userId}) async{
+  Future<List<Map<String, dynamic>>> fetchUserAnswers(
+      {required String userId}) async {
     List<Map<String, dynamic>> userAnswers = [];
     this.questions.get().then((questions) async {
-      for(int i = 0; i < questions.docs.length; i++){
-        await questions.docs[i].reference.collection('answers').where('authorId', isEqualTo: userId).get().then((answers){
-          for(int j = 0; j < answers.docs.length; j++){
+      for (int i = 0; i < questions.docs.length; i++) {
+        await questions.docs[i].reference
+            .collection('answers')
+            .where('authorId', isEqualTo: userId)
+            .get()
+            .then((answers) {
+          for (int j = 0; j < answers.docs.length; j++) {
             Map<String, dynamic> answer = answers.docs[i].data();
             answer.addAll({'id': answers.docs[i].id});
             userAnswers.add(answer);
@@ -52,15 +52,22 @@ class WitsOverflowData {
     return userAnswers;
   }
 
-  User? getCurrentUser(){
+  User? getCurrentUser() {
     return this.auth.currentUser;
   }
 
   /// fetch
-  Future<List<Map<String, dynamic>>?> fetchQuestionAnswerVotes(String questionId, String answerId) async{
+  Future<List<Map<String, dynamic>>?> fetchQuestionAnswerVotes(
+      String questionId, String answerId) async {
     List<Map<String, dynamic>> questionAnswerVotes = [];
-    await questions.doc(questionId).collection('answers').doc(answerId).collection('votes').get().then((QuerySnapshot<Map<String, dynamic>> value){
-      for(var i = 0; i < value.docs.length; i++){
+    await questions
+        .doc(questionId)
+        .collection('answers')
+        .doc(answerId)
+        .collection('votes')
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> value) {
+      for (var i = 0; i < value.docs.length; i++) {
         Map<String, dynamic> questionAnswerVote = value.docs[i].data();
         questionAnswerVote['id'] = value.docs[i].id;
         questionAnswerVotes.add(questionAnswerVote);
@@ -69,10 +76,15 @@ class WitsOverflowData {
     return questionAnswerVotes;
   }
 
-  Future<List<Map<String, dynamic>>?> fetchQuestionAnswers (String questionId) async{
+  Future<List<Map<String, dynamic>>?> fetchQuestionAnswers(
+      String questionId) async {
     List<Map<String, dynamic>> questionAnswers = [];
-    await questions.doc(questionId).collection('answers').get().then((QuerySnapshot<Map<String, dynamic>> value){
-      for(var i = 0; i < value.docs.length; i++){
+    await questions
+        .doc(questionId)
+        .collection('answers')
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> value) {
+      for (var i = 0; i < value.docs.length; i++) {
         Map<String, dynamic> questionAnswer = value.docs[i].data();
         questionAnswer['id'] = value.docs[i].id;
         questionAnswers.add(questionAnswer);
@@ -81,11 +93,16 @@ class WitsOverflowData {
     return questionAnswers;
   }
 
-  Future<List<Map<String, dynamic>>?> fetchQuestionComments (String questionId) async{
+  Future<List<Map<String, dynamic>>?> fetchQuestionComments(
+      String questionId) async {
     List<Map<String, dynamic>> questionComments = [];
 
-    await questions.doc(questionId).collection('comments').get().then((QuerySnapshot<Map<String, dynamic>> value){
-      for(var i = 0; i < value.docs.length; i++){
+    await questions
+        .doc(questionId)
+        .collection('comments')
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> value) {
+      for (var i = 0; i < value.docs.length; i++) {
         Map<String, dynamic> questionComment = value.docs[i].data();
         questionComment['id'] = value.docs[i].id;
         questionComments.add(questionComment);
@@ -94,29 +111,36 @@ class WitsOverflowData {
     return questionComments;
   }
 
-  Future<List<Map<String, dynamic>>?> fetchQuestionVotes (String questionId) async{
+  Future<List<Map<String, dynamic>>?> fetchQuestionVotes(
+      String questionId) async {
     List<Map<String, dynamic>> questionVotes = [];
-    await questions.doc(questionId).collection('votes').get().then((QuerySnapshot<Map<String, dynamic>> value){
-      for(var i = 0; i < value.docs.length; i++){
+    await questions
+        .doc(questionId)
+        .collection('votes')
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> value) {
+      for (var i = 0; i < value.docs.length; i++) {
         questionVotes.add(value.docs[i].data());
       }
     });
     return questionVotes;
   }
 
-  Future<Map<String, dynamic>?> fetchUserInformation (String userId) async{
+  Future<Map<String, dynamic>?> fetchUserInformation(String userId) async {
     Map<String, dynamic>? userInfo;
-    await this.users.doc(userId).get().then((DocumentSnapshot<Map<String, dynamic>> value){
+    await this
+        .users
+        .doc(userId)
+        .get()
+        .then((DocumentSnapshot<Map<String, dynamic>> value) {
       userInfo = value.data();
       userInfo?.addAll({'id': value.id});
     });
 
     return userInfo;
-
   }
 
   Future<Map<String, dynamic>?> fetchQuestion(String questionId) async {
-
     Map<String, dynamic>? question;
 
     await questions.doc(questionId).get().then((value) {
@@ -131,17 +155,18 @@ class WitsOverflowData {
     List<Map<String, dynamic>> results = List.empty(growable: true);
 
     await questions.get().then((snapshot) => {
-      snapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['id'] = doc.id;
-        results.add(data);
-      })
-    });
+          snapshot.docs.forEach((doc) {
+            Map<String, dynamic> data = doc.data();
+            data['id'] = doc.id;
+            results.add(data);
+          })
+        });
 
     return results;
   }
 
-  Future<List<Map<String, dynamic>>> fetchUserQuestions({required String userId}) async {
+  Future<List<Map<String, dynamic>>> fetchUserQuestions(
+      {required String userId}) async {
     List<Map<String, dynamic>> results = List.empty(growable: true);
 
     await questions
@@ -159,7 +184,8 @@ class WitsOverflowData {
     return results;
   }
 
-  Future<List<Map<String, dynamic>>> fetchModuleQuestions({required String moduleId}) async {
+  Future<List<Map<String, dynamic>>> fetchModuleQuestions(
+      {required String moduleId}) async {
     List<Map<String, dynamic>> results = List.empty(growable: true);
 
     await questions
@@ -229,8 +255,8 @@ class WitsOverflowData {
     return results;
   }
 
-  Future<List<Map<String, dynamic>>> fetchUserFavouriteQuestions({required String userId}) async {
-
+  Future<List<Map<String, dynamic>>> fetchUserFavouriteQuestions(
+      {required String userId}) async {
     List<Map<String, dynamic>> results = List.empty(growable: true);
 
     await favourites.doc(userId).get().then((doc) async {
@@ -249,11 +275,13 @@ class WitsOverflowData {
     return results;
   }
 
-  Future<DocumentReference<Map<String, dynamic>>> addQuestion(Map<String, dynamic> data) async {
+  Future<DocumentReference<Map<String, dynamic>>> addQuestion(
+      Map<String, dynamic> data) async {
     return questions.add(data);
   }
 
-  Future<void> addFavouriteQuestion({required String userId, required String questionId}) async {
+  Future<void> addFavouriteQuestion(
+      {required String userId, required String questionId}) async {
     await favourites.doc(userId).get().then((doc) {
       if (doc.exists) {
         var fq = doc['favouriteQuestions'];
@@ -279,7 +307,11 @@ class WitsOverflowData {
     });
   }
 
-  void voteQuestion({required context, required int value, required questionId, required userId}) async{
+  void voteQuestion(
+      {required context,
+      required int value,
+      required questionId,
+      required userId}) async {
     /// handler function when a user votes on a question
 
     Map<String, dynamic> data = {
@@ -288,29 +320,43 @@ class WitsOverflowData {
       'votedAt': DateTime.now(),
     };
 
-    CollectionReference<Map<String, dynamic>> questionVotesCollection = this.questions.doc(questionId).collection('votes');
-    QuerySnapshot<Map<String, dynamic>> questionUserVote = await questionVotesCollection.where('user', isEqualTo: userId).get();
+    CollectionReference<Map<String, dynamic>> questionVotesCollection =
+        this.questions.doc(questionId).collection('votes');
+    QuerySnapshot<Map<String, dynamic>> questionUserVote =
+        await questionVotesCollection.where('user', isEqualTo: userId).get();
 
-    if(questionUserVote.docs.isEmpty){
-      questionVotesCollection.add(data).then((value){
+    if (questionUserVote.docs.isEmpty) {
+      questionVotesCollection.add(data).then((value) {
         showNotification(context, "Vote added");
-
-      }).catchError((error){
+      }).catchError((error) {
         showNotification(context, 'Error occurred');
       });
-    }
-    else{
+    } else {
       showNotification(context, 'Already voted');
     }
   }
 
-  Future voteAnswer({required context, required String questionId, required String answerId, required int value, required String userId}) async{
+  Future voteAnswer(
+      {required context,
+      required String questionId,
+      required String answerId,
+      required int value,
+      required String userId}) async {
     // check if user has already voted on this answer
-    DocumentSnapshot<Map<String, dynamic>> answer = await this.questions.doc(questionId).collection('answers').doc(answerId).get();
-    CollectionReference<Map<String, dynamic>> answerVotesReference = answer.reference.collection('votes');
-    QuerySnapshot<Map<String, dynamic>> userVote = await answerVotesReference.where('user', isEqualTo: userId).limit(1).get();
+    DocumentSnapshot<Map<String, dynamic>> answer = await this
+        .questions
+        .doc(questionId)
+        .collection('answers')
+        .doc(answerId)
+        .get();
+    CollectionReference<Map<String, dynamic>> answerVotesReference =
+        answer.reference.collection('votes');
+    QuerySnapshot<Map<String, dynamic>> userVote = await answerVotesReference
+        .where('user', isEqualTo: userId)
+        .limit(1)
+        .get();
 
-    if(userVote.docs.isEmpty){
+    if (userVote.docs.isEmpty) {
       // then the user can vote
       Map<String, dynamic> data = {
         'votedAt': DateTime.now(),
@@ -318,36 +364,52 @@ class WitsOverflowData {
         'value': value,
       };
 
-      answerVotesReference.add(data).then((value){
+      answerVotesReference.add(data).then((value) {
         // show that the vote was successful
         showNotification(context, "Vote added");
-      }).catchError((error){
+      }).catchError((error) {
         showNotification(context, "Error occurred");
       });
-    }
-    else{
+    } else {
       showNotification(context, 'Already voted');
     }
   }
 
-  Future<Map<String, dynamic>?> postQuestionComment({required String questionId, required String body,required String authorId, DateTime? commentedAt}) async{
+  Future<Map<String, dynamic>?> postQuestionComment(
+      {required String questionId,
+      required String body,
+      required String authorId,
+      DateTime? commentedAt}) async {
     Map<String, dynamic>? comment;
     Map<String, dynamic> data = {
       'body': body,
       'authorId': authorId,
       'commentedAt': commentedAt == null ? DateTime.now() : commentedAt,
     };
-    await this.questions.doc(questionId).collection('comments').add(data).then((value){
+    await this
+        .questions
+        .doc(questionId)
+        .collection('comments')
+        .add(data)
+        .then((value) {
       comment = data;
       comment?.addAll({'id': value.id});
     });
     return comment;
   }
 
-  Future<Map<String, dynamic>?> postAnswer({required String questionId, required String authorId, required String body, DateTime? answeredAt}) async{
+  Future<Map<String, dynamic>?> postAnswer(
+      {required String questionId,
+      required String authorId,
+      required String body,
+      DateTime? answeredAt}) async {
     // TODO: check id user has already voted, if yes, then throw error
     Map<String, dynamic>? answer;
-    await this.questions.doc(questionId).collection('answers').add({'authorId': authorId, 'body': body}).then((value){
+    await this
+        .questions
+        .doc(questionId)
+        .collection('answers')
+        .add({'authorId': authorId, 'body': body}).then((value) {
       answer = {
         'id': value.id,
         'body': body,
@@ -358,20 +420,38 @@ class WitsOverflowData {
     return answer;
   }
 
-  Future<Map<String, dynamic>?> editAnswer({required String questionId, required String answerId, required String editorId, required body, DateTime ? editedAt}) async{
+  Future<Map<String, dynamic>?> editAnswer(
+      {required String questionId,
+      required String answerId,
+      required String editorId,
+      required body,
+      DateTime? editedAt}) async {
     Map<String, dynamic> data = {
       'body': body,
       'editorId': editorId,
       'editedAt': editedAt == null ? DateTime.now() : editedAt,
     };
-    await this.questions.doc(questionId).collection('answers').doc(answerId).update(data);
-    Map<String, dynamic>? answer = await this.fetchAnswer(questionId: questionId, answerId: answerId);
+    await this
+        .questions
+        .doc(questionId)
+        .collection('answers')
+        .doc(answerId)
+        .update(data);
+    Map<String, dynamic>? answer =
+        await this.fetchAnswer(questionId: questionId, answerId: answerId);
     return answer;
   }
 
-  Future<Map<String, dynamic>?> fetchAnswer({required String questionId, required String answerId}) async {
+  Future<Map<String, dynamic>?> fetchAnswer(
+      {required String questionId, required String answerId}) async {
     Map<String, dynamic>? answer;
-    await this.questions.doc(questionId).collection('answers').doc(answerId).get().then((value){
+    await this
+        .questions
+        .doc(questionId)
+        .collection('answers')
+        .doc(answerId)
+        .get()
+        .then((value) {
       answer = value.data();
       answer?.addAll({'id': value.id});
     });

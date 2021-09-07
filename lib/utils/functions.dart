@@ -74,7 +74,8 @@ Future<void> updateQuestions() async {
         await questionsReference.doc(questionId).get();
 
     // updated at can be null or may not exist
-    int latest = (question.data()!['createAt'] as Timestamp).millisecondsSinceEpoch;
+    int latest =
+        (question.data()!['createAt'] as Timestamp).millisecondsSinceEpoch;
     var updatedAt = question.data()!['updatedAt'];
     if (updatedAt != null) {
       int l = (updatedAt as Timestamp).millisecondsSinceEpoch;
@@ -160,16 +161,13 @@ Future<void> updateQuestions() async {
 }
 
 /// function to show notification to user
-void showNotification(context, message, {type='primary'}) {
-
+void showNotification(context, message, {type = 'primary'}) {
   Color? bgColor;
-  if(type == 'error'){
+  if (type == 'error') {
     bgColor = Colors.red;
-  }
-  else if(type == 'warning'){
+  } else if (type == 'warning') {
     bgColor = Colors.orange;
-  }
-  else{
+  } else {
     bgColor = Colors.blue;
   }
 
@@ -187,17 +185,14 @@ const Map COLLECTIONS = {
   'users': 'users',
 };
 
-int countVotes(List<Map<String, dynamic>> votes){
+int countVotes(List<Map<String, dynamic>> votes) {
   int count = 0;
-  for(int i = 0; i < votes.length; i++){
+  for (int i = 0; i < votes.length; i++) {
     count += votes[i]['value'] as int;
   }
   return count;
 }
 
-
-
 // final map STYLES = {
 //     'background_colour':
 // }
-

@@ -12,10 +12,8 @@ import 'package:wits_overflow/widgets/question_summary.dart';
 
 import 'utils.dart';
 
-
 void main() {
-
-  group('Test widgets', (){
+  group('Test widgets', () {
     /// widgets to test:
     /// Question
     /// Comments
@@ -29,7 +27,7 @@ void main() {
     ///   Answers
     ///   Answer
     /// Meta
-    ///   QuestionMeta - 
+    ///   QuestionMeta -
     ///   AnswerMeta
     /// QuestionSummary
     /// Sidebar
@@ -41,13 +39,12 @@ void main() {
     ///
     var firestore;
 
-    setUp((){
+    setUp(() {
       firestore = FakeFirebaseFirestore();
     });
 
     /// test the question widget
     testWidgets('Test Question Widget', (WidgetTester tester) async {
-
       MockUser mockUser = MockUser(
         uid: 'testUserUid1',
         displayName: 'testFirstName1 testLastName1',
@@ -66,21 +63,20 @@ void main() {
       String authorDisplayName = 'test author display name';
 
       Widget testWidget = new MediaQuery(
-        data: new MediaQueryData(),
-        child: new Directionality(
-          textDirection: TextDirection.rtl,
-          child: new QuestionWidget(
-            id: id,
-            title: title,
-            body: body,
-            votes: votes,
-            authorDisplayName: authorDisplayName,
-            createdAt: createdAt,
-            firestore: firestore,
-            auth: auth,
-          ),
-        )
-      );
+          data: new MediaQueryData(),
+          child: new Directionality(
+            textDirection: TextDirection.rtl,
+            child: new QuestionWidget(
+              id: id,
+              title: title,
+              body: body,
+              votes: votes,
+              authorDisplayName: authorDisplayName,
+              createdAt: createdAt,
+              firestore: firestore,
+              auth: auth,
+            ),
+          ));
 
       await tester.pumpWidget(testWidget);
 
@@ -96,10 +92,8 @@ void main() {
       expect(authorDisplayNameFinder, findsOneWidget);
     });
 
-
     /// test the answer widget
     testWidgets('Test Answer Widget', (WidgetTester tester) async {
-
       MockUser mockUser = MockUser(
         displayName: 'testFirstName1 testLastName1',
         uid: 'testUid1',
@@ -120,7 +114,8 @@ void main() {
       // answer information
       final String answerId = 'test_answer_body_1';
       final String answerBody = 'test answer body 1';
-      final Timestamp answeredAt = Timestamp.fromDate(DateTime(2021, 4, 25, 10, 45));
+      final Timestamp answeredAt =
+          Timestamp.fromDate(DateTime(2021, 4, 25, 10, 45));
       final bool answerAccepted = true;
       final List<Map<String, dynamic>> answerVotes = [
         {'value': 1},
@@ -132,25 +127,22 @@ void main() {
       ];
 
       Widget testWidget = new MediaQuery(
-        data: new MediaQueryData(),
-        child: new Directionality(
-          textDirection: TextDirection.rtl,
-          child: new Answer(
-            votes: answerVotes,
-            id: answerId,
-            body: answerBody,
-            questionId: questionId,
-            questionAuthorId: answerAuthorId,
-            accepted: answerAccepted,
-            authorId: answerAuthorId,
-            authorDisplayName: answerAuthorDisplayName,
-            answeredAt: answeredAt,
-            firestore: firestore,
-            auth: auth,
-          )
-        )
-      );
-
+          data: new MediaQueryData(),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              child: new Answer(
+                votes: answerVotes,
+                id: answerId,
+                body: answerBody,
+                questionId: questionId,
+                questionAuthorId: answerAuthorId,
+                accepted: answerAccepted,
+                authorId: answerAuthorId,
+                authorDisplayName: answerAuthorDisplayName,
+                answeredAt: answeredAt,
+                firestore: firestore,
+                auth: auth,
+              )));
 
       await tester.pumpWidget(testWidget);
 
@@ -162,24 +154,20 @@ void main() {
       expect(messageFinder, findsOneWidget);
     });
 
-
     /// test the comment widget
     testWidgets('Test Comment Widget', (WidgetTester tester) async {
-
       final String body = 'test comment body';
       final Timestamp commentedAt = Timestamp.now();
 
       Widget testWidget = new MediaQuery(
-        data: new MediaQueryData(),
-        child: new Directionality(
-          textDirection: TextDirection.rtl,
-          child: Comment(
-            body: body,
-            commentedAt: commentedAt,
-            displayName: 'test display name',
-          )
-        )
-      );
+          data: new MediaQueryData(),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              child: Comment(
+                body: body,
+                commentedAt: commentedAt,
+                displayName: 'test display name',
+              )));
 
       await tester.pumpWidget(testWidget);
 
@@ -205,7 +193,7 @@ void main() {
 
       // data
       String questionId = 'questionId1';
-      String title = 'test question summary title'; 
+      String title = 'test question summary title';
       Timestamp createdAt = Timestamp.fromDate(DateTime(2021, 1, 1, 10, 23));
       List<String> tags = ['One', 'Two', 'Three'];
       List<Map<String, dynamic>> votes = [
@@ -219,7 +207,7 @@ void main() {
       // correct values
       String correctTitleFormat = 'Test Question Summary Title';
       String correctDataFormat = 'Jan 1 \'21 at 10:23';
-      
+
       Map<String, dynamic> data = {
         'title': title,
         'createdAt': createdAt,
@@ -238,17 +226,16 @@ void main() {
       );
 
       Widget testWidget = new MediaQuery(
-        data: new MediaQueryData(),
-        child: new Directionality(
-          textDirection: TextDirection.rtl,
-          child: questionSummary,
-        )
-      );
+          data: new MediaQueryData(),
+          child: new Directionality(
+            textDirection: TextDirection.rtl,
+            child: questionSummary,
+          ));
 
       await tester.pumpWidget(testWidget);
 
       final titleFinder = find.text(correctTitleFormat);
-      
+
       final votesFinder = find.textContaining('5'); //.text('votes');
 
       final badgeOneFinder = find.textContaining(data['tags'][0]);
@@ -256,7 +243,6 @@ void main() {
       final badgeThreeFinder = find.textContaining(data['tags'][2]);
 
       final createdAtFinder = find.text(correctDataFormat);
-      
 
       expect(titleFinder, findsOneWidget);
       expect(votesFinder, findsOneWidget);
@@ -266,7 +252,6 @@ void main() {
       expect(badgeThreeFinder, findsOneWidget);
 
       expect(createdAtFinder, findsOneWidget);
-
     });
 
     testWidgets('Test SideBar Widget', (WidgetTester tester) async {
@@ -291,7 +276,6 @@ void main() {
       //   {},
       // ];
 
-
       // SideDrawer sideDrawer = new SideDrawer();
       //
       // // data
@@ -308,12 +292,9 @@ void main() {
       //
       // final titleFinder = find.text(correctTitleFormat);
 
-
       // final createdAtFinder = find.text(correctDataFormat);
 
-
       // expect(titleFinder, findsOneWidget);
-
     });
   });
 
@@ -347,28 +328,26 @@ void main() {
   //     counter.increment();
 
   //     expect(counter.value, 1);
-  //   }); 
+  //   });
 
   /// testing utils/functions.dart
   ///   * toTitleCase
   ///   * capitaliseChar
   ///   * formatDateTime
 
-
   /// test witsOverflow/utils/functions.dart
-  group('Testing functions', (){
+  group('Testing functions', () {
     ///
-    test('Test toTitleCase', (){
+    test('Test toTitleCase', () {
       String line = 'test to title case';
       String titleLine = 'Test To Title Case';
       String toTitleCaseResult = toTitleCase(line);
 
       expect(toTitleCaseResult, titleLine);
-        
     });
 
     ///
-    test('Test formatDateTime', (){
+    test('Test formatDateTime', () {
       DateTime datetime = DateTime(2021, 8, 1, 2, 3, 4);
 
       String formatDatetime = formatDateTime(datetime);
@@ -378,18 +357,12 @@ void main() {
       expect(formatDatetime.contains('1'), true);
     });
 
-
     /// if the time is earlier, (like in latest question)
-    /// the time display should be like: 
-    /// '2 hours' ago / '21 min' ago 
-    /// 
+    /// the time display should be like:
+    /// '2 hours' ago / '21 min' ago
+    ///
     // test('', (){
-      
+
     // });
   });
-
-
-
-
-
 }

@@ -12,27 +12,23 @@ import 'package:wits_overflow/utils/functions.dart';
 
 import 'utils.dart';
 
-
 void main() {
-
-  group('Wits over flow data', (){
-    test('Mock fetches correct data', () async{
+  group('Wits over flow data', () {
+    test('Mock fetches correct data', () async {
       final firestore = FakeFirebaseFirestore();
       await firestore.collection('test').add({'field_1': 'value_1'});
 
-
-      QuerySnapshot<Map<String, dynamic>> tests = await firestore.collection('test').get();
+      QuerySnapshot<Map<String, dynamic>> tests =
+          await firestore.collection('test').get();
       expect(tests.docs.length > 0, true);
     });
   });
 
-  group('Test screens', (){
-
-
-    testWidgets('Test question and answers screen', (WidgetTester tester) async {
+  group('Test screens', () {
+    testWidgets('Test question and answers screen',
+        (WidgetTester tester) async {
       // Populate the fake database.
       final firestore = FakeFirebaseFirestore();
-
 
       // add question author information to the database
       String questionAuthorDisplayName = 'testFirstName1 testLastName1';
@@ -41,7 +37,7 @@ void main() {
         'displayName': questionAuthorDisplayName,
         'email': questionAuthorEmail,
       };
-      await firestore.collection('users').add(questionAuthor).then((value){
+      await firestore.collection('users').add(questionAuthor).then((value) {
         questionAuthor.addAll({'id': value.id});
       });
 
@@ -63,7 +59,7 @@ void main() {
         'code': courseCode,
       };
 
-      await firestore.collection('courses-2').add(course).then((value){
+      await firestore.collection('courses-2').add(course).then((value) {
         course.addAll({'id': value.id});
       });
 
@@ -73,11 +69,11 @@ void main() {
       String moduleCourseId = course['id'];
 
       Map<String, dynamic> module = {
-        'name':moduleName,
-        'code':moduleCode,
-        'courseId':moduleCourseId,
+        'name': moduleName,
+        'code': moduleCode,
+        'courseId': moduleCourseId,
       };
-      await firestore.collection('modules').add(module).then((value){
+      await firestore.collection('modules').add(module).then((value) {
         module.addAll({'id': value.id});
       });
 
@@ -96,10 +92,9 @@ void main() {
         'createdAt': createdAt,
         'tags': tags,
       };
-      await firestore.collection('questions-2').add(question).then((value){
+      await firestore.collection('questions-2').add(question).then((value) {
         question.addAll({'id': value.id});
       });
-
 
       // add question votes
       //  * add question votes users
@@ -116,8 +111,12 @@ void main() {
         {'value': -1},
       ];
 
-      for(var i = 0; i < questionVotes.length; i++){
-        await firestore.collection('questions-2').doc(question['id']).collection('votes').add(questionVotes[i]);
+      for (var i = 0; i < questionVotes.length; i++) {
+        await firestore
+            .collection('questions-2')
+            .doc(question['id'])
+            .collection('votes')
+            .add(questionVotes[i]);
       }
 
       // add question answers
@@ -131,24 +130,21 @@ void main() {
           'displayName': 'answerFirstName1 answerLastName1',
           'email': 'answerEmail1@domain.com',
         },
-
         {
           'displayName': 'answerFirstName2 answerLastName2',
           'email': 'answerEmail2@domain.com',
         },
-
         {
           'displayName': 'answerFirstName3 answerLastName3',
           'email': 'answerEmail3@domain.com',
         },
       ];
 
-      for(var i = 0; i < answerAuthors.length; i++){
-        await firestore.collection('users').add(answerAuthors[i]).then((value){
+      for (var i = 0; i < answerAuthors.length; i++) {
+        await firestore.collection('users').add(answerAuthors[i]).then((value) {
           answerAuthors[i].addAll({'id': value.id});
         });
       }
-
 
       // add answers (with votes) to database
       List<Map<String, dynamic>> answers = [
@@ -168,7 +164,7 @@ void main() {
           ],
         },
         {
-          'fields':{
+          'fields': {
             'body': 'test answer body 3',
             'authorId': answerAuthors[1]['id'],
             'answeredAt': Timestamp.fromDate(DateTime(2021, 5, 1, 21, 21)),
@@ -180,7 +176,7 @@ void main() {
           ],
         },
         {
-          'fields':{
+          'fields': {
             'body': 'test answer body 3',
             'authorId': answerAuthors[2]['id'],
             'answeredAt': Timestamp.fromDate(DateTime(2021, 5, 23, 10, 5)),
@@ -192,17 +188,25 @@ void main() {
         }
       ];
 
-      for(var i = 0; i < answers.length; i++){
-        await firestore.collection('questions-2').doc(question['id']).collection('answers').add(answers[i]['fields']).then((value) async {
+      for (var i = 0; i < answers.length; i++) {
+        await firestore
+            .collection('questions-2')
+            .doc(question['id'])
+            .collection('answers')
+            .add(answers[i]['fields'])
+            .then((value) async {
           answers[i]['fields']['id'] = value.id;
           List<Map<String, dynamic>> v = answers[i]['votes'];
-          for(int j = 0; j < v.length; j++){
+          for (int j = 0; j < v.length; j++) {
             await value.collection('votes').add(v[j]);
           }
         });
       }
 
-      Widget questionAndAnswersScreen = new QuestionAndAnswersScreen(question['id'], firestore: firestore, auth: auth);
+      Widget questionAndAnswersScreen = new QuestionAndAnswersScreen(
+          question['id'],
+          firestore: firestore,
+          auth: auth);
       // Widget testWidget = new MediaQuery(
       //     data: new MediaQueryData(),
       //     child: new Directionality(
@@ -218,15 +222,12 @@ void main() {
 
       // test question basics
       expect(find.textContaining(question['body']), findsOneWidget);
-
     });
   });
 
-
-  group('Test form pages', (){
-
+  group('Test form pages', () {
     /// test question post form screen
-    testWidgets('Test question post form screen', (WidgetTester tester) async{
+    testWidgets('Test question post form screen', (WidgetTester tester) async {
       // String questionTitle
       // String questionBody
 
@@ -240,7 +241,10 @@ void main() {
         'name': 'computer science',
         'code': 'coms',
       };
-      await firestore.collection(COLLECTIONS['courses']).add(course).then((value){
+      await firestore
+          .collection(COLLECTIONS['courses'])
+          .add(course)
+          .then((value) {
         course.addAll({'id': value.id});
       });
 
@@ -250,7 +254,10 @@ void main() {
         'name': 'software design',
       };
 
-      await firestore.collection(COLLECTIONS['modules']).add(module).then((value){
+      await firestore
+          .collection(COLLECTIONS['modules'])
+          .add(module)
+          .then((value) {
         module.addAll({'id': value.id});
       });
 
@@ -259,7 +266,10 @@ void main() {
         'email': 'testEmail@domain.con',
       };
 
-      await firestore.collection(COLLECTIONS['users']).add(author).then((value){
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .add(author)
+          .then((value) {
         author.addAll({'id': value.id});
       });
 
@@ -280,25 +290,25 @@ void main() {
       // String questionCourse = 'Software Design';
       // String questionModule = 'Computer Science';
 
-      PostQuestionScreen postQuestionScreen = PostQuestionScreen(firestore: firestore, auth: auth);
+      PostQuestionScreen postQuestionScreen =
+          PostQuestionScreen(firestore: firestore, auth: auth);
 
       Widget testWidget = new MediaQuery(
-        data: new MediaQueryData(),
-        child: new Directionality(
-          textDirection: TextDirection.rtl,
-          child: postQuestionScreen,
-        )
-      );
+          data: new MediaQueryData(),
+          child: new Directionality(
+            textDirection: TextDirection.rtl,
+            child: postQuestionScreen,
+          ));
 
       await tester.pumpWidget(testWidget);
 
       // TODO: remove the following line and add tests
       expect(true, true);
-
     });
 
     /// test question answer form screen
-    testWidgets('Test question answer form screen', (WidgetTester tester) async{
+    testWidgets('Test question answer form screen',
+        (WidgetTester tester) async {
       // String questionTitle
       // String questionBody
 
@@ -314,7 +324,10 @@ void main() {
         'name': 'computer science',
         'code': 'coms',
       };
-      await firestore.collection(COLLECTIONS['courses']).add(course).then((value){
+      await firestore
+          .collection(COLLECTIONS['courses'])
+          .add(course)
+          .then((value) {
         course.addAll({'id': value.id});
       });
 
@@ -324,7 +337,10 @@ void main() {
         'name': 'software design',
       };
 
-      await firestore.collection(COLLECTIONS['modules']).add(module).then((value){
+      await firestore
+          .collection(COLLECTIONS['modules'])
+          .add(module)
+          .then((value) {
         module.addAll({'id': value.id});
       });
 
@@ -333,7 +349,10 @@ void main() {
         'email': 'testEmail@domain.con',
       };
 
-      await firestore.collection(COLLECTIONS['users']).add(author).then((value){
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .add(author)
+          .then((value) {
         author.addAll({'id': value.id});
       });
 
@@ -352,23 +371,34 @@ void main() {
         'courseId': course['id'],
         'authorId': author['id'],
         'createdAt': Timestamp.fromDate(DateTime(2021, 4, 23, 2, 23)),
-        'tags': <String>['testTag1', 'testTag2', 'testTag3',],
+        'tags': <String>[
+          'testTag1',
+          'testTag2',
+          'testTag3',
+        ],
       };
 
-
-      await firestore.collection(COLLECTIONS['questions']).add(question).then((value){
-          question.addAll({'id': value.id});
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .add(question)
+          .then((value) {
+        question.addAll({'id': value.id});
       });
 
-      QuestionAnswerForm questionAnswerForm = QuestionAnswerForm(question['id'], question['title'], question['body'], firestore: firestore, auth: auth,);
+      QuestionAnswerForm questionAnswerForm = QuestionAnswerForm(
+        question['id'],
+        question['title'],
+        question['body'],
+        firestore: firestore,
+        auth: auth,
+      );
 
       Widget testWidget = new MediaQuery(
-        data: new MediaQueryData(),
-        child: new Directionality(
-          textDirection: TextDirection.rtl,
-          child: questionAnswerForm,
-        )
-      );
+          data: new MediaQueryData(),
+          child: new Directionality(
+            textDirection: TextDirection.rtl,
+            child: questionAnswerForm,
+          ));
 
       await tester.pumpWidget(testWidget);
       await tester.pump(Duration(seconds: 5));
@@ -381,12 +411,11 @@ void main() {
 
       // TODO; add more tests
       // String answerBody = 'test answer body 1';
-
     });
 
-
     /// test question comment form screen
-    testWidgets('Test question comment form screen', (WidgetTester tester) async{
+    testWidgets('Test question comment form screen',
+        (WidgetTester tester) async {
       // String questionTitle
       // String questionBody
 
@@ -402,7 +431,10 @@ void main() {
         'name': 'computer science',
         'code': 'coms',
       };
-      await firestore.collection(COLLECTIONS['courses']).add(course).then((value){
+      await firestore
+          .collection(COLLECTIONS['courses'])
+          .add(course)
+          .then((value) {
         course.addAll({'id': value.id});
       });
 
@@ -412,7 +444,10 @@ void main() {
         'name': 'software design',
       };
 
-      await firestore.collection(COLLECTIONS['modules']).add(module).then((value){
+      await firestore
+          .collection(COLLECTIONS['modules'])
+          .add(module)
+          .then((value) {
         module.addAll({'id': value.id});
       });
 
@@ -421,7 +456,10 @@ void main() {
         'email': 'testEmail@domain.con',
       };
 
-      await firestore.collection(COLLECTIONS['users']).add(author).then((value){
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .add(author)
+          .then((value) {
         author.addAll({'id': value.id});
       });
 
@@ -440,22 +478,34 @@ void main() {
         'courseId': course['id'],
         'authorId': author['id'],
         'createdAt': Timestamp.fromDate(DateTime(2021, 4, 23, 2, 23)),
-        'tags': <String>['testTag1', 'testTag2', 'testTag3',],
+        'tags': <String>[
+          'testTag1',
+          'testTag2',
+          'testTag3',
+        ],
       };
 
-      await firestore.collection(COLLECTIONS['questions']).add(question).then((value){
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .add(question)
+          .then((value) {
         question.addAll({'id': value.id});
       });
 
-      QuestionCommentForm questionCommentFormForm = QuestionCommentForm(question['id'], question['title'], question['body'], firestore: firestore, auth: auth,);
+      QuestionCommentForm questionCommentFormForm = QuestionCommentForm(
+        question['id'],
+        question['title'],
+        question['body'],
+        firestore: firestore,
+        auth: auth,
+      );
 
       Widget testWidget = new MediaQuery(
-        data: new MediaQueryData(),
-        child: new Directionality(
-          textDirection: TextDirection.rtl,
-          child: questionCommentFormForm,
-        )
-      );
+          data: new MediaQueryData(),
+          child: new Directionality(
+            textDirection: TextDirection.rtl,
+            child: questionCommentFormForm,
+          ));
 
       await tester.pumpWidget(testWidget);
       await tester.pump(Duration(seconds: 5));
@@ -467,7 +517,6 @@ void main() {
       expect(find.text('test question body 1'), findsOneWidget);
 
       // TODO: add more tests like to interact with the form
-
     });
   });
 }
