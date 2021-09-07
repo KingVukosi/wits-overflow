@@ -12,7 +12,7 @@ Future<MockFirebaseAuth> loginUser(MockUser mockUser) async {
   );
 
   final auth = MockFirebaseAuth(mockUser: mockUser);
-  final result = await auth.signInWithCredential(credential);
+  await auth.signInWithCredential(credential);
 
   return auth;
 }

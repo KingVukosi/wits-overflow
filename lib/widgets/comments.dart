@@ -1,22 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:wits_overflow/forms/question_answer_form.dart';
-import 'package:wits_overflow/forms/question_comment_form.dart';
+// import 'package:wits_overflow/forms/question_answer_form.dart';
+// import 'package:wits_overflow/forms/question_comment_form.dart';
 import 'package:wits_overflow/utils/functions.dart';
-import 'package:wits_overflow/utils/wits_overflow_data.dart';
-import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
-import 'package:wits_overflow/screens/question_and_answers_screen.dart';
+// import 'package:wits_overflow/utils/wits_overflow_data.dart';
+// import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
+// import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 
 class Comments extends StatelessWidget {
   /// just displays a list of comments
 
-  late List<Map<String, dynamic>> comments;
+  late final List<Map<String, dynamic>> comments;
 
   Comments({required this.comments});
 

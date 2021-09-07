@@ -4,15 +4,15 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:wits_overflow/forms/question_answer_form.dart';
-import 'package:wits_overflow/forms/question_comment_form.dart';
-import 'package:wits_overflow/startup/wits_overflow_app.dart';
+// import 'package:wits_overflow/forms/question_answer_form.dart';
+// import 'package:wits_overflow/forms/question_comment_form.dart';
+// import 'package:wits_overflow/startup/wits_overflow_app.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
-import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
-import 'package:wits_overflow/screens/question_and_answers_screen.dart';
+// import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
+// import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 
 class QuestionWidget extends StatelessWidget {
   final int votes;
@@ -22,7 +22,7 @@ class QuestionWidget extends StatelessWidget {
   final Timestamp createdAt;
   final String authorDisplayName;
 
-  WitsOverflowData witsOverflowData = WitsOverflowData();
+  late final WitsOverflowData witsOverflowData = WitsOverflowData();
   late final _firestore;
   late final _auth;
 

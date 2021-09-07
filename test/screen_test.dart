@@ -283,16 +283,12 @@ void main() {
         ),
       );
 
-      String questionTitle = 'test question title 1';
-      String questionBody = 'test question body 1';
-      List<String> tags = [
-        'testTag1',
-        'testTag2',
-        'testTag3',
-      ];
-      Timestamp createAt = Timestamp.fromDate(DateTime(2021, 4, 23, 2, 23));
-      String questionCourse = 'Software Design';
-      String questionModule = 'Computer Science';
+      // String questionTitle = 'test question title 1';
+      // String questionBody = 'test question body 1';
+      // List<String> tags = ['testTag1', 'testTag2', 'testTag3',];
+      // Timestamp createAt = Timestamp.fromDate(DateTime(2021, 4, 23, 2, 23));
+      // String questionCourse = 'Software Design';
+      // String questionModule = 'Computer Science';
 
       PostQuestionScreen postQuestionScreen =
           PostQuestionScreen(firestore: firestore, auth: auth);

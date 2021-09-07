@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
-import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/answers.dart';
 import 'package:wits_overflow/widgets/comments.dart';
 import 'package:wits_overflow/widgets/question.dart';
@@ -264,17 +261,20 @@ void main() {
       //  * title     (String)
       //  * createdAt (Timestamp)
 
-      List<Map<String, dynamic>> modules = [];
-
-      // course fields
-      // * id
-      // * name
-      // *
-      List<Map<String, dynamic>> courses = [
-        {'id': 'course_id_1'},
-        {},
-        {},
-      ];
+      // List<Map<String, dynamic>> modules = [
+      //
+      // ];
+      //
+      // // course fields
+      // // * id
+      // // * name
+      // // *
+      // List<Map<String, dynamic>> courses = [
+      //   {
+      //     'id': 'course_id_1'},
+      //   {},
+      //   {},
+      // ];
 
       // SideDrawer sideDrawer = new SideDrawer();
       //

@@ -26,12 +26,14 @@ main() {
       displayName: 'Bob',
     );
     final auth = MockFirebaseAuth(mockUser: mockUser);
-    final result = await auth.signInWithCredential(credential);
+    await auth.signInWithCredential(credential);
 
     final firestore = FakeFirebaseFirestore();
     WitsOverflowData witsOverflowData = WitsOverflowData();
     witsOverflowData.initialize(firestore: firestore, auth: auth);
     User? user = witsOverflowData.getCurrentUser();
+
+    expect(user?.uid, 'someuid');
   });
 
   // late MockGoogleSignIn googleSignIn;

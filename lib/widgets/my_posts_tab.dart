@@ -90,10 +90,7 @@ class _MyPostsTabState extends State<MyPostsTab> {
         itemCount: this.questions.length,
         itemBuilder: (context, index) {
           Map<String, dynamic> question = this.questions[index];
-          List<Map<String, dynamic>> questionVotes =
-              this.questionVotes[question['id']] == null
-                  ? []
-                  : this.questionVotes[question['id']]!;
+          // List<Map<String, dynamic>> questionVotes = this.questionVotes[question['id']] == null ? [] : this.questionVotes[question['id']]!;
           return QuestionSummary(
             title: question['title'],
             questionId: question['id'],

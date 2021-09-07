@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wits_overflow/forms/question_answer_form.dart';
 import 'package:wits_overflow/forms/question_comment_form.dart';
-import 'package:wits_overflow/utils/functions.dart';
+// import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/question.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
@@ -123,7 +123,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
               await witsOverflowData.fetchUserInformation(editorId);
           if (userInfo != null) {
             editors.addAll({answerId: userInfo});
-            print('[USER INFORMATION FOR ANSWER WITH ID: ${answerId}]');
+            // print('[USER INFORMATION FOR ANSWER WITH ID: ${answerId}]');
           }
         }
       }
@@ -202,19 +202,21 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
     );
   }
 
-  void _addFavouriteQuestion() {
-    User? currentUser = witsOverflowData.getCurrentUser();
-    if (currentUser != null) {
-      String questionId = this.id;
-      String userId = currentUser.uid;
-
-      witsOverflowData
-          .addFavouriteQuestion(userId: userId, questionId: questionId)
-          .then((result) {
-        showNotification(context, 'Favourite added.');
-      });
-    }
-  }
+  // void _addFavouriteQuestion() {
+  //   User? currentUser = witsOverflowData.getCurrentUser();
+  //   if (currentUser != null) {
+  //
+  //     String questionId = this.id;
+  //     String userId = currentUser.uid;
+  //
+  //     witsOverflowData.addFavouriteQuestion(
+  //       userId: userId,
+  //       questionId: questionId
+  //     ).then((result) {
+  //         showNotification(context, 'Favourite added.');
+  //     });
+  //   }
+  // }
 
   // void changeAnswerStatus({required String answerId}) async{
   //   setState(() {

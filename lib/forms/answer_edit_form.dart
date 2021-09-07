@@ -41,7 +41,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
   final String questionId;
   final String answerId;
   final String body;
-  String? _body;
+  // String? _body;
 
   bool isBusy = true;
   Map<String, dynamic>? question;

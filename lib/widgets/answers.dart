@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
+// import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:wits_overflow/forms/question_answer_form.dart';
-import 'package:wits_overflow/forms/question_comment_form.dart';
+// import 'package:wits_overflow/forms/question_answer_form.dart';
+// import 'package:wits_overflow/forms/question_comment_form.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
-import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
+// import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 import 'package:wits_overflow/forms/answer_edit_form.dart';
 
@@ -26,8 +26,8 @@ class Answer extends StatefulWidget {
   final Timestamp answeredAt;
   final String questionAuthorId;
 
-  String? editorDisplayName;
-  Timestamp? editedAt;
+  final String? editorDisplayName;
+  final Timestamp? editedAt;
 
   final _firestore;
   final _auth;

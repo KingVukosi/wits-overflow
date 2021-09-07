@@ -16,7 +16,7 @@ void main() {
       final googleSignIn = MockGoogleSignIn();
       final signinAccount = await googleSignIn.signIn();
       final googleAuth = await signinAccount?.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
+      GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
@@ -29,7 +29,7 @@ void main() {
         displayName: 'testFirstName1 testLastName1',
       );
       final auth = MockFirebaseAuth(mockUser: mockUser);
-      final result = await auth.signInWithCredential(credential);
+      // final result = await auth.signInWithCredential(credential);
 
       final firestore = FakeFirebaseFirestore();
       WitsOverflowData witsOverflowData = WitsOverflowData();
