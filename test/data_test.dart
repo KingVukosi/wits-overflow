@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
+// import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
 
 import 'utils.dart';
 
