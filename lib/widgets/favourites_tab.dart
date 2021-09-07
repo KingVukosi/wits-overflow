@@ -17,6 +17,7 @@ class FavouritesTab extends StatefulWidget {
 }
 
 class _FavouritesTabState extends State<FavouritesTab> {
+  // ignore: unused_field
   late bool _loading;
 
   @override
