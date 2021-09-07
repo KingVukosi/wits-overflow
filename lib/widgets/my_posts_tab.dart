@@ -17,6 +17,7 @@ class MyPostsTab extends StatefulWidget {
 }
 
 class _MyPostsTabState extends State<MyPostsTab> {
+  // ignore: unused_field
   late bool _loading;
 
   @override
@@ -41,15 +42,43 @@ class _MyPostsTabState extends State<MyPostsTab> {
                   if (data != null) {
                     return QuestionSummary(questionId: data['id'], data: data);
                   } else {
-                    return SizedBox.shrink();
+                    return Scaffold(
+                      body: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.post_add_outlined,
+                              size: 64,
+                            ),
+                            Text(
+                              'post m-alone',
+                              style: Theme.of(context).textTheme.headline5,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   }
                 });
           } else {
-            if (this._loading == true) {
-              return Center(child: CircularProgressIndicator());
-            } else {
-              return Text('You have not asked any quesions.');
-            }
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.post_add_outlined,
+                      size: 64,
+                    ),
+                    Text(
+                      'post m-alone',
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
         });
   }

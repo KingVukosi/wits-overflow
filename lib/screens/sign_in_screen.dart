@@ -26,6 +26,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           child: Image.asset(
                             'assets/images/wits_logo_transparent.png',
                             scale: 2,
+                            key: ValueKey("Wits_logo"),
                           ),
                         ),
                         SizedBox(height: 30),

@@ -1,26 +1,42 @@
 <p align="center">
-  <img src="assets/images/logo_square_small.jpg?raw=true" alt="Wits University"/>
+  <img src="../assets/images/logo_square_small.jpg?raw=true" alt="Wits University"/>
 </p>
 
-# Wits Overflow
+# Wits Overflow (Website & Mobile App)
 
-Software Design Project - 2021 - University of the Witwatersrand
+This section contains the code for the client application(s) of the Wits Software Design project 2021.
 
-[![codecov](https://codecov.io/gh/KingVukosi/wits-overflow/branch/main/graph/badge.svg?token=HZKUKBFPKA)](https://codecov.io/gh/KingVukosi/wits-overflow)
+## Getting started
 
-[![Pre-Release Testing Workflow](https://github.com/gltch/wits-overflow/actions/workflows/pre-test.yml/badge.svg)](https://github.com/gltch/wits-overflow/actions/workflows/pre-test.yml)
-[![Pre-Release Deploy Workflow](https://github.com/gltch/wits-overflow/actions/workflows/pre-deploy.yml/badge.svg)](https://github.com/gltch/wits-overflow/actions/workflows/pre-deploy.yml)
+> This section is also available [here](https://github.com/gltch/wits-overflow/wiki/Getting-Started#app).
 
-[![Production Testing Workflow](https://github.com/gltch/wits-overflow/actions/workflows/main-test.yml/badge.svg)](https://github.com/gltch/wits-overflow/actions/workflows/main-test.yml)
-[![Production Deploy Workflow](https://github.com/gltch/wits-overflow/actions/workflows/main-deploy.yml/badge.svg)](https://github.com/gltch/wits-overflow/actions/workflows/main-deploy.yml)
+### Getting the Flutter app up and running.
 
-## Getting Started
+Follow the Flutter installation guide here: https://flutter.dev/docs/get-started/install.
 
-For a description on how to get up and running, see the wiki article here:\
-[https://github.com/gltch/wits-overflow/wiki/Getting-Started](https://github.com/gltch/wits-overflow/wiki/Getting-Started).
+> Note you will probably have to open the Flutter app directory as the root directory in your IDE because at this time Flutter doesn't support launching apps from sub-directories...
 
+Run the following command to check that everything installed correctly:
 
-## Documentation
+````
+flutter doctor
+````
 
-Our system documentation is kept on the repository wiki, which can be found here:\
-[https://github.com/gltch/wits-overflow/wiki](https://github.com/gltch/wits-overflow/wiki)
+In the app directory, run the following command to install the Flutter dependencies:
+
+````
+flutter pub get
+````
+
+Run the following command to test the app:
+
+````
+flutter test
+````
+
+Once this is done you should be able to debug the flutter app by pressing F5 as usual.
+
+## Useful Information
+
+- https://github.com/gltch/wits-overflow/wiki/Useful-Links
+- https://github.com/gltch/wits-overflow/wiki/Useful-Commands

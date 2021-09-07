@@ -17,6 +17,7 @@ class FavouritesTab extends StatefulWidget {
 }
 
 class _FavouritesTabState extends State<FavouritesTab> {
+  // ignore: unused_field
   late bool _loading;
 
   @override
@@ -45,11 +46,23 @@ class _FavouritesTabState extends State<FavouritesTab> {
                   }
                 });
           } else {
-            if (this._loading == true) {
-              return Center(child: CircularProgressIndicator());
-            } else {
-              return Text('You have not added any favourites yet.');
-            }
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.auto_awesome,
+                      size: 64,
+                    ),
+                    Text(
+                      'no favorites to show',
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
         });
   }
