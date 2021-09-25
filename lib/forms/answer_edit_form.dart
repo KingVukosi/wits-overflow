@@ -8,102 +8,103 @@ import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
-import 'package:wits_overflow/utils/exceptions.dart';
-
 // -----------------------------------------------------------------------------
-//                      QUESTION CREATE FORM
+//                      ANSWER EDIT FORM
 // -----------------------------------------------------------------------------
-class QuestionAnswerForm extends StatefulWidget {
+class AnswerEditForm extends StatefulWidget {
   final String questionId;
-  final String questionTitle;
-  final String questionBody;
+  final String answerId;
+  final String body;
 
   final _firestore;
   final _auth;
 
-  QuestionAnswerForm(this.questionId, this.questionTitle, this.questionBody,
-      {firestore, auth})
+  AnswerEditForm(
+      {required this.questionId,
+      required this.answerId,
+      required this.body,
+      firestore,
+      auth})
       : this._firestore =
             firestore == null ? FirebaseFirestore.instance : firestore,
-        this._auth = auth == null ? FirebaseAuth.instance : auth;
+        this._auth = firestore == null ? FirebaseAuth.instance : firestore;
 
   @override
-  _QuestionAnswerFormState createState() {
-    return _QuestionAnswerFormState(
-        this.questionId, this.questionTitle, this.questionBody,
+  _AnswerEditFormState createState() {
+    return _AnswerEditFormState(this.questionId, answerId, this.body,
         firestore: this._firestore, auth: this._auth);
   }
 }
 
-// -----------------------------------------------------------------------------
-//                      QUESTION CREATE FORM STATE
-// -----------------------------------------------------------------------------
-class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
+class _AnswerEditFormState extends State<AnswerEditForm> {
   final _formKey = GlobalKey<FormState>();
   final String questionId;
-  final String questionTitle;
-  final String questionBody;
+  final String answerId;
+  final String body;
+  // String? _body;
 
   bool isBusy = true;
   Map<String, dynamic>? question;
 
-  final bodyController = TextEditingController();
+  late TextEditingController bodyController;
 
+  WitsOverflowData witsOverflowData = WitsOverflowData();
   late var _firestore;
   late var _auth;
-  WitsOverflowData witsOverflowData = WitsOverflowData();
 
-  _QuestionAnswerFormState(
-      this.questionId, this.questionTitle, this.questionBody,
+  _AnswerEditFormState(this.questionId, this.answerId, this.body,
       {firestore, auth}) {
     this._firestore =
         firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
     witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
+
+    this.bodyController = TextEditingController(text: this.body);
+
     this.getData();
   }
 
   void getData() async {
-    this.question = await witsOverflowData.fetchQuestion(this.questionId);
+    this.question = await witsOverflowData.fetchQuestion(questionId);
 
     setState(() {
       this.isBusy = false;
     });
   }
 
-  Future<void> submitAnswer(String body) async {
+  void submitAnswer(String body) async {
     setState(() {
       isBusy = true;
     });
 
-    try {
-      String authorId = witsOverflowData.getCurrentUser()!.uid;
-      Map<String, dynamic>? answer = await witsOverflowData.postAnswer(
-          questionId: this.questionId, authorId: authorId, body: body);
+    String editorId = witsOverflowData.getCurrentUser()!.uid;
+    Map<String, dynamic>? editedAnswer = await witsOverflowData.editAnswer(
+        questionId: this.questionId,
+        answerId: this.answerId,
+        body: body,
+        editorId: editorId,
+        editedAt: DateTime.now());
 
-      if (answer == null) {
-        showNotification(this.context, 'Something went wrong', type: 'error');
-      } else {
-        showNotification(this.context, 'Successfully posted your answer');
+    if (editedAnswer == null) {
+      showNotification(this.context, 'Something went wrong', type: 'error');
+    } else {
+      showNotification(this.context, 'Successful');
 
-        Navigator.push(context, MaterialPageRoute(
-          builder: (context) {
-            return QuestionAndAnswersScreen(this.questionId);
-          },
-        ));
-      }
-    } on UseQuestionAnswerExist {
-      showNotification(
-          this.context, 'You have existing answer for this question',
-          type: 'error');
+      Navigator.push(context, MaterialPageRoute(
+        builder: (context) {
+          return QuestionAndAnswersScreen(this.questionId);
+        },
+      ));
     }
+
+    setState(() {
+      isBusy = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: include courses dropdown list
     if (this.isBusy) {
-      print('[_QuestionAnswerFormState-> PAGE IS LOADING]');
       return WitsOverflowScaffold(
         auth: this._auth,
         firestore: this._firestore,
@@ -113,7 +114,6 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
       );
     }
 
-    print('[_QuestionAnswerFormState-> BUILDING PAGE]');
     return WitsOverflowScaffold(
       auth: this._auth,
       firestore: this._firestore,
@@ -121,24 +121,38 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
         padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
         children: [
           Container(
+            padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+            color: Color.fromARGB(100, 220, 220, 220),
+            child: Text(
+              'Question',
+              style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w600,
+                  color: Color.fromARGB(100, 16, 16, 16)),
+            ),
+          ),
+          Container(
             margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
             alignment: Alignment.centerLeft,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(5),
+                  // color: Colors.black12,
+                  // decoration: BoxDecoration(
+                  //   border: Border(
+                  //     bottom: BorderSide(
+                  //       color: Colors.black12,
+                  //       width: 0.5,
+                  //     ),
+                  //   ),
+                  // ),
                   margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                   alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(
-                      color: Colors.black12,
-                      width: 0.5,
-                    )),
-                  ),
                   child: Text(
-                    toTitleCase(this.questionTitle),
+                    toTitleCase(this.question?['title']),
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
@@ -147,10 +161,10 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(5),
                   margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  // color: Colors.black12,
                   child: Text(
-                    this.questionBody,
+                    this.question?['body'],
                     style: TextStyle(
                       color: Color.fromARGB(1000, 70, 70, 70),
                     ),
@@ -163,7 +177,7 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
             padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
             color: Color.fromARGB(100, 220, 220, 220),
             child: Text(
-              'Post answer',
+              'Edit answer',
               style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w600,
@@ -189,7 +203,7 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
                         minLines: 10,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: 'answer',
+                          labelText: 'Answer',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -206,23 +220,9 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: ElevatedButton(
                         onPressed: () {
-                          // when the user wants to submit his/her answer to the question
-                          // if(submitAnswer(bodyController.text.toString()) != null){
-                          //   // redirect to question page
-                          //   Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context){
-                          //         return Question(this.questionId);
-                          //       }
-                          //     ),
-                          //   );
-                          // }
-
-                          this.submitAnswer(
-                              this.bodyController.text.toString());
+                          this.submitAnswer(bodyController.text.toString());
                         },
-                        child: Text('post'),
+                        child: Text('Sumbit'),
                       ),
                     )
                   ],

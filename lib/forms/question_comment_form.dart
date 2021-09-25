@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
+import 'package:wits_overflow/utils/functions.dart';
+import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
 // -----------------------------------------------------------------------------
@@ -14,12 +16,20 @@ class QuestionCommentForm extends StatefulWidget {
   final String questionTitle;
   final String questionBody;
 
-  QuestionCommentForm(this.questionId, this.questionTitle, this.questionBody);
+  final _firestore;
+  final _auth;
+
+  QuestionCommentForm(this.questionId, this.questionTitle, this.questionBody,
+      {firestore, auth})
+      : this._firestore =
+            firestore == null ? FirebaseFirestore.instance : firestore,
+        this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
   _QuestionCommentFormState createState() {
     return _QuestionCommentFormState(
-        this.questionId, this.questionTitle, this.questionBody);
+        this.questionId, this.questionTitle, this.questionBody,
+        firestore: this._firestore, auth: this._auth);
   }
 }
 
@@ -33,73 +43,91 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
   final String questionBody;
 
   bool isBusy = true;
-  DocumentSnapshot<Map<String, dynamic>>? question;
+  Map<String, dynamic>? question;
 
   final bodyController = TextEditingController();
 
+  WitsOverflowData witsOverflowData = WitsOverflowData();
+  late var _firestore;
+  late var _auth;
+
+  _QuestionCommentFormState(
+      this.questionId, this.questionTitle, this.questionBody,
+      {firestore, auth}) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
+    witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
+    this.getData();
+  }
+
   void getData() async {
-    this.question = await FirebaseFirestore.instance
-        .collection('questions-2')
-        .doc(this.questionId)
-        .get();
+    this.question = await witsOverflowData.fetchQuestion(questionId);
 
     setState(() {
       this.isBusy = false;
     });
   }
 
-  _QuestionCommentFormState(
-      this.questionId, this.questionTitle, this.questionBody) {
-    this.getData();
-  }
-
-  void submitComment(String body) {
+  void submitComment(String body) async {
     setState(() {
       isBusy = true;
     });
 
-    Map<String, dynamic> data = {
-      'authorId': FirebaseAuth.instance.currentUser!.uid,
-      'body': body,
-      'commentedAt': DateTime.now(),
-    };
+    String authorId = witsOverflowData.getCurrentUser()!.uid;
+    Map<String, dynamic>? questionComment =
+        await witsOverflowData.postQuestionComment(
+            questionId: this.questionId, body: body, authorId: authorId);
 
-    CollectionReference questionCommentsCollection = FirebaseFirestore.instance
-        .collection('questions-2')
-        .doc(this.questionId)
-        .collection('comments');
-    questionCommentsCollection.add(data).then((onValue) {
-      print("[COMMENT ADDED]");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Successfully posted comment',
-            style: TextStyle(
-              color: Colors.green,
-            ),
-          ),
-        ),
-      );
+    if (questionComment == null) {
+      showNotification(this.context, 'Something went wrong', type: 'error');
+    } else {
+      showNotification(this.context, 'Successfully posted your comment');
 
       Navigator.push(context, MaterialPageRoute(
         builder: (context) {
           return QuestionAndAnswersScreen(this.questionId);
         },
       ));
-    }).catchError((error) {
-      // if error occurs while submitting user answer
-      print("[FAILED TO ADD COMMENT]: $error");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error occurred',
-            style: TextStyle(
-              color: Colors.red,
-            ),
-          ),
-        ),
-      );
-    });
+    }
+
+    // CollectionReference questionCommentsCollection = witsOverflowData.fetchQuestion(this.questionId)collection('comments');
+    // questionCommentsCollection.add(data).then((onValue) {
+    //
+    //   print("[COMMENT ADDED]");
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(
+    //         'Successfully posted comment',
+    //         style: TextStyle(
+    //           color: Colors.green,
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    //
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context){
+    //         return QuestionAndAnswersScreen(this.questionId);
+    //       },
+    //     )
+    //   );
+    // }).catchError((error){
+    //   // if error occurs while submitting user answer
+    //   print("[FAILED TO ADD COMMENT]: $error");
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(
+    //         'Error occurred',
+    //         style: TextStyle(
+    //           color: Colors.red,
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    // });
 
     setState(() {
       isBusy = false;
@@ -114,17 +142,17 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
 
     if (this.isBusy) {
       return WitsOverflowScaffold(
+        auth: this._auth,
+        firestore: this._firestore,
         body: Center(
           child: CircularProgressIndicator(),
         ),
       );
     }
 
-    // for (var dropdownMenuItem in this.dropdownButtonMenuItems) {
-    //   print('[QuestionCreateFormState.build dropDownMenuItem: text: ${dropdownMenuItem.child.toString()}, value: ${dropdownMenuItem.value}]');
-    // }
-
     return WitsOverflowScaffold(
+      auth: this._auth,
+      firestore: this._firestore,
       body: ListView(
         padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
         children: [
@@ -149,7 +177,7 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
                   padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    this.questionTitle,
+                    toTitleCase(this.questionTitle),
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,

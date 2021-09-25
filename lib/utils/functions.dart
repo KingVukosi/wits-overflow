@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
 String toTitleCase(String string) {
   /// return a string in a title format
@@ -72,8 +74,6 @@ Future<void> updateQuestions() async {
         await questionsReference.doc(questionId).get();
 
     // updated at can be null or may not exist
-    //
-    print('[QUESTION DATA : ${question.data()}]');
     int latest =
         (question.data()!['createAt'] as Timestamp).millisecondsSinceEpoch;
     var updatedAt = question.data()!['updatedAt'];
@@ -159,3 +159,40 @@ Future<void> updateQuestions() async {
     });
   }
 }
+
+/// function to show notification to user
+void showNotification(context, message, {type = 'primary'}) {
+  Color? bgColor;
+  if (type == 'error') {
+    bgColor = Colors.red;
+  } else if (type == 'warning') {
+    bgColor = Colors.orange;
+  } else {
+    bgColor = Colors.blue;
+  }
+
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(message),
+    backgroundColor: bgColor,
+  ));
+}
+
+const Map COLLECTIONS = {
+  'questions': 'questions-2',
+  'favourites': 'favorites-2',
+  'courses': 'courses-2',
+  'modules': 'modules-2',
+  'users': 'users',
+};
+
+int countVotes(List<Map<String, dynamic>> votes) {
+  int count = 0;
+  for (int i = 0; i < votes.length; i++) {
+    count += votes[i]['value'] as int;
+  }
+  return count;
+}
+
+// final map STYLES = {
+//     'background_colour':
+// }
