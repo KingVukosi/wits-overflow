@@ -28,7 +28,7 @@ class SideDrawer extends StatelessWidget {
                         top: 40, left: 10, right: 10, bottom: 10),
                     child: GestureDetector(
                         onTap: () => {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => UserInfoScreen())),
@@ -72,7 +72,7 @@ class SideDrawer extends StatelessWidget {
                       leading: Icon(Icons.home),
                       title: Text('Home'),
                       onTap: () => {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => HomeScreen())),
@@ -85,7 +85,7 @@ class SideDrawer extends StatelessWidget {
                       leading: Icon(Icons.post_add_outlined),
                       title: Text('Post Question'),
                       onTap: () => {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => PostQuestionScreen())),
@@ -132,7 +132,7 @@ class SideDrawer extends StatelessWidget {
                                                               moduleData[
                                                                   'name']),
                                                           onTap: () => {
-                                                            Navigator.pushReplacement(
+                                                            Navigator.push(
                                                                 context,
                                                                 MaterialPageRoute(
                                                                     builder: (context) =>

@@ -6,10 +6,9 @@
     "configurations": [
         {
             "program": "lib/startup/main_dev.dart",
-            "name": "app",
-            "cwd": "app",
+            "name": "wits-overflow",
             "request": "launch",
             "type": "dart"
-        }
+        },
     ]
 }
