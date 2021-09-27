@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/side_drawer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wits_overflow/screens/user_info_screen.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:wits_overflow/screens/user_info_screen.dart';
 
 // ignore: must_be_immutable
 class WitsOverflowScaffold extends StatelessWidget {
