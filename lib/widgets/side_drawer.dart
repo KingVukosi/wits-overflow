@@ -26,7 +26,7 @@ class SideDrawer extends StatelessWidget {
     }
     return Theme(
         data: Theme.of(context).copyWith(
-          canvasColor: Colors.blue,
+          canvasColor: Colors.white,
         ),
         child: Drawer(child: LayoutBuilder(builder:
             (BuildContext context, BoxConstraints viewportConstraints) {
@@ -52,17 +52,18 @@ class SideDrawer extends StatelessWidget {
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 40,
                                     height: 40,
-                                    margin: EdgeInsets.only(right: 10),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      image: DecorationImage(
-                                          // Change code to get profile image of user
-                                          // image: ,
-                                          image: image,
-                                          fit: BoxFit.fill),
+                                    child: Container(
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.rectangle,
+                                        image: DecorationImage(
+                                            // Change code to get profile image of user
+                                            image: image,
+                                            fit: BoxFit.fill),
+                                      ),
                                     ),
                                   ),
                                 ),
