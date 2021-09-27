@@ -8,88 +8,104 @@ import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
-import 'package:wits_overflow/utils/exceptions.dart';
-
 // -----------------------------------------------------------------------------
 //                      QUESTION CREATE FORM
 // -----------------------------------------------------------------------------
-class QuestionAnswerForm extends StatefulWidget {
+class QuestionAnswerCommentForm extends StatefulWidget {
   final String questionId;
+  final String answerId;
 
   final _firestore;
   final _auth;
 
-  QuestionAnswerForm({required this.questionId, firestore, auth})
+  QuestionAnswerCommentForm(
+      {required this.questionId, required this.answerId, firestore, auth})
       : this._firestore =
             firestore == null ? FirebaseFirestore.instance : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
-  _QuestionAnswerFormState createState() {
-    return _QuestionAnswerFormState();
+  _QuestionAnswerCommentFormState createState() {
+    return _QuestionAnswerCommentFormState();
   }
 }
 
 // -----------------------------------------------------------------------------
 //                      QUESTION CREATE FORM STATE
 // -----------------------------------------------------------------------------
-class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
+class _QuestionAnswerCommentFormState extends State<QuestionAnswerCommentForm> {
   final _formKey = GlobalKey<FormState>();
+  // final String questionId;
 
   bool isBusy = true;
-  late Map<String, dynamic> question;
+  late final Map<String, dynamic>? question;
+  late final Map<String, dynamic>? answer;
 
   final bodyController = TextEditingController();
 
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
+  @override
   void initState() {
     super.initState();
-    this
-        .witsOverflowData
-        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+
+    witsOverflowData.initialize(
+        firestore: this.widget._firestore, auth: this.widget._auth);
     this.getData();
   }
 
   void getData() async {
     this.question =
-        (await witsOverflowData.fetchQuestion(this.widget.questionId))!;
+        await witsOverflowData.fetchQuestion(this.widget.questionId);
+    this.answer = await witsOverflowData.fetchAnswer(
+        questionId: this.widget.questionId, answerId: this.widget.answerId);
 
     setState(() {
       this.isBusy = false;
     });
   }
 
-  Future<void> submitAnswer(String body) async {
+  void submitComment(String body) async {
     setState(() {
       isBusy = true;
     });
 
-    try {
-      String authorId = witsOverflowData.getCurrentUser()!.uid;
-      Map<String, dynamic>? answer = await witsOverflowData.postAnswer(
-          questionId: this.widget.questionId, authorId: authorId, body: body);
+    String authorId = witsOverflowData.getCurrentUser()!.uid;
+    Map<String, dynamic>? questionComment =
+        await witsOverflowData.postQuestionAnswerComment(
+            questionId: this.widget.questionId,
+            answerId: this.widget.answerId,
+            body: body,
+            authorId: authorId);
 
-      if (answer == null) {
-        showNotification(this.context, 'Something went wrong', type: 'error');
-      } else {
-        showNotification(this.context, 'Successfully posted your answer');
+    if (questionComment == null) {
+      showNotification(this.context, 'Something went wrong', type: 'error');
+    } else {
+      showNotification(this.context, 'Successfully posted your comment');
 
+      // wait three seconds and navigate to the question and answers screen
+      await Future.delayed(Duration(seconds: 4)).then((value) {
         Navigator.push(context, MaterialPageRoute(
           builder: (context) {
-            return QuestionAndAnswersScreen(this.widget.questionId);
+            return QuestionAndAnswersScreen(
+              this.widget.questionId,
+              firestore: this.widget._firestore,
+              auth: this.widget._auth,
+            );
           },
         ));
-      }
-    } on UseQuestionAnswerExist {
-      showNotification(
-          this.context, 'You have existing answer for this question',
-          type: 'error');
+      });
     }
+
+    setState(() {
+      isBusy = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Build a Form widget using the _formKey created above.
+
     if (this.isBusy) {
       return WitsOverflowScaffold(
         auth: this.widget._auth,
@@ -111,20 +127,23 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
             alignment: Alignment.centerLeft,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(5),
-                  margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                  alignment: Alignment.centerLeft,
+                  // color: Colors.black12,
                   decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(
-                      color: Colors.black12,
-                      width: 0.5,
-                    )),
+                      bottom: BorderSide(
+                        color: Colors.black12,
+                        width: 0.5,
+                      ),
+                    ),
                   ),
+                  margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    this.question['title'],
+                    this.question?['title'],
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
@@ -133,10 +152,10 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(5),
                   margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  // color: Colors.black12,
                   child: Text(
-                    this.question['body'],
+                    this.question?['body'],
                     style: TextStyle(
                       color: Color.fromARGB(1000, 70, 70, 70),
                     ),
@@ -145,11 +164,19 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
               ],
             ),
           ),
+
+          // show answer information
+          Container(
+            child: Text(
+              this.answer?['body'],
+            ),
+          ),
+
           Container(
             padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
             color: Color.fromARGB(100, 220, 220, 220),
             child: Text(
-              'Post answer',
+              'Post comment',
               style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w600,
@@ -170,13 +197,13 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
                       // color:Color.fromARGB(1000, 100, 100, 100),
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: TextFormField(
-                        key: Key('id_edit_answer_body'),
+                        key: Key('id_comment_body'),
                         controller: this.bodyController,
                         maxLines: 15,
                         minLines: 10,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: 'Answer',
+                          labelText: 'comment',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -188,12 +215,13 @@ class _QuestionAnswerFormState extends State<QuestionAnswerForm> {
                     ),
                     Container(
                       width: double.infinity,
+                      // color:Color.fromARGB(1000, 100, 100, 100),
+                      // alignment: Alignment.bottomCenter,
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: ElevatedButton(
-                        key: Key('id_submit'),
+                        key: Key('id_submit_comment'),
                         onPressed: () {
-                          this.submitAnswer(
-                              this.bodyController.text.toString());
+                          this.submitComment(bodyController.text.toString());
                         },
                         child: Text('post'),
                       ),

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="38">
+    <g fill="rgb(76, 144, 103)">
+        <path stroke="rgb(76, 144, 103)" stroke-width="2" d="M31 16.178c0 .785-.503 3.349-1.304 5.767-1.304 3.927-5.87 15.055-5.87 15.055l-3.261-6.545c-.815.412-2.609.91-4.691.91-8.341 0-15.127-6.814-15.127-15.186s6.786-15.178 15.127-15.178c8.341 0 15.126 6.807 15.126 15.178z"/>
+        <text fill="none" font-family="Helvetica Neue" font-size="16" transform="translate(1 1)">
+            <tspan x="9.164" y="20.712" fill="white">A</tspan>
+        </text>
+    </g>
+</svg>

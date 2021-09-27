@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/side_drawer.dart';
@@ -6,32 +7,52 @@ import 'package:wits_overflow/screens/user_info_screen.dart';
 
 // ignore: must_be_immutable
 class WitsOverflowScaffold extends StatelessWidget {
-  Future<List<Map<String, dynamic>>> _courses;
-  Future<List<Map<String, dynamic>>> _modules;
-  FloatingActionButton? _floatingActionButton;
+  late Future<List<Map<String, dynamic>>> _courses;
+  late Future<List<Map<String, dynamic>>> _modules;
+  late FloatingActionButton? _floatingActionButton;
+
+  WitsOverflowData witsOverflowData = WitsOverflowData();
   final Widget body;
 
-  WitsOverflowScaffold(
-      {required this.body, courses, modules, floatingActionButton})
-      : _floatingActionButton = floatingActionButton,
-        _courses =
-            (courses == null) ? WitsOverflowData().fetchCourses() : courses,
-        _modules =
-            (modules == null) ? WitsOverflowData().fetchModules() : modules;
+  late final _firestore;
+  late final _auth;
 
+  WitsOverflowScaffold(
+      {required this.body,
+      courses,
+      modules,
+      floatingActionButton,
+      firestore,
+      auth}) {
+    this._floatingActionButton = floatingActionButton;
+
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
+
+    this
+        .witsOverflowData
+        .initialize(firestore: this._firestore, auth: this._auth);
+
+    this._courses =
+        (courses == null) ? witsOverflowData.fetchCourses() : courses;
+    this._modules =
+        (modules == null) ? witsOverflowData.fetchModules() : modules;
+  }
   @override
   Widget build(BuildContext context) {
+    // print('[DEVICE WIDTH: ${MediaQuery.of(context).size.width}, HEIGHT: ${MediaQuery.of(context).size.height}]');
+    late var image;
+    if (this._auth.currentUser?.photoURL == null) {
+      image = ExactAssetImage('assets/images/default_avatar.png');
+    } else {
+      image = NetworkImage(this._auth.currentUser?.photoURL!);
+    }
     if (this._floatingActionButton != null) {
       return GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             appBar: AppBar(
-                leading: Container(
-                  margin: EdgeInsets.only(right: 30),
-                  child: BackButton(
-                    color: Colors.white,
-                  ),
-                ),
                 elevation: 1,
                 title: Text(
                   'Wits Overflow',
@@ -56,9 +77,15 @@ class WitsOverflowScaffold extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Container(
+                    margin: EdgeInsets.only(right: 30),
+                    child: BackButton(
+                      color: Colors.white,
+                    ),
+                  ),
                   TextButton(
                       child: Text(
-                        FirebaseAuth.instance.currentUser!.displayName!,
+                        this.witsOverflowData.getCurrentUser()!.displayName!,
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       ),
                       onPressed: () {
@@ -81,10 +108,8 @@ class WitsOverflowScaffold extends StatelessWidget {
                       margin: EdgeInsets.only(right: 10, left: 20),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                FirebaseAuth.instance.currentUser!.photoURL!),
-                            fit: BoxFit.contain),
+                        image:
+                            DecorationImage(image: image, fit: BoxFit.contain),
                       ),
                     ),
                   ),
@@ -100,12 +125,6 @@ class WitsOverflowScaffold extends StatelessWidget {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             appBar: AppBar(
-                leading: Container(
-                  margin: EdgeInsets.only(right: 30),
-                  child: BackButton(
-                    color: Colors.white,
-                  ),
-                ),
                 elevation: 1,
                 title: Text(
                   'Wits Overflow',
@@ -116,7 +135,7 @@ class WitsOverflowScaffold extends StatelessWidget {
                 ),
                 actions: [
                   Container(
-                    margin: EdgeInsets.only(right: 250, top: 4.5),
+                    margin: EdgeInsets.only(right: 5, top: 4.5),
                     width: 250,
                     child: TextField(
                       decoration: InputDecoration(
@@ -130,18 +149,24 @@ class WitsOverflowScaffold extends StatelessWidget {
                       ),
                     ),
                   ),
-                  TextButton(
-                      child: Text(
-                        FirebaseAuth.instance.currentUser!.displayName!,
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UserInfoScreen()),
-                        );
-                      }),
+                  // Container(
+                  //   margin: EdgeInsets.only(right: 30),
+                  //   child: BackButton(
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  // TextButton(
+                  //     child: Text(
+                  //       this.witsOverflowData.getCurrentUser()!.displayName!,
+                  //       style: TextStyle(color: Colors.white, fontSize: 15),
+                  //     ),
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //             builder: (context) => UserInfoScreen()),
+                  //       );
+                  //     }),
                   GestureDetector(
                     onTap: () => {
                       Navigator.push(
@@ -155,17 +180,20 @@ class WitsOverflowScaffold extends StatelessWidget {
                       margin: EdgeInsets.only(right: 10, left: 20),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                FirebaseAuth.instance.currentUser!.photoURL!),
-                            fit: BoxFit.contain),
+                        image:
+                            DecorationImage(image: image, fit: BoxFit.contain),
                       ),
                     ),
                   ),
                 ]),
-            drawer: SideDrawer(courses: this._courses, modules: this._modules),
+            // drawer: SideDrawer(courses: this._courses, modules: this._modules, firestore: this._firestore, auth: this._auth,),
             body: Row(children: [
-              SideDrawer(courses: this._courses, modules: this._modules),
+              SideDrawer(
+                courses: this._courses,
+                modules: this._modules,
+                firestore: this._firestore,
+                auth: this._auth,
+              ),
               Expanded(child: this.body)
             ])),
       );

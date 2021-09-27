@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,10 +11,22 @@ class SideDrawer extends StatelessWidget {
   final Future<List<Map<String, dynamic>>> courses;
   final Future<List<Map<String, dynamic>>> modules;
 
-  SideDrawer({required this.courses, required this.modules});
+  final _firestore;
+  final _auth;
+
+  SideDrawer({required this.courses, required this.modules, firestore, auth})
+      : this._firestore =
+            firestore == null ? FirebaseFirestore.instance : firestore,
+        this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
   Widget build(BuildContext context) {
+    late ImageProvider image;
+    if (this._auth.currentUser?.photoURL == null) {
+      image = ExactAssetImage('assets/images/default_avatar.png');
+    } else {
+      image = NetworkImage(this._auth.currentUser?.photoURL!);
+    }
     return Theme(
         data: Theme.of(context).copyWith(
           canvasColor: Colors.white,
@@ -39,35 +53,44 @@ class SideDrawer extends StatelessWidget {
                                               UserInfoScreen())),
                                 },
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  margin: EdgeInsets.only(right: 10),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    image: DecorationImage(
-                                        // Change code to get profile image of user
-                                        image: NetworkImage(FirebaseAuth
-                                            .instance.currentUser!.photoURL!),
-                                        fit: BoxFit.fill),
+                                Flexible(
+                                  child: SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: Container(
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.rectangle,
+                                        image: DecorationImage(
+                                            // Change code to get profile image of user
+                                            image: image,
+                                            fit: BoxFit.fill),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                        "Welcome, " +
-                                            FirebaseAuth.instance.currentUser!
-                                                .displayName!,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    Text("Student",
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .disabledColor))
-                                  ],
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          "Welcome, " +
+                                              this
+                                                  ._auth
+                                                  .currentUser!
+                                                  .displayName!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      Text("Student",
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .disabledColor))
+                                    ],
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                  ),
                                 )
                               ],
                             )),
@@ -146,9 +169,12 @@ class SideDrawer extends StatelessWidget {
                                                                 Navigator.push(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                ModuleQuestionsScreen(moduleId: moduleData['id']))),
+                                                                        builder: (context) =>
+                                                                            ModuleQuestionsScreen(
+                                                                              moduleId: moduleData['id'],
+                                                                              firestore: this._firestore,
+                                                                              auth: this._auth,
+                                                                            ))),
                                                               },
                                                             );
                                                           } else {
