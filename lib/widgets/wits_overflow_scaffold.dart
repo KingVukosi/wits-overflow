@@ -26,6 +26,12 @@ class WitsOverflowScaffold extends StatelessWidget {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             appBar: AppBar(
+                leading: Container(
+                  margin: EdgeInsets.only(right: 30),
+                  child: BackButton(
+                    color: Colors.white,
+                  ),
+                ),
                 elevation: 1,
                 title: Text(
                   'Wits Overflow',
@@ -48,12 +54,6 @@ class WitsOverflowScaffold extends StatelessWidget {
                         ),
                         hintText: "Search",
                       ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 30),
-                    child: BackButton(
-                      color: Colors.white,
                     ),
                   ),
                   TextButton(
@@ -100,6 +100,12 @@ class WitsOverflowScaffold extends StatelessWidget {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             appBar: AppBar(
+                leading: Container(
+                  margin: EdgeInsets.only(right: 30),
+                  child: BackButton(
+                    color: Colors.white,
+                  ),
+                ),
                 elevation: 1,
                 title: Text(
                   'Wits Overflow',
@@ -122,12 +128,6 @@ class WitsOverflowScaffold extends StatelessWidget {
                         ),
                         hintText: "Search",
                       ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 30),
-                    child: BackButton(
-                      color: Colors.white,
                     ),
                   ),
                   TextButton(
