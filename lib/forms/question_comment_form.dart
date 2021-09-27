@@ -58,6 +58,7 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
   }
 
   void submitComment(String body) async {
+    print('[POSTING QUESTION COMMENT]');
     setState(() {
       isBusy = true;
     });
@@ -70,6 +71,7 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
     if (questionComment == null) {
       showNotification(this.context, 'Something went wrong', type: 'error');
     } else {
+      print('[SUCCESSFULLY POSTED QUESTION COMMENT]');
       showNotification(this.context, 'Successfully posted your comment');
 
       Navigator.push(context, MaterialPageRoute(
@@ -194,6 +196,7 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
                       child: ElevatedButton(
                         key: Key('id_submit'),
                         onPressed: () {
+                          print('[SUBMITTING QUESTION COMMENT]');
                           this.submitComment(bodyController.text.toString());
                         },
                         child: Text('post'),

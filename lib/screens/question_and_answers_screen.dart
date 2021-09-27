@@ -21,7 +21,7 @@ class QuestionAndAnswersScreen extends StatefulWidget {
 
   QuestionAndAnswersScreen(this.id, {firestore, auth})
       : this._firestore =
-  firestore == null ? FirebaseFirestore.instance : firestore,
+            firestore == null ? FirebaseFirestore.instance : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
@@ -42,27 +42,27 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
   // question comments (comments that belong to the question)
   // not answers
   Map<String, Map<String, dynamic>> questionCommentsAuthors =
-  Map<String, Map<String, dynamic>>();
+      Map<String, Map<String, dynamic>>();
 
   // holds user information for each question answer
   Map<String, Map<String, dynamic>> questionAnswersAuthors =
-  Map<String, Map<String, dynamic>>();
+      Map<String, Map<String, dynamic>>();
 
   // holds votes information for each answer
   Map<String, List<Map<String, dynamic>>> questionAnswersVotes =
-  Map<String, List<Map<String, dynamic>>>();
+      Map<String, List<Map<String, dynamic>>>();
 
   // holds votes information for each answer
   Map<String, Map<String, dynamic>> questionAnswerEditors =
-  Map<String, Map<String, dynamic>>();
+      Map<String, Map<String, dynamic>>();
 
   Map<String, List<Map<String, dynamic>>> questionAnswersComments = {};
 
   // holds author information to each question-answer comments
   // hold author information for each comment that belongs to answers
   Map<String, Map<String, Map<String, dynamic>>>
-  questionAnswersCommentsAuthors =
-  {}; // = Map<String, Map<String, dynamic>>();
+      questionAnswersCommentsAuthors =
+      {}; // = Map<String, Map<String, dynamic>>();
 
   bool isBusy = true;
 
@@ -84,8 +84,8 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
       Map<String, List<Map<String, dynamic>>> answerVotes = Map();
       for (var i = 0; i < this.questionAnswers.length; i++) {
         List<Map<String, dynamic>>? votes =
-        await witsOverflowData.fetchQuestionAnswerVotes(
-            this.widget.id, this.questionAnswers[i]['id']);
+            await witsOverflowData.fetchQuestionAnswerVotes(
+                this.widget.id, this.questionAnswers[i]['id']);
         answerVotes.addAll({this.questionAnswers[i]['id']: votes!});
       }
       return answerVotes;
@@ -121,7 +121,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
         String answerId = this.questionAnswers[i]['id'];
         if (editorId != null) {
           Map<String, dynamic>? userInfo =
-          await witsOverflowData.fetchUserInformation(editorId);
+              await witsOverflowData.fetchUserInformation(editorId);
           if (userInfo != null) {
             editors.addAll({answerId: userInfo});
           }
@@ -132,7 +132,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
 
     // for each comment in question answers, get user information
     Future<Map<String, Map<String, Map<String, dynamic>>>>
-    getAnswersCommentsAuthors() async {
+        getAnswersCommentsAuthors() async {
       Map<String, Map<String, Map<String, dynamic>>> results = {};
       for (int k = 0; k < this.questionAnswersComments.entries.length; k++) {
         // key - answer id
@@ -153,7 +153,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
         for (int i = 0; i < answerComments.length; i++) {
           Map<String, dynamic> comment = answerComments[i];
           Map<String, dynamic>? userInfo =
-          await witsOverflowData.fetchUserInformation(comment['authorId']);
+              await witsOverflowData.fetchUserInformation(comment['authorId']);
 
           commentsAuthors.addAll({
             comment['id']: userInfo!,
@@ -174,11 +174,11 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
         List<Map<String, dynamic>>? answerComments = await this
             .witsOverflowData
             .fetchQuestionAnswerComments(
-            questionId: this.widget.id,
-            answerId: this.questionAnswers[i]['id']);
+                questionId: this.widget.id,
+                answerId: this.questionAnswers[i]['id']);
         answersComments.addAll({
-        this.questionAnswers[i]['id']:
-        answerComments == null ? [] : answerComments,
+          this.questionAnswers[i]['id']:
+              answerComments == null ? [] : answerComments,
         });
       }
       return answersComments;
@@ -190,17 +190,17 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
     this.questionEditor = this.question['editorId'] == null
         ? {}
         : (await witsOverflowData
-        .fetchUserInformation(this.question['editorId']))!;
+            .fetchUserInformation(this.question['editorId']))!;
     List<Map<String, dynamic>>? fQuestionVotes =
-    await witsOverflowData.fetchQuestionVotes(this.widget.id);
+        await witsOverflowData.fetchQuestionVotes(this.widget.id);
     this.questionVotes.addAll(fQuestionVotes == null ? [] : fQuestionVotes);
     List<Map<String, dynamic>>? fQuestionComments =
-    await witsOverflowData.fetchQuestionComments(this.widget.id);
+        await witsOverflowData.fetchQuestionComments(this.widget.id);
     this
         .questionComments
         .addAll(fQuestionComments == null ? [] : fQuestionComments);
     List<Map<String, dynamic>>? fQuestionAnswers =
-    await witsOverflowData.fetchQuestionAnswers(this.widget.id);
+        await witsOverflowData.fetchQuestionAnswers(this.widget.id);
     this
         .questionAnswers
         .addAll(fQuestionAnswers == null ? [] : fQuestionAnswers);
@@ -226,8 +226,8 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
         // navigate to the question comment form screen
         Navigator.push(this.context,
             MaterialPageRoute(builder: (BuildContext buildContext) {
-              return QuestionCommentForm(questionId: this.widget.id);
-            }));
+          return QuestionCommentForm(questionId: this.widget.id);
+        }));
       },
     );
   }
@@ -239,15 +239,15 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
       String answerId = this.questionAnswers[i]['id'];
       var editedAt = this.questionAnswers[i]['editedAt'];
       String authorDisplayName =
-      this.questionAnswersAuthors[answerId]!['displayName'];
+          this.questionAnswersAuthors[answerId]!['displayName'];
       List<Map<String, dynamic>>? votes =
-      this.questionAnswersVotes[this.questionAnswers[i]['id']];
+          this.questionAnswersVotes[this.questionAnswers[i]['id']];
       String? editorDisplayName =
-      this.questionAnswerEditors[answerId]?['displayName'];
+          this.questionAnswerEditors[answerId]?['displayName'];
       List<Map<String, dynamic>>? comments =
-      this.questionAnswersComments[answerId];
+          this.questionAnswersComments[answerId];
       Map<String, Map<String, dynamic>>? commentsAuthors =
-      this.questionAnswersCommentsAuthors[answerId];
+          this.questionAnswersCommentsAuthors[answerId];
       answers.add(
         Answer(
           id: this.questionAnswers[i]['id'],

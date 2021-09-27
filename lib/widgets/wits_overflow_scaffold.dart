@@ -17,25 +17,35 @@ class WitsOverflowScaffold extends StatelessWidget {
   late final _firestore;
   late final _auth;
 
-  WitsOverflowScaffold({required this.body, courses, modules, floatingActionButton, firestore, auth}){
-      this._floatingActionButton = floatingActionButton;
+  WitsOverflowScaffold(
+      {required this.body,
+      courses,
+      modules,
+      floatingActionButton,
+      firestore,
+      auth}) {
+    this._floatingActionButton = floatingActionButton;
 
-      this._firestore = firestore == null ? FirebaseFirestore.instance : firestore;
-      this._auth = auth == null ? FirebaseAuth.instance : auth;
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
 
-      this.witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
+    this
+        .witsOverflowData
+        .initialize(firestore: this._firestore, auth: this._auth);
 
-      this._courses = (courses == null) ? witsOverflowData.fetchCourses() : courses;
-      this._modules = (modules == null) ? witsOverflowData.fetchModules() : modules;
-
+    this._courses =
+        (courses == null) ? witsOverflowData.fetchCourses() : courses;
+    this._modules =
+        (modules == null) ? witsOverflowData.fetchModules() : modules;
   }
   @override
   Widget build(BuildContext context) {
+    // print('[DEVICE WIDTH: ${MediaQuery.of(context).size.width}, HEIGHT: ${MediaQuery.of(context).size.height}]');
     late var image;
-    if(this._auth.currentUser?.photoURL == null){
+    if (this._auth.currentUser?.photoURL == null) {
       image = ExactAssetImage('assets/images/default_avatar.png');
-    }
-    else{
+    } else {
       image = NetworkImage(this._auth.currentUser?.photoURL!);
     }
     if (this._floatingActionButton != null) {
@@ -98,9 +108,8 @@ class WitsOverflowScaffold extends StatelessWidget {
                       margin: EdgeInsets.only(right: 10, left: 20),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: image,
-                            fit: BoxFit.contain),
+                        image:
+                            DecorationImage(image: image, fit: BoxFit.contain),
                       ),
                     ),
                   ),
@@ -126,7 +135,7 @@ class WitsOverflowScaffold extends StatelessWidget {
                 ),
                 actions: [
                   Container(
-                    margin: EdgeInsets.only(right: 250, top: 4.5),
+                    margin: EdgeInsets.only(right: 5, top: 4.5),
                     width: 250,
                     child: TextField(
                       decoration: InputDecoration(
@@ -140,24 +149,24 @@ class WitsOverflowScaffold extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(right: 30),
-                    child: BackButton(
-                      color: Colors.white,
-                    ),
-                  ),
-                  TextButton(
-                      child: Text(
-                        this.witsOverflowData.getCurrentUser()!.displayName!,
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UserInfoScreen()),
-                        );
-                      }),
+                  // Container(
+                  //   margin: EdgeInsets.only(right: 30),
+                  //   child: BackButton(
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  // TextButton(
+                  //     child: Text(
+                  //       this.witsOverflowData.getCurrentUser()!.displayName!,
+                  //       style: TextStyle(color: Colors.white, fontSize: 15),
+                  //     ),
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //             builder: (context) => UserInfoScreen()),
+                  //       );
+                  //     }),
                   GestureDetector(
                     onTap: () => {
                       Navigator.push(
@@ -171,16 +180,20 @@ class WitsOverflowScaffold extends StatelessWidget {
                       margin: EdgeInsets.only(right: 10, left: 20),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: image,
-                            fit: BoxFit.contain),
+                        image:
+                            DecorationImage(image: image, fit: BoxFit.contain),
                       ),
                     ),
                   ),
                 ]),
-            drawer: SideDrawer(courses: this._courses, modules: this._modules),
+            // drawer: SideDrawer(courses: this._courses, modules: this._modules, firestore: this._firestore, auth: this._auth,),
             body: Row(children: [
-              SideDrawer(courses: this._courses, modules: this._modules),
+              SideDrawer(
+                courses: this._courses,
+                modules: this._modules,
+                firestore: this._firestore,
+                auth: this._auth,
+              ),
               Expanded(child: this.body)
             ])),
       );

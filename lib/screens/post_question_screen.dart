@@ -160,101 +160,100 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   @override
   Widget build(BuildContext context) {
     return WitsOverflowScaffold(
-      auth: this._auth,
-      firestore: this._firestore,
-      body: Container(
-        padding: EdgeInsets.all(10),
-        child: Form(
-          child: ListView(
-            children: [
-              FutureBuilder<List<Map<String, dynamic>>>(
-                  future: this.coursesFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    }
+        auth: this._auth,
+        firestore: this._firestore,
+        body: Container(
+            padding: EdgeInsets.all(10),
+            child: Form(
+                child: ListView(
+              children: [
+                FutureBuilder<List<Map<String, dynamic>>>(
+                    future: this.coursesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString());
+                      }
 
-                    if (snapshot.hasData) {
-                      this._courses = snapshot.data;
+                      if (snapshot.hasData) {
+                        this._courses = snapshot.data;
 
-                      return DropdownButtonFormField<String?>(
-                        onChanged: (String? courseId) {
-                          setState(() {
-                            _selectCourse(courseId);
-                          });
-                        },
-                        items: snapshot.data!.map((course) {
-                          return DropdownMenuItem<String?>(
-                              value: course['id'],
-                              child: Text(course['name']));
-                        }).toList(),
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                      );
-                    } else {
-                      return Text('Please load courses');
-                    }
-                  }),
-              Divider(color: Colors.white, height: 10),
-              FutureBuilder<List<Map<String, dynamic>>>(
-                  future: modulesFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    }
+                        return DropdownButtonFormField<String?>(
+                          onChanged: (String? courseId) {
+                            setState(() {
+                              _selectCourse(courseId);
+                            });
+                          },
+                          items: snapshot.data!.map((course) {
+                            return DropdownMenuItem<String?>(
+                                value: course['id'],
+                                child: Text(course['name']));
+                          }).toList(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                        );
+                      } else {
+                        return Text('Please load courses');
+                      }
+                    }),
+                Divider(color: Colors.white, height: 10),
+                FutureBuilder<List<Map<String, dynamic>>>(
+                    future: modulesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString());
+                      }
 
-                    if (snapshot.hasData) {
-                      this._modules = snapshot.data;
+                      if (snapshot.hasData) {
+                        this._modules = snapshot.data;
 
-                      return DropdownButtonFormField<String?>(
-                        onChanged: (String? moduleId) {
-                          setState(() {
-                            _selectModule(moduleId);
-                          });
-                        },
-                        items: snapshot.data!.map((module) {
-                          return DropdownMenuItem<String?>(
-                              value: module['id'],
-                              child: Text(module['name']));
-                        }).toList(),
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                      );
-                    } else {
-                      return Text('Please load courses');
-                    }
-                  }),
-              Divider(color: Colors.white, height: 10),
-              TextFormField(
-                controller: titleController,
-                decoration: InputDecoration(
-                    labelText: 'Title',
-                    alignLabelWithHint: true,
-                    hintText: 'e.g. Is there a python function for...',
-                    border: OutlineInputBorder()),
-              ),
-              Divider(color: Colors.white, height: 10),
-              TextFormField(
-                controller: bodyController,
-                maxLines: 10,
-                decoration: InputDecoration(
-                    labelText: 'Question',
-                    alignLabelWithHint: true,
-                    hintText: 'Include as much information as possible...',
-                    border: OutlineInputBorder()),
-              ),
-              Divider(color: Colors.white, height: 10),
-
-              Container(
-                child: ElevatedButton.icon(
-                  onPressed: () => {this._addQuestion()},
-                  icon: Icon(Icons.post_add),
-                  label: Text('Submit'),
+                        return DropdownButtonFormField<String?>(
+                          onChanged: (String? moduleId) {
+                            setState(() {
+                              _selectModule(moduleId);
+                            });
+                          },
+                          items: snapshot.data!.map((module) {
+                            return DropdownMenuItem<String?>(
+                                value: module['id'],
+                                child: Text(module['name']));
+                          }).toList(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                        );
+                      } else {
+                        return Text('Please load courses');
+                      }
+                    }),
+                Divider(color: Colors.white, height: 10),
+                TextFormField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                      labelText: 'Title',
+                      alignLabelWithHint: true,
+                      hintText: 'e.g. Is there a python function for...',
+                      border: OutlineInputBorder()),
                 ),
-              )
-            ],
-        ))));
+                Divider(color: Colors.white, height: 10),
+                TextFormField(
+                  controller: bodyController,
+                  maxLines: 10,
+                  decoration: InputDecoration(
+                      labelText: 'Question',
+                      alignLabelWithHint: true,
+                      hintText: 'Include as much information as possible...',
+                      border: OutlineInputBorder()),
+                ),
+                Divider(color: Colors.white, height: 10),
+                Container(
+                  child: ElevatedButton.icon(
+                    onPressed: () => {this._addQuestion()},
+                    icon: Icon(Icons.post_add),
+                    label: Text('Submit'),
+                  ),
+                )
+              ],
+            ))));
   }
 }

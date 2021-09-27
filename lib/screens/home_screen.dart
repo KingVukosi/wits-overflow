@@ -15,7 +15,11 @@ class HomeScreen extends StatefulWidget {
   final _firestore;
   final _auth;
 
-  HomeScreen({Key? key, this.module, firestore, auth}) : this._firestore = firestore == null ? FirebaseFirestore.instance : firestore, this._auth = auth == null ? FirebaseAuth.instance : auth, super(key: key);
+  HomeScreen({Key? key, this.module, firestore, auth})
+      : this._firestore =
+            firestore == null ? FirebaseFirestore.instance : firestore,
+        this._auth = auth == null ? FirebaseAuth.instance : auth,
+        super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -27,7 +31,9 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    this.witsOverflowData.initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    this
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
     // questions = this.witsOverflowData.fetchQuestions();
   }
 
@@ -66,9 +72,18 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           body: TabBarView(
             children: [
-              RecentActivityTab(firestore: this.widget._firestore, auth: this.widget._auth,),
-              FavouritesTab(firestore: this.widget._firestore, auth: this.widget._auth,),
-              MyPostsTab(firestore: this.widget._firestore, auth: this.widget._auth,),
+              RecentActivityTab(
+                firestore: this.widget._firestore,
+                auth: this.widget._auth,
+              ),
+              FavouritesTab(
+                firestore: this.widget._firestore,
+                auth: this.widget._auth,
+              ),
+              MyPostsTab(
+                firestore: this.widget._firestore,
+                auth: this.widget._auth,
+              ),
             ],
           ),
         ),

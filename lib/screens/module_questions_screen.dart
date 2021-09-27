@@ -20,7 +20,7 @@ class ModuleQuestionsScreen extends StatefulWidget {
 
   ModuleQuestionsScreen({Key? key, required this.moduleId, firestore, auth})
       : this._firestore =
-  firestore == null ? FirebaseFirestore.instance : firestore,
+            firestore == null ? FirebaseFirestore.instance : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth,
         super(key: key);
 
@@ -33,11 +33,11 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
 
   late List<Map<String, dynamic>> questions;
   late Map<String, List<Map<String, dynamic>>> questionVotes =
-  {}; // holds votes information for each question
+      {}; // holds votes information for each question
   late Map<String, Map<String, dynamic>> questionAuthors =
-  {}; // hold question author information for each question
+      {}; // hold question author information for each question
   late Map<String, List<Map<String, dynamic>>> questionAnswers =
-  {}; // hold question author information for each question
+      {}; // hold question author information for each question
 
   WitsOverflowData witsOverflowData = new WitsOverflowData();
 
@@ -48,17 +48,17 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
     for (int i = 0; i < this.questions.length; i++) {
       String questionId = this.questions[i]['id'];
       List<Map<String, dynamic>>? questionVotes =
-      await witsOverflowData.fetchQuestionVotes(questionId);
+          await witsOverflowData.fetchQuestionVotes(questionId);
       this
           .questionVotes
           .addAll({questionId: questionVotes == null ? [] : questionVotes});
 
       Map<String, dynamic>? questionAuthor =
-      await witsOverflowData.fetchUserInformation(questions[i]['authorId']);
+          await witsOverflowData.fetchUserInformation(questions[i]['authorId']);
       this.questionAuthors.addAll({questionId: questionAuthor!});
 
       List<Map<String, dynamic>>? questionAnswers =
-      await witsOverflowData.fetchQuestionAnswers(questionId);
+          await witsOverflowData.fetchQuestionAnswers(questionId);
       this
           .questionAnswers
           .addAll({questionId: questionAnswers == null ? [] : questionAnswers});
@@ -91,17 +91,17 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
             Map<String, dynamic> question = this.questions[index];
             List<Map<String, dynamic>> questionVotes =
                 this.questionVotes[question['id']] == null
-                ? []
-            : this.questionVotes[question['id']]!;
+                    ? []
+                    : this.questionVotes[question['id']]!;
             return QuestionSummary(
-            title: question['title'],
-            questionId: question['id'],
-            createdAt: question['createdAt'],
-            answers: this.questionAnswers[question['id']]!,
-            authorDisplayName: this.questionAuthors[question['id']]
-            ?['displayName'],
-            tags: question['tags'],
-            votes: questionVotes,
+              title: question['title'],
+              questionId: question['id'],
+              createdAt: question['createdAt'],
+              answers: this.questionAnswers[question['id']]!,
+              authorDisplayName: this.questionAuthors[question['id']]
+                  ?['displayName'],
+              tags: question['tags'],
+              votes: questionVotes,
             );
           }),
     );

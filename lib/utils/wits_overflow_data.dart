@@ -175,12 +175,12 @@ class WitsOverflowData {
     List<Map<String, dynamic>> results = List.empty(growable: true);
 
     await questions.get().then((snapshot) => {
-      snapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['id'] = doc.id;
-        results.add(data);
-      })
-    });
+          snapshot.docs.forEach((doc) {
+            Map<String, dynamic> data = doc.data();
+            data['id'] = doc.id;
+            results.add(data);
+          })
+        });
 
     return results;
   }
@@ -194,12 +194,12 @@ class WitsOverflowData {
         .orderBy('createdAt', descending: true)
         .get()
         .then((snapshot) => {
-      snapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['id'] = doc.id;
-        results.add(data);
-      })
-    });
+              snapshot.docs.forEach((doc) {
+                Map<String, dynamic> data = doc.data();
+                data['id'] = doc.id;
+                results.add(data);
+              })
+            });
 
     return results;
   }
@@ -213,12 +213,12 @@ class WitsOverflowData {
         .orderBy('createdAt', descending: true)
         .get()
         .then((snapshot) => {
-      snapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['id'] = doc.id;
-        results.add(data);
-      })
-    });
+              snapshot.docs.forEach((doc) {
+                Map<String, dynamic> data = doc.data();
+                data['id'] = doc.id;
+                results.add(data);
+              })
+            });
 
     return results;
   }
@@ -231,12 +231,12 @@ class WitsOverflowData {
         .limit(limit)
         .get()
         .then((snapshot) => {
-      snapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['id'] = doc.id;
-        results.add(data);
-      })
-    });
+              snapshot.docs.forEach((doc) {
+                Map<String, dynamic> data = doc.data();
+                data['id'] = doc.id;
+                results.add(data);
+              })
+            });
 
     return results;
   }
@@ -245,12 +245,12 @@ class WitsOverflowData {
     List<Map<String, dynamic>> results = List.empty(growable: true);
 
     await courses.get().then((snapshot) => {
-      snapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['id'] = doc.id;
-        results.add(data);
-      })
-    });
+          snapshot.docs.forEach((doc) {
+            Map<String, dynamic> data = doc.data();
+            data['id'] = doc.id;
+            results.add(data);
+          })
+        });
 
     return results;
   }
@@ -265,12 +265,12 @@ class WitsOverflowData {
     }
 
     await ref.get().then((snapshot) => {
-      snapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data();
-        data['id'] = doc.id;
-        results.add(data);
-      })
-    });
+          snapshot.docs.forEach((doc) {
+            Map<String, dynamic> data = doc.data();
+            data['id'] = doc.id;
+            results.add(data);
+          })
+        });
 
     return results;
   }
@@ -329,9 +329,9 @@ class WitsOverflowData {
 
   void voteQuestion(
       {required context,
-        required int value,
-        required questionId,
-        required userId}) async {
+      required int value,
+      required questionId,
+      required userId}) async {
     /// handler function when a user votes on a question
 
     Map<String, dynamic> data = {
@@ -341,9 +341,9 @@ class WitsOverflowData {
     };
 
     CollectionReference<Map<String, dynamic>> questionVotesCollection =
-    this.questions.doc(questionId).collection('votes');
+        this.questions.doc(questionId).collection('votes');
     QuerySnapshot<Map<String, dynamic>> questionUserVote =
-    await questionVotesCollection.where('user', isEqualTo: userId).get();
+        await questionVotesCollection.where('user', isEqualTo: userId).get();
 
     if (questionUserVote.docs.isEmpty) {
       questionVotesCollection.add(data).then((value) {
@@ -358,10 +358,10 @@ class WitsOverflowData {
 
   Future voteAnswer(
       {required context,
-        required String questionId,
-        required String answerId,
-        required int value,
-        required String userId}) async {
+      required String questionId,
+      required String answerId,
+      required int value,
+      required String userId}) async {
     // check if user has already voted on this answer
     DocumentSnapshot<Map<String, dynamic>> answer = await this
         .questions
@@ -370,7 +370,7 @@ class WitsOverflowData {
         .doc(answerId)
         .get();
     CollectionReference<Map<String, dynamic>> answerVotesReference =
-    answer.reference.collection('votes');
+        answer.reference.collection('votes');
     QuerySnapshot<Map<String, dynamic>> userVote = await answerVotesReference
         .where('user', isEqualTo: userId)
         .limit(1)
@@ -397,9 +397,9 @@ class WitsOverflowData {
 
   Future<Map<String, dynamic>?> postQuestionComment(
       {required String questionId,
-        required String body,
-        required String authorId,
-        DateTime? commentedAt}) async {
+      required String body,
+      required String authorId,
+      DateTime? commentedAt}) async {
     Map<String, dynamic>? comment;
     Map<String, dynamic> data = {
       'body': body,
@@ -420,10 +420,10 @@ class WitsOverflowData {
 
   Future<Map<String, dynamic>?> postQuestionAnswerComment(
       {required String questionId,
-        required String answerId,
-        required String body,
-        required String authorId,
-        DateTime? commentedAt}) async {
+      required String answerId,
+      required String body,
+      required String authorId,
+      DateTime? commentedAt}) async {
     Map<String, dynamic>? comment;
     Map<String, dynamic> data = {
       'body': body,
@@ -446,9 +446,9 @@ class WitsOverflowData {
 
   Future<Map<String, dynamic>?> postAnswer(
       {required String questionId,
-        required String authorId,
-        required String body,
-        DateTime? answeredAt}) async {
+      required String authorId,
+      required String body,
+      DateTime? answeredAt}) async {
     // TODO: check id user has already voted, if yes, then throw error
     Map<String, dynamic>? answer;
     await this
@@ -468,10 +468,10 @@ class WitsOverflowData {
 
   Future<Map<String, dynamic>?> editAnswer(
       {required String questionId,
-        required String answerId,
-        required String editorId,
-        required body,
-        DateTime? editedAt}) async {
+      required String answerId,
+      required String editorId,
+      required body,
+      DateTime? editedAt}) async {
     Map<String, dynamic> data = {
       'body': body,
       'editorId': editorId,
@@ -484,7 +484,7 @@ class WitsOverflowData {
         .doc(answerId)
         .update(data);
     Map<String, dynamic>? answer =
-    await this.fetchAnswer(questionId: questionId, answerId: answerId);
+        await this.fetchAnswer(questionId: questionId, answerId: answerId);
     return answer;
   }
 
@@ -522,7 +522,7 @@ class WitsOverflowData {
         'createdAt': DateTime.now(),
         'title': 'Software Design vs. Software Architecture?',
         'body':
-        'Could someone explain the difference between Software Design and Software Architecture?',
+            'Could someone explain the difference between Software Design and Software Architecture?',
         'tags': ['COMS', 'COMS3007'],
         'authorId': this.getCurrentUser()!.uid
       });
@@ -537,9 +537,9 @@ class WitsOverflowData {
         'moduleId': doc.id,
         'createdAt': DateTime.now(),
         'title':
-        'What is the difference between supervised learning and unsupervised learning?',
+            'What is the difference between supervised learning and unsupervised learning?',
         'body':
-        'In terms of artificial intelligence and machine learning, what is the difference between supervised and unsupervised learning? Can you provide a basic, easy explanation with an example?',
+            'In terms of artificial intelligence and machine learning, what is the difference between supervised and unsupervised learning? Can you provide a basic, easy explanation with an example?',
         'tags': ['COMS', 'COMS3009'],
         'authorId': this.getCurrentUser()!.uid
       });
@@ -554,9 +554,9 @@ class WitsOverflowData {
         'moduleId': doc.id,
         'createdAt': DateTime.now(),
         'title':
-        'How to make graphics with transparent background in R using ggplot2?',
+            'How to make graphics with transparent background in R using ggplot2?',
         'body':
-        'I need to output ggplot2 graphics from R to PNG files with transparent background. Everything is ok with basic R graphics, but no transparency with ggplot2',
+            'I need to output ggplot2 graphics from R to PNG files with transparent background. Everything is ok with basic R graphics, but no transparency with ggplot2',
         'tags': ['COMS', 'COMS3006'],
         'authorId': this.getCurrentUser()!.uid
       });
@@ -571,9 +571,9 @@ class WitsOverflowData {
         'moduleId': doc.id,
         'createdAt': DateTime.now(),
         'title':
-        'Generating grammars from a language (formal languages and automata theory)',
+            'Generating grammars from a language (formal languages and automata theory)',
         'body':
-        'guys I\'ve been working on this assignment for my formal languages class for a couple of days now, and I\'m stuck when it comes to generating grammars for a given language. I don\'t have an example in my textbook similar to this question to follow, so I was hoping anyone could provide an explanation. thank you.',
+            'guys I\'ve been working on this assignment for my formal languages class for a couple of days now, and I\'m stuck when it comes to generating grammars for a given language. I don\'t have an example in my textbook similar to this question to follow, so I was hoping anyone could provide an explanation. thank you.',
         'tags': ['COMS', 'COMS3003'],
         'authorId': this.getCurrentUser()!.uid
       });
@@ -593,9 +593,9 @@ class WitsOverflowData {
         'moduleId': doc.id,
         'createdAt': DateTime.now(),
         'title':
-        'How does the back-propagation algorithm deal with non-differentiable activation functions?',
+            'How does the back-propagation algorithm deal with non-differentiable activation functions?',
         'body':
-        'While digging through the topic of neural networks and how to efficiently train them, I came across the method of using very simple activation functions, such as the rectified linear unit (ReLU), instead of the classic smooth sigmoids. The ReLU-function is not differentiable at the origin, so according to my understanding the backpropagation algorithm (BPA) is not suitable for training a neural network with ReLUs, since the chain rule of multivariable calculus refers to smooth functions only. However, none of the papers about using ReLUs that I read address this issue. ReLUs seem to be very effective and seem to be used virtually everywhere while not causing any unexpected behavior. Can somebody explain to me why ReLUs can be trained at all via the backpropagation algorithm?',
+            'While digging through the topic of neural networks and how to efficiently train them, I came across the method of using very simple activation functions, such as the rectified linear unit (ReLU), instead of the classic smooth sigmoids. The ReLU-function is not differentiable at the origin, so according to my understanding the backpropagation algorithm (BPA) is not suitable for training a neural network with ReLUs, since the chain rule of multivariable calculus refers to smooth functions only. However, none of the papers about using ReLUs that I read address this issue. ReLUs seem to be very effective and seem to be used virtually everywhere while not causing any unexpected behavior. Can somebody explain to me why ReLUs can be trained at all via the backpropagation algorithm?',
         'tags': ['MATH', 'MATH2007'],
         'authorId': this.getCurrentUser()!.uid
       });
@@ -610,9 +610,9 @@ class WitsOverflowData {
         'moduleId': doc.id,
         'createdAt': DateTime.now(),
         'title':
-        'What are the most widely used C++ vector/matrix math/linear algebra libraries, and their cost and benefit tradeoffs?',
+            'What are the most widely used C++ vector/matrix math/linear algebra libraries, and their cost and benefit tradeoffs?',
         'body':
-        'It seems that many projects slowly come upon a need to do matrix math, and fall into the trap of first building some vector classes and slowly adding in functionality until they get caught building a half-assed custom linear algebra library, and depending on it. I\'d like to avoid that while not building in a dependence on some tangentially related library (e.g. OpenCV, OpenSceneGraph).',
+            'It seems that many projects slowly come upon a need to do matrix math, and fall into the trap of first building some vector classes and slowly adding in functionality until they get caught building a half-assed custom linear algebra library, and depending on it. I\'d like to avoid that while not building in a dependence on some tangentially related library (e.g. OpenCV, OpenSceneGraph).',
         'tags': ['MATH', 'MATH2019'],
         'authorId': this.getCurrentUser()!.uid
       });
@@ -627,9 +627,9 @@ class WitsOverflowData {
         'moduleId': doc.id,
         'createdAt': DateTime.now(),
         'title':
-        'Loop through an array and return the values sorted by a grouping pattern',
+            'Loop through an array and return the values sorted by a grouping pattern',
         'body':
-        'I\'m trying to loop through an array and return the values sorted by a pattern (groups of two). My abstract math skills are failing me. I\'m stumped, I can\'t figure out the pattern. Here\'s what I have so far.',
+            'I\'m trying to loop through an array and return the values sorted by a pattern (groups of two). My abstract math skills are failing me. I\'m stumped, I can\'t figure out the pattern. Here\'s what I have so far.',
         'tags': ['MATH', 'MATH2025'],
         'authorId': this.getCurrentUser()!.uid
       });
@@ -644,9 +644,9 @@ class WitsOverflowData {
         'moduleId': doc.id,
         'createdAt': DateTime.now(),
         'title':
-        'Is there some module/function in NLTK/SKLearn which will do basic analysis of the text data?',
+            'Is there some module/function in NLTK/SKLearn which will do basic analysis of the text data?',
         'body':
-        'I have multiple text files such that each line has exactly one document. I want to do a basic analysis on the text and answer questions like.',
+            'I have multiple text files such that each line has exactly one document. I want to do a basic analysis on the text and answer questions like.',
         'tags': ['MATH', 'MATH2001'],
         'authorId': this.getCurrentUser()!.uid
       });

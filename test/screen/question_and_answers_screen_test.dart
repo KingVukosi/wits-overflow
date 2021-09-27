@@ -231,8 +231,7 @@ void main() {
                 auth: auth,
               ),
             ),
-          )
-      );
+          ));
 
       await tester.pumpWidget(testWidget);
       await tester.pump(Duration(seconds: 5));

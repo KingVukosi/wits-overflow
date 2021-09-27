@@ -91,4 +91,3 @@ int countVotes(List<Map<String, dynamic>> votes) {
   }
   return count;
 }
-

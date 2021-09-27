@@ -193,7 +193,8 @@ class QuestionWidget extends StatelessWidget {
                         height: 25,
                         child: TextButton(
                           style: ButtonStyle(
-                            padding: MaterialStateProperty.all(EdgeInsets.all(2)),
+                            padding:
+                                MaterialStateProperty.all(EdgeInsets.all(2)),
                             // backgroundColor: MaterialStateProperty.all(Colors.red),
                           ),
                           child: Text(
@@ -216,7 +217,8 @@ class QuestionWidget extends StatelessWidget {
                         height: 25,
                         child: TextButton(
                           style: ButtonStyle(
-                            padding: MaterialStateProperty.all(EdgeInsets.all(2)),
+                            padding:
+                                MaterialStateProperty.all(EdgeInsets.all(2)),
                             // backgroundColor: MaterialStateProperty.all(Colors.red),
                           ),
                           child: Text(
@@ -239,7 +241,8 @@ class QuestionWidget extends StatelessWidget {
                         height: 25,
                         child: TextButton(
                           style: ButtonStyle(
-                            padding: MaterialStateProperty.all(EdgeInsets.all(2)),
+                            padding:
+                                MaterialStateProperty.all(EdgeInsets.all(2)),
                             // backgroundColor: MaterialStateProperty.all(Colors.red),
                           ),
                           child: Text(

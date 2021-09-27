@@ -71,7 +71,7 @@ void main() {
           PostQuestionScreen(firestore: firestore, auth: auth);
 
       Widget testWidget = new MediaQuery(
-          data: new MediaQueryData(),
+          data: new MediaQueryData(size: Size(5000, 5000)),
           child: Directionality(
             textDirection: TextDirection.rtl,
             child: MaterialApp(
@@ -81,8 +81,7 @@ void main() {
                 auth: auth,
               ),
             ),
-          )
-      );
+          ));
 
       await tester.pumpWidget(testWidget);
 

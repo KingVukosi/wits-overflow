@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,16 +14,18 @@ class SideDrawer extends StatelessWidget {
   final _firestore;
   final _auth;
 
-  SideDrawer({required this.courses, required this.modules, firestore, auth}): this._firestore = firestore == null ? FirebaseFirestore.instance : firestore, this._auth = auth == null ? FirebaseAuth.instance : auth;
+  SideDrawer({required this.courses, required this.modules, firestore, auth})
+      : this._firestore =
+            firestore == null ? FirebaseFirestore.instance : firestore,
+        this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
   Widget build(BuildContext context) {
     late ImageProvider image;
-    if(this._auth.currentUser?.photoURL == null){
+    if (this._auth.currentUser?.photoURL == null) {
       image = ExactAssetImage('assets/images/default_avatar.png');
-    }
-    else{
-       image = NetworkImage(this._auth.currentUser?.photoURL!);
+    } else {
+      image = NetworkImage(this._auth.currentUser?.photoURL!);
     }
     return Theme(
         data: Theme.of(context).copyWith(
@@ -50,8 +53,9 @@ class SideDrawer extends StatelessWidget {
                                               UserInfoScreen())),
                                 },
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Expanded(
+                                Flexible(
                                   child: SizedBox(
                                     width: 40,
                                     height: 40,
@@ -67,13 +71,16 @@ class SideDrawer extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Expanded(
+                                Flexible(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                           "Welcome, " +
-                                              this._auth.currentUser!
+                                              this
+                                                  ._auth
+                                                  .currentUser!
                                                   .displayName!,
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
@@ -162,15 +169,12 @@ class SideDrawer extends StatelessWidget {
                                                                 Navigator.push(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                ModuleQuestionsScreen(
-                                                                                  moduleId: moduleData['id'],
-                                                                                  firestore: this._firestore,
-                                                                                  auth: this._auth,
-                                                                              )
-                                                                  )
-                                                                ),
+                                                                        builder: (context) =>
+                                                                            ModuleQuestionsScreen(
+                                                                              moduleId: moduleData['id'],
+                                                                              firestore: this._firestore,
+                                                                              auth: this._auth,
+                                                                            ))),
                                                               },
                                                             );
                                                           } else {

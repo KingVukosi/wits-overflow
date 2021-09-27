@@ -60,7 +60,8 @@ class QuestionSummary extends StatelessWidget {
 
     return GestureDetector(
         onTap: () {
-          Navigator.pushReplacement(
+          print('[NAVIGATING TO QUESTIONS ANSWERS PAGES]');
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) =>

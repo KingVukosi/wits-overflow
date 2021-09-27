@@ -162,18 +162,17 @@ void main() {
       );
 
       Widget testWidget = new MediaQuery(
-        data: new MediaQueryData(),
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: MaterialApp(
-            home: WitsOverflowScaffold(
-              body: questionAnswerCommentForm,
-              firestore: firestore,
-              auth: auth,
+          data: new MediaQueryData(),
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: MaterialApp(
+              home: WitsOverflowScaffold(
+                body: questionAnswerCommentForm,
+                firestore: firestore,
+                auth: auth,
+              ),
             ),
-          ),
-        )
-      );
+          ));
       // Widget testWidget = new MediaQuery(
       //     data: new MediaQueryData(),
       //     child: new Directionality(
