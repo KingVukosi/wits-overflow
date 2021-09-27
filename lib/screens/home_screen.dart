@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -10,8 +12,10 @@ import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 //ignore: must_be_immutable
 class HomeScreen extends StatefulWidget {
   String? module;
+  final _firestore;
+  final _auth;
 
-  HomeScreen({Key? key, this.module}) : super(key: key);
+  HomeScreen({Key? key, this.module, firestore, auth}) : this._firestore = firestore == null ? FirebaseFirestore.instance : firestore, this._auth = auth == null ? FirebaseAuth.instance : auth, super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -19,12 +23,12 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   late Future<List<Map<String, dynamic>>> questions;
-
+  WitsOverflowData witsOverflowData = WitsOverflowData();
   @override
   void initState() {
     super.initState();
-
-    questions = WitsOverflowData().fetchQuestions();
+    this.witsOverflowData.initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    // questions = this.witsOverflowData.fetchQuestions();
   }
 
   @override
@@ -62,9 +66,9 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           body: TabBarView(
             children: [
-              RecentActivityTab(),
-              FavouritesTab(),
-              MyPostsTab(),
+              RecentActivityTab(firestore: this.widget._firestore, auth: this.widget._auth,),
+              FavouritesTab(firestore: this.widget._firestore, auth: this.widget._auth,),
+              MyPostsTab(firestore: this.widget._firestore, auth: this.widget._auth,),
             ],
           ),
         ),
