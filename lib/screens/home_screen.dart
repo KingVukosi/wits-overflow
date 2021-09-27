@@ -1,4 +1,3 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -8,7 +7,7 @@ import 'package:wits_overflow/widgets/my_posts_tab.dart';
 import 'package:wits_overflow/widgets/recent_activity_tab.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
-// ignore: must_be_immutable
+//ignore: must_be_immutable
 class HomeScreen extends StatefulWidget {
   String? module;
 
@@ -26,8 +25,6 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     questions = WitsOverflowData().fetchQuestions();
-
-    //WitsOverflowData().seedDatabase();
   }
 
   @override
@@ -37,10 +34,15 @@ class HomeScreenState extends State<HomeScreen> {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.white,
             flexibleSpace: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TabBar(
+                  isScrollable: true,
+                  labelColor: Colors.black,
+                  indicatorColor: Colors.black,
                   tabs: [
                     Tab(text: 'Recent Activity'),
                     Tab(text: 'Favourites'),
