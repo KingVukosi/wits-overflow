@@ -5,7 +5,6 @@ import 'package:wits_overflow/screens/sign_in_screen.dart';
 import 'package:wits_overflow/utils/authentication.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/user_info_scaffold.dart';
-import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserInfoScreen extends StatefulWidget {
