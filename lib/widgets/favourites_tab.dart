@@ -17,7 +17,6 @@ class FavouritesTab extends StatefulWidget {
 }
 
 class _FavouritesTabState extends State<FavouritesTab> {
-  // ignore: unused_field
   late bool _loading;
 
   @override
@@ -31,8 +30,10 @@ class _FavouritesTabState extends State<FavouritesTab> {
   Widget build(BuildContext context) {
     return Scrollbar(
       isAlwaysShown: true,
+      interactive: true,
       child: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FutureBuilder<List<Map<String, dynamic>>>(
                 future: widget.questions,
@@ -43,7 +44,7 @@ class _FavouritesTabState extends State<FavouritesTab> {
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
-                        width: 800,
+                        width: 900,
                         child: GridView.builder(
                             scrollDirection: Axis.vertical,
                             gridDelegate:

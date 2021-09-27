@@ -28,8 +28,10 @@ class _RecentActivityTabState extends State<RecentActivityTab> {
   Widget build(BuildContext context) {
     return Scrollbar(
       isAlwaysShown: true,
+      interactive: true,
       child: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FutureBuilder<List<Map<String, dynamic>>>(
                 future: widget.questions,
@@ -40,7 +42,7 @@ class _RecentActivityTabState extends State<RecentActivityTab> {
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
-                        width: 800,
+                        width: 900,
                         child: GridView.builder(
                             scrollDirection: Axis.vertical,
                             gridDelegate:

@@ -23,6 +23,12 @@ class UserInfoScaffold extends StatelessWidget {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             appBar: AppBar(
+                leading: Container(
+                  margin: EdgeInsets.only(right: 30),
+                  child: BackButton(
+                    color: Colors.white,
+                  ),
+                ),
                 elevation: 1,
                 title: Text(
                   'Wits Overflow',
@@ -31,14 +37,7 @@ class UserInfoScaffold extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                actions: [
-                  Container(
-                    margin: EdgeInsets.only(right: 30),
-                    child: BackButton(
-                      color: Colors.white,
-                    ),
-                  ),
-                ]),
+                actions: []),
             drawer: SideDrawer(courses: this._courses, modules: this._modules),
             body: this.body),
       );
@@ -47,6 +46,12 @@ class UserInfoScaffold extends StatelessWidget {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             appBar: AppBar(
+                leading: Container(
+                  margin: EdgeInsets.only(right: 30),
+                  child: BackButton(
+                    color: Colors.white,
+                  ),
+                ),
                 elevation: 1,
                 title: Text(
                   'Wits Overflow',
@@ -55,14 +60,7 @@ class UserInfoScaffold extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                actions: [
-                  Container(
-                    margin: EdgeInsets.only(right: 30),
-                    child: BackButton(
-                      color: Colors.white,
-                    ),
-                  ),
-                ]),
+                actions: []),
             drawer: SideDrawer(courses: this._courses, modules: this._modules),
             body: this.body),
       );

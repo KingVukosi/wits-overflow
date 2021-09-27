@@ -17,7 +17,6 @@ class MyPostsTab extends StatefulWidget {
 }
 
 class _MyPostsTabState extends State<MyPostsTab> {
-  // ignore: unused_field
   late bool _loading;
 
   @override
@@ -31,8 +30,10 @@ class _MyPostsTabState extends State<MyPostsTab> {
   Widget build(BuildContext context) {
     return Scrollbar(
       isAlwaysShown: true,
+      interactive: true,
       child: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FutureBuilder<List<Map<String, dynamic>>>(
                 future: widget.questions,
@@ -43,7 +44,7 @@ class _MyPostsTabState extends State<MyPostsTab> {
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
-                        width: 800,
+                        width: 900,
                         child: GridView.builder(
                             scrollDirection: Axis.vertical,
                             gridDelegate:

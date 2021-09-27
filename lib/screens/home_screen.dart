@@ -34,10 +34,18 @@ class HomeScreenState extends State<HomeScreen> {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              color: Colors.black,
+              icon: Icon(Icons.notifications),
+              onPressed: () {
+                //implement this
+              },
+            ),
             elevation: 0,
             backgroundColor: Colors.white,
             flexibleSpace: Column(
               mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 TabBar(
                   isScrollable: true,
