@@ -155,7 +155,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           height: 40,
                           width: 100,
                           child: Text(
-                            "Name:",
+                            "Name",
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -188,7 +188,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           height: 40,
                           width: 100,
                           child: Text(
-                            'Email:',
+                            'Email',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
