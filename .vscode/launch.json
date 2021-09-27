@@ -10,11 +10,5 @@
             "request": "launch",
             "type": "dart"
         },
-        {
-            "name": "wits-overflow (profile mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        }
     ]
 }
