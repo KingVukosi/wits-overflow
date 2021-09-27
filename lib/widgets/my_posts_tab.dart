@@ -30,7 +30,7 @@ class _MyPostsTabState extends State<MyPostsTab> {
   Widget build(BuildContext context) {
     return Scrollbar(
       isAlwaysShown: true,
-      interactive: true,
+      // interactive: true,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
