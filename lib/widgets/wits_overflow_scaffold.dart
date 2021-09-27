@@ -35,8 +35,10 @@ class WitsOverflowScaffold extends StatelessWidget {
               color: Colors.transparent,
             ),
           ]),
-          drawer: SideDrawer(courses: this._courses, modules: this._modules),
-          body: this.body);
+          body: Row(children: [
+            SideDrawer(courses: this._courses, modules: this._modules),
+            Expanded(child: this.body)
+          ]));
     } else {
       return Scaffold(
           appBar: AppBar(title: const Text('Wits Overflow'), actions: [
@@ -52,8 +54,10 @@ class WitsOverflowScaffold extends StatelessWidget {
               color: Colors.transparent,
             ),
           ]),
-          drawer: SideDrawer(courses: this._courses, modules: this._modules),
-          body: this.body);
+          body: Row(children: [
+            SideDrawer(courses: this._courses, modules: this._modules),
+            Expanded(child: this.body)
+          ]));
     }
   }
 }
