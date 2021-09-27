@@ -47,7 +47,7 @@ class _QuestionSummaryState extends State<QuestionSummary> {
 
     return GestureDetector(
         onTap: () => {
-              Navigator.pushReplacement(
+              Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>

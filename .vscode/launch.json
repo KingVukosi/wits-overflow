@@ -6,10 +6,15 @@
     "configurations": [
         {
             "program": "lib/startup/main_dev.dart",
-            "name": "app",
-            "cwd": "app",
+            "name": "wits-overflow",
             "request": "launch",
             "type": "dart"
+        },
+        {
+            "name": "wits-overflow (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
         }
     ]
 }
