@@ -11,38 +11,44 @@ import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 // -----------------------------------------------------------------------------
 //                      QUESTION CREATE FORM
 // -----------------------------------------------------------------------------
-class QuestionCommentForm extends StatefulWidget {
+class QuestionAnswerCommentForm extends StatefulWidget {
   final String questionId;
+  final String answerId;
 
   final _firestore;
   final _auth;
 
-  QuestionCommentForm({required this.questionId, firestore, auth})
+  QuestionAnswerCommentForm(
+      {required this.questionId, required this.answerId, firestore, auth})
       : this._firestore =
             firestore == null ? FirebaseFirestore.instance : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
-  _QuestionCommentFormState createState() {
-    return _QuestionCommentFormState();
+  _QuestionAnswerCommentFormState createState() {
+    return _QuestionAnswerCommentFormState();
   }
 }
 
 // -----------------------------------------------------------------------------
 //                      QUESTION CREATE FORM STATE
 // -----------------------------------------------------------------------------
-class _QuestionCommentFormState extends State<QuestionCommentForm> {
+class _QuestionAnswerCommentFormState extends State<QuestionAnswerCommentForm> {
   final _formKey = GlobalKey<FormState>();
+  // final String questionId;
 
   bool isBusy = true;
   late final Map<String, dynamic>? question;
+  late final Map<String, dynamic>? answer;
 
   final bodyController = TextEditingController();
 
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
+  @override
   void initState() {
     super.initState();
+
     witsOverflowData.initialize(
         firestore: this.widget._firestore, auth: this.widget._auth);
     this.getData();
@@ -51,6 +57,8 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
   void getData() async {
     this.question =
         await witsOverflowData.fetchQuestion(this.widget.questionId);
+    this.answer = await witsOverflowData.fetchAnswer(
+        questionId: this.widget.questionId, answerId: this.widget.answerId);
 
     setState(() {
       this.isBusy = false;
@@ -64,19 +72,29 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
 
     String authorId = witsOverflowData.getCurrentUser()!.uid;
     Map<String, dynamic>? questionComment =
-        await witsOverflowData.postQuestionComment(
-            questionId: this.widget.questionId, body: body, authorId: authorId);
+        await witsOverflowData.postQuestionAnswerComment(
+            questionId: this.widget.questionId,
+            answerId: this.widget.answerId,
+            body: body,
+            authorId: authorId);
 
     if (questionComment == null) {
       showNotification(this.context, 'Something went wrong', type: 'error');
     } else {
       showNotification(this.context, 'Successfully posted your comment');
 
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) {
-          return QuestionAndAnswersScreen(this.widget.questionId);
-        },
-      ));
+      // wait three seconds and navigate to the question and answers screen
+      await Future.delayed(Duration(seconds: 4)).then((value) {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) {
+            return QuestionAndAnswersScreen(
+              this.widget.questionId,
+              firestore: this.widget._firestore,
+              auth: this.widget._auth,
+            );
+          },
+        ));
+      });
     }
 
     setState(() {
@@ -87,6 +105,7 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
+
     if (this.isBusy) {
       return WitsOverflowScaffold(
         auth: this.widget._auth,
@@ -145,6 +164,14 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
               ],
             ),
           ),
+
+          // show answer information
+          Container(
+            child: Text(
+              this.answer?['body'],
+            ),
+          ),
+
           Container(
             padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
             color: Color.fromARGB(100, 220, 220, 220),
@@ -170,13 +197,13 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
                       // color:Color.fromARGB(1000, 100, 100, 100),
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: TextFormField(
-                        key: Key('id_edit_comment_body'),
+                        key: Key('id_comment_body'),
                         controller: this.bodyController,
                         maxLines: 15,
                         minLines: 10,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: 'Comment',
+                          labelText: 'comment',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -192,7 +219,7 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
                       // alignment: Alignment.bottomCenter,
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: ElevatedButton(
-                        key: Key('id_submit'),
+                        key: Key('id_submit_comment'),
                         onPressed: () {
                           this.submitComment(bodyController.text.toString());
                         },
