@@ -165,7 +165,7 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
         body: Container(
             padding: EdgeInsets.all(10),
             child: Form(
-                child: Column(
+                child: ListView(
               children: [
                 FutureBuilder<List<Map<String, dynamic>>>(
                     future: this.coursesFuture,
@@ -246,10 +246,12 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                       border: OutlineInputBorder()),
                 ),
                 Divider(color: Colors.white, height: 10),
-                ElevatedButton.icon(
-                  onPressed: () => {this._addQuestion()},
-                  icon: Icon(Icons.post_add),
-                  label: Text('Submit your question'),
+                Container(
+                  child: ElevatedButton.icon(
+                    onPressed: () => {this._addQuestion()},
+                    icon: Icon(Icons.post_add),
+                    label: Text('Submit'),
+                  ),
                 )
               ],
             ))));

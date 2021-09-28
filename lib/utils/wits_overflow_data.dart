@@ -111,6 +111,26 @@ class WitsOverflowData {
     return questionComments;
   }
 
+  Future<List<Map<String, dynamic>>?> fetchQuestionAnswerComments(
+      {required String questionId, required String answerId}) async {
+    List<Map<String, dynamic>> questionComments = [];
+
+    await questions
+        .doc(questionId)
+        .collection('answers')
+        .doc(answerId)
+        .collection('comments')
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> value) {
+      for (var i = 0; i < value.docs.length; i++) {
+        Map<String, dynamic> questionComment = value.docs[i].data();
+        questionComment['id'] = value.docs[i].id;
+        questionComments.add(questionComment);
+      }
+    });
+    return questionComments;
+  }
+
   Future<List<Map<String, dynamic>>?> fetchQuestionVotes(
       String questionId) async {
     List<Map<String, dynamic>> questionVotes = [];
@@ -389,6 +409,32 @@ class WitsOverflowData {
     await this
         .questions
         .doc(questionId)
+        .collection('comments')
+        .add(data)
+        .then((value) {
+      comment = data;
+      comment?.addAll({'id': value.id});
+    });
+    return comment;
+  }
+
+  Future<Map<String, dynamic>?> postQuestionAnswerComment(
+      {required String questionId,
+      required String answerId,
+      required String body,
+      required String authorId,
+      DateTime? commentedAt}) async {
+    Map<String, dynamic>? comment;
+    Map<String, dynamic> data = {
+      'body': body,
+      'authorId': authorId,
+      'commentedAt': commentedAt == null ? DateTime.now() : commentedAt,
+    };
+    await this
+        .questions
+        .doc(questionId)
+        .collection('answers')
+        .doc(answerId)
         .collection('comments')
         .add(data)
         .then((value) {

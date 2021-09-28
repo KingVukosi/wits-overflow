@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:wits_overflow/startup/wits_overflow_app.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
+import 'package:wits_overflow/widgets/widgets.dart';
 // import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 // import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 
@@ -21,6 +22,12 @@ class QuestionWidget extends StatelessWidget {
   final String body;
   final Timestamp createdAt;
   final String authorDisplayName;
+
+  final String authorId;
+
+  final String? editorId;
+  final String? editorDisplayName;
+  final Timestamp? editedAt;
 
   late final WitsOverflowData witsOverflowData = WitsOverflowData();
   late final _firestore;
@@ -33,6 +40,10 @@ class QuestionWidget extends StatelessWidget {
     required this.votes,
     required this.createdAt,
     required this.authorDisplayName,
+    required this.authorId,
+    this.editorId,
+    this.editorDisplayName,
+    this.editedAt,
     firestore,
     auth,
   }) {
@@ -68,6 +79,7 @@ class QuestionWidget extends StatelessWidget {
                       // mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         TextButton(
+                          key: Key('id_question_${this.id}_upvote_btn'),
                           onPressed: () {
                             WitsOverflowData().voteQuestion(
                               context: context,
@@ -100,6 +112,7 @@ class QuestionWidget extends StatelessWidget {
                               ),
                         ),
                         TextButton(
+                          key: Key('id_question_${this.id}_downvote_btn'),
                           onPressed: () {
                             WitsOverflowData().voteQuestion(
                                 context: context,
@@ -135,8 +148,7 @@ class QuestionWidget extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.all(5),
                   child: Text(
-                    toTitleCase(this.title),
-                    // this.getQuestionTitle(),
+                    this.title,
                     style: TextStyle(
                       color: Colors.blue,
                       fontSize: 20,
@@ -147,22 +159,6 @@ class QuestionWidget extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // Expanded(
-              //   child: Row(
-              //     children: <Widget>[
-              //       // date posted
-              //       Text(
-              //         this.question!.get('createAt').toString(),
-              //       ),
-              //
-              //       Text(
-              //         this.questionUser!.get('displayName').toString(),
-              //       ),
-              //       // user information
-              //     ],
-              //   ),
-              // ),
             ],
           ),
         ),
@@ -187,76 +183,84 @@ class QuestionWidget extends StatelessWidget {
         Padding(
           padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            // crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisSize: MainAxisSize.,
             children: [
-              Row(
-                children: [
-                  SizedBox(
-                    width: 50,
-                    height: 25,
-                    child: TextButton(
-                      style: ButtonStyle(
-                        padding: MaterialStateProperty.all(EdgeInsets.all(2)),
-                        // backgroundColor: MaterialStateProperty.all(Colors.red),
-                      ),
-                      child: Text(
-                        'Share',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        width: 50,
+                        height: 25,
+                        child: TextButton(
+                          style: ButtonStyle(
+                            padding:
+                                MaterialStateProperty.all(EdgeInsets.all(2)),
+                            // backgroundColor: MaterialStateProperty.all(Colors.red),
+                          ),
+                          child: Text(
+                            'Share',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          onPressed: () {
+                            print('[SHARE ANSWER BUTTON PRESSED]');
+                          },
                         ),
                       ),
-                      onPressed: () {
-                        print('[SHARE ANSWER BUTTON PRESSED]');
-                      },
                     ),
-                  ),
-                  SizedBox(
-                    width: 50,
-                    height: 25,
-                    child: TextButton(
-                      style: ButtonStyle(
-                        padding: MaterialStateProperty.all(EdgeInsets.all(2)),
-                        // backgroundColor: MaterialStateProperty.all(Colors.red),
-                      ),
-                      child: Text(
-                        'Edit',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
+                    Expanded(
+                      child: SizedBox(
+                        width: 50,
+                        height: 25,
+                        child: TextButton(
+                          style: ButtonStyle(
+                            padding:
+                                MaterialStateProperty.all(EdgeInsets.all(2)),
+                            // backgroundColor: MaterialStateProperty.all(Colors.red),
+                          ),
+                          child: Text(
+                            'Edit',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          onPressed: () {
+                            print('[EDIT ANSWER BUTTON PRESSED]');
+                          },
                         ),
                       ),
-                      onPressed: () {
-                        print('[SHARE ANSWER BUTTON PRESSED]');
-                      },
                     ),
-                  ),
-                  SizedBox(
-                    width: 50,
-                    height: 25,
-                    child: TextButton(
-                      style: ButtonStyle(
-                        padding: MaterialStateProperty.all(EdgeInsets.all(2)),
-                        // backgroundColor: MaterialStateProperty.all(Colors.red),
-                      ),
-                      child: Text(
-                        'Follow',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
+                    Expanded(
+                      child: SizedBox(
+                        width: 50,
+                        height: 25,
+                        child: TextButton(
+                          style: ButtonStyle(
+                            padding:
+                                MaterialStateProperty.all(EdgeInsets.all(2)),
+                            // backgroundColor: MaterialStateProperty.all(Colors.red),
+                          ),
+                          child: Text(
+                            'Follow',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          onPressed: () {
+                            print('[FOLLOW ANSWER BUTTON PRESSED]');
+                          },
                         ),
                       ),
-                      onPressed: () {
-                        print('[SHARE ANSWER BUTTON PRESSED]');
-                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Container(
                 child: SizedBox(
@@ -297,74 +301,14 @@ class QuestionWidget extends StatelessWidget {
           ),
         ),
 
-        /// user who asked question
-        Container(
-          color: Color.fromRGBO(242, 249, 255, 1),
-          padding: EdgeInsets.all(5),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // user information
-              Container(
-                child: Row(
-                  children: [
-                    // user avatar image
-                    Container(
-                        child: Image(
-                            height: 25,
-                            width: 25,
-                            image: AssetImage(
-                                'assets/images/default_avatar.png'))),
-
-                    // user information (display name, metadata)
-                    Column(
-                      children: [
-                        // user display name
-                        Text(this.authorDisplayName,
-                            // this.questionUser!.get('displayName'),
-                            style: TextStyle(
-                              color: Colors.blue,
-                            )),
-                        // user metadata
-                        Row(
-                          children: [],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // datetime
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'asked',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        // backgroundColor: Colors.black12,
-                      ),
-                    ),
-                    Text(
-                      // formatDateTime(DateTime.fromMillisecondsSinceEpoch((this.question!.get('createdAt') as Timestamp).millisecondsSinceEpoch)),
-                      formatDateTime(DateTime.fromMillisecondsSinceEpoch(
-                          (this.createdAt).millisecondsSinceEpoch)),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        /// user who updated question
-        Container(),
+        UserCard(
+          createdAt: this.createdAt,
+          authorId: this.authorId,
+          authorDisplayName: authorDisplayName,
+          editorId: this.editorId,
+          editorDisplayName: this.editorDisplayName,
+          editedAt: this.editedAt,
+        )
       ],
     );
   }
