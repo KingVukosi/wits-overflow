@@ -33,16 +33,9 @@ class _FavouritesTabState extends State<FavouritesTab> {
   late Map<String, List<Map<String, dynamic>>> questionAnswers =
       {}; // hold question author information for each question
 
-  WitsOverflowData witsOverflowData = WitsOverflowData();
-  late var _firestore;
-  late var _auth;
+  List<Widget> questionSummaryWidgets = [];
 
-  _FavouritesTabState({firestore, auth}) {
-    this._firestore =
-        firestore == null ? FirebaseFirestore.instance : firestore;
-    this._auth = auth == null ? FirebaseAuth.instance : auth;
-    witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
-  }
+  WitsOverflowData witsOverflowData = WitsOverflowData();
 
   void getData() async {
     this.questions = await witsOverflowData.fetchUserFavouriteQuestions(
@@ -50,6 +43,7 @@ class _FavouritesTabState extends State<FavouritesTab> {
     );
 
     for (int i = 0; i < this.questions.length; i++) {
+      Map<String, dynamic> question = questions[i];
       String questionId = this.questions[i]['id'];
       List<Map<String, dynamic>>? questionVotes =
           await witsOverflowData.fetchQuestionVotes(questionId);
@@ -66,6 +60,21 @@ class _FavouritesTabState extends State<FavouritesTab> {
       this
           .questionAnswers
           .addAll({questionId: questionAnswers == null ? [] : questionAnswers});
+      this.setState(() {
+        _loading = false;
+        this.questionSummaryWidgets.add(QuestionSummary(
+              title: question['title'],
+              questionId: question['id'],
+              createdAt: question['createdAt'],
+              answers: this.questionAnswers[question['id']]!,
+              authorDisplayName: this.questionAuthors[question['id']]
+                  ?['displayName'],
+              tags: question['tags'],
+              votes: this.questionVotes[question['id']] == null
+                  ? []
+                  : this.questionVotes[question['id']]!,
+            ));
+      });
     }
     this.setState(() {
       _loading = false;
@@ -76,6 +85,9 @@ class _FavouritesTabState extends State<FavouritesTab> {
   void initState() {
     super.initState();
     this._loading = true;
+    this
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
     this.getData();
   }
 
@@ -84,23 +96,31 @@ class _FavouritesTabState extends State<FavouritesTab> {
     if (this._loading == true) {
       return Center(child: CircularProgressIndicator());
     }
-
-    return ListView.builder(
-        itemCount: this.questions.length,
-        itemBuilder: (context, index) {
-          Map<String, dynamic> question = this.questions[index];
-          return QuestionSummary(
-            title: question['title'],
-            questionId: question['id'],
-            createdAt: question['createdAt'],
-            answers: this.questionAnswers[question['id']]!,
-            authorDisplayName: this.questionAuthors[question['id']]
-                ?['displayName'],
-            tags: question['tags'],
-            votes: this.questionVotes[question['id']] == null
-                ? []
-                : this.questionVotes[question['id']]!,
-          );
-        });
+    return Scrollbar(
+      isAlwaysShown: true,
+      // interactive: true,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: 800,
+                child: GridView.builder(
+                    scrollDirection: Axis.vertical,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, childAspectRatio: 7 / 2),
+                    shrinkWrap: true,
+                    itemCount: this.questionSummaryWidgets.length,
+                    itemBuilder: (context, index) {
+                      return this.questionSummaryWidgets[index];
+                    }),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

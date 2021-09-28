@@ -1,4 +1,3 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,11 +9,12 @@ import 'package:wits_overflow/widgets/my_posts_tab.dart';
 import 'package:wits_overflow/widgets/recent_activity_tab.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
-// ignore: must_be_immutable
+//ignore: must_be_immutable
 class HomeScreen extends StatefulWidget {
   String? module;
-  late var _firestore;
-  late var _auth;
+  final _firestore;
+  final _auth;
+
   HomeScreen({Key? key, this.module, firestore, auth})
       : this._firestore =
             firestore == null ? FirebaseFirestore.instance : firestore,
@@ -22,48 +22,45 @@ class HomeScreen extends StatefulWidget {
         super(key: key);
 
   @override
-  HomeScreenState createState() =>
-      HomeScreenState(firestore: this._firestore, auth: this._auth);
+  HomeScreenState createState() => HomeScreenState();
 }
 
 class HomeScreenState extends State<HomeScreen> {
   late Future<List<Map<String, dynamic>>> questions;
-
-  WitsOverflowData witsOverflowData = new WitsOverflowData();
-  late var _firestore;
-  late var _auth;
-
-  HomeScreenState({firestore, auth}) {
-    this._firestore =
-        firestore == null ? FirebaseFirestore.instance : firestore;
-    this._auth = firestore == null ? FirebaseAuth.instance : auth;
-    this
-        .witsOverflowData
-        .initialize(firestore: this._firestore, auth: this._auth);
-  }
-
+  WitsOverflowData witsOverflowData = WitsOverflowData();
   @override
   void initState() {
     super.initState();
-  }
-
-  void getData() {
-    questions = witsOverflowData.fetchQuestions();
+    this
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    // questions = this.witsOverflowData.fetchQuestions();
   }
 
   @override
   Widget build(BuildContext context) {
     return WitsOverflowScaffold(
-      auth: this._auth,
-      firestore: this._firestore,
       body: DefaultTabController(
         length: 3,
         child: Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              color: Colors.black,
+              icon: Icon(Icons.notifications),
+              onPressed: () {
+                //implement this
+              },
+            ),
+            elevation: 0,
+            backgroundColor: Colors.white,
             flexibleSpace: Column(
               mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 TabBar(
+                  isScrollable: true,
+                  labelColor: Colors.black,
+                  indicatorColor: Colors.black,
                   tabs: [
                     Tab(text: 'Recent Activity'),
                     Tab(text: 'Favourites'),
@@ -75,11 +72,17 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           body: TabBarView(
             children: [
-              RecentActivityTab(),
-              FavouritesTab(),
+              RecentActivityTab(
+                firestore: this.widget._firestore,
+                auth: this.widget._auth,
+              ),
+              FavouritesTab(
+                firestore: this.widget._firestore,
+                auth: this.widget._auth,
+              ),
               MyPostsTab(
-                firestore: this._firestore,
-                auth: this._auth,
+                firestore: this.widget._firestore,
+                auth: this.widget._auth,
               ),
             ],
           ),

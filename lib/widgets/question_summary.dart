@@ -60,7 +60,8 @@ class QuestionSummary extends StatelessWidget {
 
     return GestureDetector(
         onTap: () {
-          Navigator.pushReplacement(
+          print('[NAVIGATING TO QUESTIONS ANSWERS PAGES]');
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) =>
@@ -151,7 +152,7 @@ class QuestionSummary extends StatelessWidget {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(toTitleCase(this.title),
+                              Text(this.title,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(

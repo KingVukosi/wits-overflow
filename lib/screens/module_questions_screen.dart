@@ -15,15 +15,21 @@ import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 // ignore: must_be_immutable
 class ModuleQuestionsScreen extends StatefulWidget {
   final String moduleId;
+  final _firestore;
+  final _auth;
 
-  ModuleQuestionsScreen({Key? key, required this.moduleId}) : super(key: key);
+  ModuleQuestionsScreen({Key? key, required this.moduleId, firestore, auth})
+      : this._firestore =
+            firestore == null ? FirebaseFirestore.instance : firestore,
+        this._auth = auth == null ? FirebaseAuth.instance : auth,
+        super(key: key);
 
   @override
   _ModuleQuestionsScreenState createState() => _ModuleQuestionsScreenState();
 }
 
 class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
-  late bool _loading;
+  late bool _loading = true;
 
   late List<Map<String, dynamic>> questions;
   late Map<String, List<Map<String, dynamic>>> questionVotes =
@@ -34,19 +40,6 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
       {}; // hold question author information for each question
 
   WitsOverflowData witsOverflowData = new WitsOverflowData();
-  late final _firestore;
-  late final _auth;
-
-  _ModuleQuestionsScreenState({firestore, auth}) {
-    this._firestore =
-        firestore == null ? FirebaseFirestore.instance : firestore;
-    this._auth = auth == null ? FirebaseAuth.instance : auth;
-    this
-        .witsOverflowData
-        .initialize(firestore: this._firestore, auth: this._auth);
-
-    this.getData();
-  }
 
   void getData() async {
     this.questions = await witsOverflowData.fetchModuleQuestions(
@@ -78,8 +71,10 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
   @override
   void initState() {
     super.initState();
-
-    this._loading = true;
+    this
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    this.getData();
   }
 
   @override
@@ -88,8 +83,8 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
       return Center(child: CircularProgressIndicator());
     }
     return WitsOverflowScaffold(
-      firestore: this._firestore,
-      auth: this._auth,
+      firestore: this.widget._firestore,
+      auth: this.widget._auth,
       body: ListView.builder(
           itemCount: this.questions.length,
           itemBuilder: (context, index) {

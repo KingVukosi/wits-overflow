@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wits_overflow/utils/authentication.dart';
 import 'package:wits_overflow/widgets/google_sign_in_button.dart';
+import 'package:wits_overflow/widgets/sign_in_scaffold.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SignInScaffold(
         body: Material(
             type: MaterialType.transparency,
             child: Center(
@@ -26,6 +27,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           child: Image.asset(
                             'assets/images/wits_logo_transparent.png',
                             scale: 2,
+                            key: ValueKey("Wits_logo"),
                           ),
                         ),
                         SizedBox(height: 30),
