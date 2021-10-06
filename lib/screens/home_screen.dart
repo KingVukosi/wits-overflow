@@ -27,18 +27,38 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   late Future<List<Map<String, dynamic>>> questions;
+  late RecentActivityTab recentActivityTab;
+  late FavouritesTab favouritesTab;
+  late MyPostsTab myPostsTab;
   WitsOverflowData witsOverflowData = WitsOverflowData();
   @override
   void initState() {
+    print('HOME SCREEN: initState');
     super.initState();
     this
         .witsOverflowData
         .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+
+    this.recentActivityTab = RecentActivityTab(
+      firestore: this.widget._firestore,
+      auth: this.widget._auth,
+    );
+
+    this.favouritesTab = FavouritesTab(
+      firestore: this.widget._firestore,
+      auth: this.widget._auth,
+    );
+
+    this.myPostsTab = MyPostsTab(
+      firestore: this.widget._firestore,
+      auth: this.widget._auth,
+    );
     // questions = this.witsOverflowData.fetchQuestions();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('[HOME SCREEN: build]');
     return WitsOverflowScaffold(
       body: DefaultTabController(
         length: 3,
@@ -72,18 +92,9 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           body: TabBarView(
             children: [
-              RecentActivityTab(
-                firestore: this.widget._firestore,
-                auth: this.widget._auth,
-              ),
-              FavouritesTab(
-                firestore: this.widget._firestore,
-                auth: this.widget._auth,
-              ),
-              MyPostsTab(
-                firestore: this.widget._firestore,
-                auth: this.widget._auth,
-              ),
+              this.recentActivityTab,
+              this.favouritesTab,
+              this.myPostsTab,
             ],
           ),
         ),

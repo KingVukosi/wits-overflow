@@ -21,13 +21,13 @@ class AnswerEditForm extends StatefulWidget {
 
   AnswerEditForm(
       {required this.questionId,
-      required this.answerId,
-      required this.body,
-      firestore,
-      auth})
+        required this.answerId,
+        required this.body,
+        firestore,
+        auth})
       : this._firestore =
-            firestore == null ? FirebaseFirestore.instance : firestore,
-        this._auth = firestore == null ? FirebaseAuth.instance : firestore;
+  firestore == null ? FirebaseFirestore.instance : firestore,
+        this._auth = firestore == null ? FirebaseAuth.instance : auth;
 
   @override
   _AnswerEditFormState createState() {
@@ -56,7 +56,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
 
   void getData() async {
     this.question =
-        await witsOverflowData.fetchQuestion(this.widget.questionId);
+    await witsOverflowData.fetchQuestion(this.widget.questionId);
 
     setState(() {
       this.isBusy = false;
@@ -95,6 +95,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
 
   @override
   Widget build(BuildContext context) {
+    print('[ANSWER EDIT FORM: BUILD]');
     if (this.isBusy) {
       return WitsOverflowScaffold(
         auth: this.widget._auth,
@@ -104,6 +105,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
         ),
       );
     }
+    print('[ANSWER EDIT FORM: RETUNING BUILD ]');
 
     return WitsOverflowScaffold(
       auth: this.widget._auth,
@@ -213,7 +215,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                         onPressed: () {
                           this.submitAnswer(bodyController.text.toString());
                         },
-                        child: Text('Sumbit'),
+                        child: Text('Submit'),
                       ),
                     )
                   ],

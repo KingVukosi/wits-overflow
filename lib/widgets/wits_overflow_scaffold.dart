@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wits_overflow/screens/search_results_screen.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/side_drawer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -138,6 +139,14 @@ class WitsOverflowScaffold extends StatelessWidget {
                     margin: EdgeInsets.only(right: 5, top: 4.5),
                     width: 250,
                     child: TextField(
+                      onSubmitted: (String keyword){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (BuildContext context){
+                            return SearchResults(keyword: keyword);
+                          })
+                        );
+                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,

@@ -83,6 +83,7 @@ class _FavouritesTabState extends State<FavouritesTab> {
 
   @override
   void initState() {
+    print('[FAVOURITES TAB: initState]');
     super.initState();
     this._loading = true;
     this
