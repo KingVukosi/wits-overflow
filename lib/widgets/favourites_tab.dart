@@ -9,12 +9,25 @@ class FavouritesTab extends StatefulWidget {
   late var _firestore;
   late var _auth;
 
+  WitsOverflowData witsOverflowData = WitsOverflowData();
+
+  List<Map<String, dynamic>> questions = [];
+  late Map<String, List<Map<String, dynamic>>> questionVotes =
+      {}; // holds votes information for each question
+  late Map<String, Map<String, dynamic>> questionAuthors =
+      {}; // hold question author information for each question
+  late Map<String, List<Map<String, dynamic>>> questionAnswers =
+      {}; // hold question author information for each question
+
+  List<Widget> questionSummaryWidgets = [];
+  int added = 0;
+
   FavouritesTab({firestore, auth}) {
     this._firestore =
         firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
+    {}
 
-    WitsOverflowData witsOverflowData = WitsOverflowData();
     witsOverflowData.initialize(firestore: this._firestore, auth: this._auth);
   }
 
@@ -25,55 +38,50 @@ class FavouritesTab extends StatefulWidget {
 class _FavouritesTabState extends State<FavouritesTab> {
   late bool _loading;
 
-  late List<Map<String, dynamic>> questions;
-  late Map<String, List<Map<String, dynamic>>> questionVotes =
-      {}; // holds votes information for each question
-  late Map<String, Map<String, dynamic>> questionAuthors =
-      {}; // hold question author information for each question
-  late Map<String, List<Map<String, dynamic>>> questionAnswers =
-      {}; // hold question author information for each question
-
-  List<Widget> questionSummaryWidgets = [];
-
-  WitsOverflowData witsOverflowData = WitsOverflowData();
-
   void getData() async {
-    this.questions = await witsOverflowData.fetchUserFavouriteQuestions(
-      userId: witsOverflowData.getCurrentUser()!.uid,
-    );
 
-    for (int i = 0; i < this.questions.length; i++) {
-      Map<String, dynamic> question = questions[i];
-      String questionId = this.questions[i]['id'];
+    this.widget.questions =
+        await this.widget.witsOverflowData.fetchUserFavouriteQuestions(
+              userId: this.widget.witsOverflowData.getCurrentUser()!.uid,
+            );
+
+    for (int i = this.widget.added; i < this.widget.questions.length; i++) {
+      Map<String, dynamic> question = this.widget.questions[i];
+      String questionId = this.widget.questions[i]['id'];
       List<Map<String, dynamic>>? questionVotes =
-          await witsOverflowData.fetchQuestionVotes(questionId);
+          await this.widget.witsOverflowData.fetchQuestionVotes(questionId);
       this
+          .widget
           .questionVotes
           .addAll({questionId: questionVotes == null ? [] : questionVotes});
 
-      Map<String, dynamic>? questionAuthor =
-          await witsOverflowData.fetchUserInformation(questions[i]['authorId']);
-      this.questionAuthors.addAll({questionId: questionAuthor!});
+      Map<String, dynamic>? questionAuthor = await this
+          .widget
+          .witsOverflowData
+          .fetchUserInformation(this.widget.questions[i]['authorId']);
+      this.widget.questionAuthors.addAll({questionId: questionAuthor!});
 
       List<Map<String, dynamic>>? questionAnswers =
-          await witsOverflowData.fetchQuestionAnswers(questionId);
+          await this.widget.witsOverflowData.fetchQuestionAnswers(questionId);
       this
+          .widget
           .questionAnswers
           .addAll({questionId: questionAnswers == null ? [] : questionAnswers});
       this.setState(() {
-        _loading = false;
-        this.questionSummaryWidgets.add(QuestionSummary(
+        this.widget.questionSummaryWidgets.add(QuestionSummary(
               title: question['title'],
               questionId: question['id'],
               createdAt: question['createdAt'],
-              answers: this.questionAnswers[question['id']]!,
-              authorDisplayName: this.questionAuthors[question['id']]
+              answers: this.widget.questionAnswers[question['id']]!,
+              authorDisplayName: this.widget.questionAuthors[question['id']]
                   ?['displayName'],
               tags: question['tags'],
-              votes: this.questionVotes[question['id']] == null
+              votes: this.widget.questionVotes[question['id']] == null
                   ? []
-                  : this.questionVotes[question['id']]!,
+                  : this.widget.questionVotes[question['id']]!,
             ));
+        _loading = false;
+        this.widget.added += 1;
       });
     }
     this.setState(() {
@@ -83,13 +91,17 @@ class _FavouritesTabState extends State<FavouritesTab> {
 
   @override
   void initState() {
-    print('[FAVOURITES TAB: initState]');
     super.initState();
     this._loading = true;
-    this
-        .witsOverflowData
-        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
-    this.getData();
+
+    if (this.widget.questions.length == 0 ||
+        this.widget.added < this.widget.questions.length - 1) {
+      this.getData();
+    } else {
+      this.setState(() {
+        this._loading = false;
+      });
+    }
   }
 
   @override
@@ -113,9 +125,9 @@ class _FavouritesTabState extends State<FavouritesTab> {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2, childAspectRatio: 7 / 2),
                     shrinkWrap: true,
-                    itemCount: this.questionSummaryWidgets.length,
+                    itemCount: this.widget.questionSummaryWidgets.length,
                     itemBuilder: (context, index) {
-                      return this.questionSummaryWidgets[index];
+                      return this.widget.questionSummaryWidgets[index];
                     }),
               ),
             )

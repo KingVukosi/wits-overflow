@@ -139,13 +139,11 @@ class WitsOverflowScaffold extends StatelessWidget {
                     margin: EdgeInsets.only(right: 5, top: 4.5),
                     width: 250,
                     child: TextField(
-                      onSubmitted: (String keyword){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (BuildContext context){
-                            return SearchResults(keyword: keyword);
-                          })
-                        );
+                      onSubmitted: (String keyword) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return SearchResults(keyword: keyword);
+                        }));
                       },
                       decoration: InputDecoration(
                         filled: true,
