@@ -21,12 +21,12 @@ class AnswerEditForm extends StatefulWidget {
 
   AnswerEditForm(
       {required this.questionId,
-        required this.answerId,
-        required this.body,
-        firestore,
-        auth})
+      required this.answerId,
+      required this.body,
+      firestore,
+      auth})
       : this._firestore =
-  firestore == null ? FirebaseFirestore.instance : firestore,
+            firestore == null ? FirebaseFirestore.instance : firestore,
         this._auth = firestore == null ? FirebaseAuth.instance : auth;
 
   @override
@@ -37,11 +37,10 @@ class AnswerEditForm extends StatefulWidget {
 
 class _AnswerEditFormState extends State<AnswerEditForm> {
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController bodyController;
 
   bool isBusy = true;
   Map<String, dynamic>? question;
-
-  late TextEditingController bodyController;
 
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
@@ -56,7 +55,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
 
   void getData() async {
     this.question =
-    await witsOverflowData.fetchQuestion(this.widget.questionId);
+        await witsOverflowData.fetchQuestion(this.widget.questionId);
 
     setState(() {
       this.isBusy = false;
@@ -64,6 +63,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
   }
 
   void submitAnswer(String body) async {
+    print('[ANSWER EDIT: SUBMITTING ANSWER ]');
     setState(() {
       isBusy = true;
     });
@@ -95,7 +95,6 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
 
   @override
   Widget build(BuildContext context) {
-    print('[ANSWER EDIT FORM: BUILD]');
     if (this.isBusy) {
       return WitsOverflowScaffold(
         auth: this.widget._auth,
@@ -105,7 +104,8 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
         ),
       );
     }
-    print('[ANSWER EDIT FORM: RETUNING BUILD ]');
+
+    print('[BUILDING ANSWER EDIT FORM SCREEN]');
 
     return WitsOverflowScaffold(
       auth: this.widget._auth,
@@ -145,7 +145,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                   padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    toTitleCase(this.question?['title']),
+                    this.question?['title'],
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
@@ -191,6 +191,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                       // color:Color.fromARGB(1000, 100, 100, 100),
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: TextFormField(
+                        key: Key('id_edit_answer'),
                         controller: this.bodyController,
                         maxLines: 15,
                         minLines: 10,
@@ -208,11 +209,11 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                     ),
                     Container(
                       width: double.infinity,
-                      // color:Color.fromARGB(1000, 100, 100, 100),
-                      // alignment: Alignment.bottomCenter,
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: ElevatedButton(
+                        key: Key('id_submit'),
                         onPressed: () {
+                          print('ON PRESS: UPDATING QUESTION ANSWER');
                           this.submitAnswer(bodyController.text.toString());
                         },
                         child: Text('Submit'),

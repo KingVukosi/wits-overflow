@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
-import 'package:wits_overflow/widgets/favourites_tab.dart';
-import 'package:wits_overflow/widgets/my_posts_tab.dart';
-import 'package:wits_overflow/widgets/question.dart';
-import 'package:wits_overflow/widgets/recent_activity_tab.dart';
+import 'package:wits_overflow/widgets/question_summary.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
 //ignore: must_be_immutable
@@ -19,9 +16,9 @@ class SearchResults extends StatefulWidget {
 
   SearchResults({Key? key, required keyword, firestore, auth})
       : this._firestore =
-  firestore == null ? FirebaseFirestore.instance : firestore,
+            firestore == null ? FirebaseFirestore.instance : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth,
-        super(key: key){
+        super(key: key) {
     this.keyword = keyword.toString().toLowerCase();
   }
 
@@ -30,29 +27,32 @@ class SearchResults extends StatefulWidget {
 }
 
 class _SearchResultsState extends State<SearchResults> {
-
-  List<Widget> questions = [];
+  List<Widget> questionSummaryWidgets = [];
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
-  bool _questionMatchKeyWord(Map<String, dynamic> question){
+  bool _questionMatchKeyWord(Map<String, dynamic> question) {
     bool found = false;
 
-    bool _questionTagsMatchKeyWord(List<String> tags){
-      for(int i = 0; i < tags.length; i++){
-        if(tags[i].contains(this.widget.keyword)){
+    bool _questionTagsMatchKeyWord(List<String> tags) {
+      for (int i = 0; i < tags.length; i++) {
+        if (tags[i].contains(this.widget.keyword)) {
           return true;
         }
       }
       return false;
     }
 
-    if(question['title'].toString().toLowerCase().contains(this.widget.keyword)){
+    if (question['title']
+        .toString()
+        .toLowerCase()
+        .contains(this.widget.keyword)) {
       found = true;
-    }
-    else if(question['body'].toString().toLowerCase().contains(this.widget.keyword)){
+    } else if (question['body']
+        .toString()
+        .toLowerCase()
+        .contains(this.widget.keyword)) {
       found = true;
-    }
-    else if(_questionTagsMatchKeyWord(question['tags'])){
+    } else if (_questionTagsMatchKeyWord(question['tags'])) {
       found = true;
     }
     return found;
@@ -60,8 +60,14 @@ class _SearchResultsState extends State<SearchResults> {
 
   void _getSearchResults() async {
     int limit = 50;
-    QuerySnapshot<Map<String, dynamic>> patch = await FirebaseFirestore.instance.collection(COLLECTIONS['questions']).limit(limit).get();
-    while(patch.docs.isNotEmpty) {
+    QuerySnapshot<Map<String, dynamic>> patch = await this
+        .widget
+        ._firestore
+        .collection(COLLECTIONS['questions'])
+        .orderBy('createdAt', descending: true)
+        .limit(limit)
+        .get();
+    while (patch.docs.isNotEmpty) {
       for (int i = 0; i < patch.docs.length; i++) {
         Map<String, dynamic> question = patch.docs.elementAt(i).data();
         question.addAll({'id': patch.docs.elementAt(i).id});
@@ -71,39 +77,41 @@ class _SearchResultsState extends State<SearchResults> {
           // get question:
           //    * votes
           //    * author's uid & display name
-          String questionId = patch.docs
-              .elementAt(i)
-              .id;
-          Map<String, dynamic> author = (await this.witsOverflowData
-              .fetchUserInformation(question['authorId']))!;
-          List<Map<String, dynamic>>? questionVotes = await this
-              .witsOverflowData.fetchQuestionVotes(questionId);
-          late int votes;
-          if (questionVotes == null) {
-            votes = 0;
-          }
-          else {
-            votes = countVotes(questionVotes);
+          Map<String, dynamic>? author = (await this
+              .witsOverflowData
+              .fetchUserInformation(question['authorId']));
+          if (author == null) {
+            continue;
           }
 
+          List<Map<String, dynamic>>? questionVotes =
+              await this.witsOverflowData.fetchQuestionVotes(question['id']);
+
+          List<Map<String, dynamic>>? questionAnswers =
+              await this.witsOverflowData.fetchQuestionAnswers(question['id']);
 
           this.setState(() {
-            print('[MATCH FOUND: $question, ADDING TO QUESTIONS LIST]');
-            this.questions.add(
-                new QuestionWidget(
-                  id: questionId,
+            this.questionSummaryWidgets.add(new QuestionSummary(
+                  answers: questionAnswers == null ? [] : questionAnswers,
+                  questionId: question['id'],
                   title: question['title'],
-                  body: question['body'],
-                  votes: votes,
+                  votes: questionVotes == null ? [] : questionVotes,
                   createdAt: question['createdAt'],
+                  tags: question['tags'],
                   authorDisplayName: author['displayName'],
-                  authorId: author['id'],
-                )
-            );
+                  // authorId: author['id'],
+                ));
           });
         }
       }
-      patch = await FirebaseFirestore.instance.collection(COLLECTIONS['questions']).limit(limit).get();
+      patch = await this
+          .widget
+          ._firestore
+          .collection(COLLECTIONS['questions'])
+          .orderBy('createdAt', descending: true)
+          .startAfterDocument(patch.docs.elementAt(patch.docs.length - 1))
+          .limit(limit)
+          .get();
     }
   }
 
@@ -119,13 +127,34 @@ class _SearchResultsState extends State<SearchResults> {
 
   @override
   Widget build(BuildContext context) {
-    print('[SEARCH RESULTS: build]');
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
       auth: this.widget._auth,
-      body: ListView(
-        children: this.questions,
-      )
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            color: Colors.white12,
+            margin: EdgeInsets.fromLTRB(50, 20, 20, 50),
+            child: Text(
+              toTitleCase('${this.widget.keyword}'),
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: this.questionSummaryWidgets,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
