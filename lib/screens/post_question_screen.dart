@@ -2,8 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
+import 'package:wits_overflow/utils/DataModel.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
+import 'package:wits_overflow/widgets/DroppedFileWidget.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:universal_html/html.dart' as uhtml;
+import 'package:firebase/firebase.dart' as fb;
+import 'dart:html' as html;
 
 class PostQuestionScreen extends StatefulWidget {
   // late WitsOverflowData witsOverflowData;// = WitsOverflowData();
@@ -26,6 +33,16 @@ class PostQuestionScreen extends StatefulWidget {
 }
 
 class _PostQuestionScreenState extends State<PostQuestionScreen> {
+  late DropzoneViewController controller;
+
+  DataModel? droppedFile;
+
+  bool highlight = false;
+
+  uhtml.File? file;
+
+  String? URL;
+
   late final Future<List<Map<String, dynamic>>> coursesFuture;
 
   late List<Map<String, dynamic>>? _courses;
@@ -105,6 +122,7 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
         'courseId': _selectedCourseId,
         'moduleId': _selectedModuleId,
         'title': titleController.text,
+        'image': URL,
         'body': bodyController.text,
         'authorId': witsOverflowData.getCurrentUser()!.uid,
         'tags': [_selectedCourseCode, _selectedModuleCode]
@@ -246,14 +264,138 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                       border: OutlineInputBorder()),
                 ),
                 Divider(color: Colors.white, height: 10),
+                // Image Drop Section
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          height: 160,
+                          padding: EdgeInsets.all(10),
+                          color: highlight == true ? Colors.grey : Colors.blue,
+                          child: DottedBorder(
+                            borderType: BorderType.RRect,
+                            color: Colors.white,
+                            padding: EdgeInsets.zero,
+                            child: Stack(
+                              children: [
+                                DropzoneView(
+                                    onDrop: uploadedFile,
+                                    onCreated: (dropController) =>
+                                        this.controller = dropController,
+                                    onHover: () {
+                                      setState(() {
+                                        highlight = true;
+                                      });
+                                    },
+                                    onLeave: () {
+                                      setState(() {
+                                        highlight = false;
+                                      });
+                                    }),
+                                Center(
+                                  child: Column(children: [
+                                    SizedBox(height: 10),
+                                    Icon(
+                                      Icons.cloud_upload,
+                                      size: 50,
+                                      color: Colors.white,
+                                    ),
+                                    Text("Drop image here"),
+                                    SizedBox(height: 14),
+                                    ElevatedButton.icon(
+                                      onPressed: () async {
+                                        final events =
+                                            await controller.pickFiles();
+                                        if (events.isEmpty) return;
+                                        uploadedFile(events.first);
+                                      },
+                                      icon: Icon(Icons.search),
+                                      label: Text("Choose an image"),
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        primary: Colors.blue[300],
+                                        shape: RoundedRectangleBorder(),
+                                      ),
+                                    ),
+                                  ]),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: // Dropped Image
+                          Container(
+                        alignment: Alignment.center,
+                        // padding: EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DroppedFileWidget(droppedFile: droppedFile),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(color: Colors.white, height: 10),
                 Container(
                   child: ElevatedButton.icon(
-                    onPressed: () => {this._addQuestion()},
+                    onPressed: () => {makePost()},
                     icon: Icon(Icons.post_add),
                     label: Text('Submit'),
                   ),
-                )
+                ),
               ],
             ))));
   }
+
+  // Function to combine all elemnts involved in making a post
+  makePost() async {
+    await uploadImage(file!, imageName: 'images/${DateTime.now()}');
+    this._addQuestion();
+  }
+
+  // To create file from user selected image
+  Future uploadedFile(dynamic events) async {
+    final name = events.name;
+    final mime = await controller.getFileMIME(events);
+    final byte = await controller.getFileSize(events);
+    final url = await controller.createFileUrl(events);
+
+    setState(() {
+      droppedFile = DataModel(name: name, mime: mime, bytes: byte, url: url);
+      highlight = false;
+      file = events;
+    });
+  }
+
+  // Function to upload image to firebase storage
+  Future uploadImage(html.File image, {required String imageName}) async {
+    try {
+      //Upload Profile Photo
+      fb.StorageReference _storage = fb
+          .storage()
+          .refFromURL('gs://wits-overflow-2021.appspot.com')
+          .child(imageName);
+      fb.UploadTaskSnapshot uploadTaskSnapshot =
+          await _storage.put(image).future;
+      // Wait until the file is uploaded then store the download url
+      var imageUri = await uploadTaskSnapshot.ref.getDownloadURL();
+      setState(() {
+        URL = imageUri.toString();
+      });
+      // print(URL);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // TO DO:
+  // Get image url and add it to column in firebase database for user post
 }
