@@ -29,7 +29,7 @@ class SideDrawer extends StatelessWidget {
     }
     return Theme(
         data: Theme.of(context).copyWith(
-          canvasColor: Colors.white,
+          canvasColor: Colors.blue[400],
         ),
         child: Drawer(child: LayoutBuilder(builder:
             (BuildContext context, BoxConstraints viewportConstraints) {
