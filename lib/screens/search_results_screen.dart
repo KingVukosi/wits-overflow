@@ -31,6 +31,7 @@ class _SearchResultsState extends State<SearchResults> {
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
   bool _questionMatchKeyWord(Map<String, dynamic> question) {
+
     bool found = false;
 
     bool _questionTagsMatchKeyWord(List<String> tags) {
@@ -67,43 +68,67 @@ class _SearchResultsState extends State<SearchResults> {
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .get();
+    print('[SEARCH: MATCHED QUESTIONS (${patch.docs.length})]');
     while (patch.docs.isNotEmpty) {
-      for (int i = 0; i < patch.docs.length; i++) {
-        Map<String, dynamic> question = patch.docs.elementAt(i).data();
-        question.addAll({'id': patch.docs.elementAt(i).id});
-        if (_questionMatchKeyWord(question)) {
-          // add to question list
+      // QueryDocumentSnapshot<Map<String, dynamic>
+      this.questionSummaryWidgets.addAll(
+      patch.docs.where((question){
+        Map<String, dynamic> questionData = question.data();
+        questionData.addAll({'id': question.id});
+        bool match = _questionMatchKeyWord(questionData);
+        return match;
+      }).toList()
+      .map((question){
+        Map<String, dynamic> questionData = question.data();
+        questionData.addAll({'id': question.id});
+        return FutureBuilder(
+          future: Future.wait([
+            this.witsOverflowData.fetchUserInformation(questionData['authorId']),
+            this.witsOverflowData.fetchQuestionAnswers(questionData['id']),
+            this.witsOverflowData.fetchQuestionVotes(questionData['id']),
+          ]),
+          builder: (BuildContext context, AsyncSnapshot<List<Object?>> snapshot){
+            if(snapshot.hasData){
+              print('[FUTURE RETURNED, ADDING QUESTION SUMMARY WIDGET]');
+              Map<String, dynamic> author = (snapshot.data?[0] as Map<String, dynamic>);
 
-          // get question:
-          //    * votes
-          //    * author's uid & display name
-          Map<String, dynamic>? author = (await this
-              .witsOverflowData
-              .fetchUserInformation(question['authorId']));
-          if (author == null) {
-            continue;
-          }
+              List<Map<String, dynamic>> questionVotes = snapshot.data?[1] as List<Map<String, dynamic>>;
 
-          List<Map<String, dynamic>>? questionVotes =
-              await this.witsOverflowData.fetchQuestionVotes(question['id']);
+              List<Map<String, dynamic>> questionAnswers = snapshot.data?[2] as List<Map<String, dynamic>>;
+              print('[QUESTION: $questionData, AUTHOR: $author, QUESTION VOTES: $questionVotes, QUESTION ANSWERS: $questionAnswers}]');
+              // return Container(
+              //   color: Colors.red,
+              //   width: 100,
+              //   height: 100,
+              // );
+              return new QuestionSummary(
+                answers: questionAnswers,
+                questionId: questionData['id'],
+                title: questionData['title'],
+                votes: questionVotes,
+                createdAt: questionData['createdAt'],
+                tags: questionData['tags'],
+                authorDisplayName: author['displayName'],
+              );
+            }else if(snapshot.hasError){
+              print('[FUTURE RETURNED WITH ERRORS]');
+              return Text('ERRORS: (${questionData['id']})');
+            }
+            else{
+              print('[FUTURE LOADING...]');
+              return Container(
+                color: Color.fromRGBO(100, 100, 100, 0.2),
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        );
+      }).toList());
 
-          List<Map<String, dynamic>>? questionAnswers =
-              await this.witsOverflowData.fetchQuestionAnswers(question['id']);
+      // ======================================================================
+      this.setState((){
 
-          this.setState(() {
-            this.questionSummaryWidgets.add(new QuestionSummary(
-                  answers: questionAnswers == null ? [] : questionAnswers,
-                  questionId: question['id'],
-                  title: question['title'],
-                  votes: questionVotes == null ? [] : questionVotes,
-                  createdAt: question['createdAt'],
-                  tags: question['tags'],
-                  authorDisplayName: author['displayName'],
-                  // authorId: author['id'],
-                ));
-          });
-        }
-      }
+      });
       patch = await this
           .widget
           ._firestore
@@ -112,6 +137,7 @@ class _SearchResultsState extends State<SearchResults> {
           .startAfterDocument(patch.docs.elementAt(patch.docs.length - 1))
           .limit(limit)
           .get();
+      print('[AFTER RETRIEVING PATH, SIZE: ${patch.docs.length}]');
     }
   }
 
@@ -127,33 +153,40 @@ class _SearchResultsState extends State<SearchResults> {
 
   @override
   Widget build(BuildContext context) {
+    print('[_SearchResultsState.build, question widgets: ${this.questionSummaryWidgets}]');
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
       auth: this.widget._auth,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            color: Colors.white12,
-            margin: EdgeInsets.fromLTRB(50, 20, 20, 50),
-            child: Text(
-              toTitleCase('${this.widget.keyword}'),
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: this.questionSummaryWidgets,
-            ),
-          ),
-        ],
+      body: ListView.builder(
+        itemCount: this.questionSummaryWidgets.length,
+        itemBuilder: (context, index){
+          return this.questionSummaryWidgets[index];
+        },
+        // mainAxisAlignment: MainAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        // children: this.questionSummaryWidgets,
+        // children: [
+        //   Container(
+        //     color: Colors.white12,
+        //     margin: EdgeInsets.fromLTRB(50, 20, 20, 50),
+        //     child: Text(
+        //       toTitleCase('${this.widget.keyword}'),
+        //       style: TextStyle(
+        //         fontSize: 30,
+        //         fontWeight: FontWeight.w600,
+        //       ),
+        //     ),
+        //   ),
+        //   ListView(
+          // SingleChildScrollView(
+          //   padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     mainAxisAlignment: MainAxisAlignment.start,
+          //     children: this.questionSummaryWidgets,
+            // ),
+          // ),
+        // ],
       ),
     );
   }
