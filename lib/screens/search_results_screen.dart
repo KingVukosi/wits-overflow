@@ -43,6 +43,7 @@ class _SearchResultsState extends State<SearchResults> {
       }
       return false;
     }
+
     if (question['title']
         .toString()
         .toLowerCase()
@@ -159,7 +160,6 @@ class _SearchResultsState extends State<SearchResults> {
 
   @override
   Widget build(BuildContext context) {
-
     List<Widget> c = [
       Container(
         // color: Colors.blue,
