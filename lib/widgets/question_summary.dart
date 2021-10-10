@@ -62,7 +62,6 @@ class QuestionSummary extends StatelessWidget {
 
     return GestureDetector(
         onTap: () {
-          print('[NAVIGATING TO QUESTIONS ANSWERS PAGES]');
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -254,7 +253,7 @@ class _QuestionSummariesState extends State<QuestionSummaries> {
                     size: 64,
                   ),
                   Text(
-                    'no favorites to show',
+                    'No favorites to show',
                     style: Theme.of(context).textTheme.headline5,
                   ),
                 ],
@@ -267,7 +266,6 @@ class _QuestionSummariesState extends State<QuestionSummaries> {
     for (int i = 0; i < this.questions.length; i++) {
       Map<String, dynamic> question = this.questions[i];
       String questionId = question['id'];
-      // print('[question: question: $question]\nquestionId: $questionId');
       FutureBuilder futureBuilder = FutureBuilder(
         future: Future.wait([
           this.witsOverflowData.fetchUserInformation(question['authorId']),
@@ -276,7 +274,6 @@ class _QuestionSummariesState extends State<QuestionSummaries> {
         ]),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
-            // print('[FUTURE RETURNED, ADDING QUESTION SUMMARY WIDGET]');
             Map<String, dynamic> author =
                 (snapshot.data?[0] as Map<String, dynamic>);
 
@@ -324,8 +321,6 @@ class _QuestionSummariesState extends State<QuestionSummaries> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        '[_QuestionSummariesState.build -> this.mounted: ${this.mounted.toString()}]');
     if (this._loading == true) {
       return Center(child: CircularProgressIndicator());
     }

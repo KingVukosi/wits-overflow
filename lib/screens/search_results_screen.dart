@@ -32,7 +32,6 @@ class _SearchResultsState extends State<SearchResults> {
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
   bool _questionMatchKeyWord(Map<String, dynamic> question) {
-
     bool found = false;
 
     bool _questionTagsMatchKeyWord(List<String> tags) {
@@ -44,8 +43,6 @@ class _SearchResultsState extends State<SearchResults> {
       }
       return false;
     }
-    // List<String> tags = (question['tags'] as List).m
-
     if (question['title']
         .toString()
         .toLowerCase()
@@ -73,7 +70,6 @@ class _SearchResultsState extends State<SearchResults> {
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .get();
-    print('[SEARCH: MATCHED QUESTIONS (${patch.docs.length})]');
     while (patch.docs.isNotEmpty) {
       // QueryDocumentSnapshot<Map<String, dynamic>
       this.widget.questionSummaryWidgets.addAll(patch.docs
@@ -148,7 +144,6 @@ class _SearchResultsState extends State<SearchResults> {
           .startAfterDocument(patch.docs.elementAt(patch.docs.length - 1))
           .limit(limit)
           .get();
-      print('[AFTER RETRIEVING PATH, SIZE: ${patch.docs.length}]');
     }
   }
 
@@ -164,39 +159,6 @@ class _SearchResultsState extends State<SearchResults> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        '[_SearchResultsState.build, questionSummaryWidgets: ${this.widget.questionSummaryWidgets}\n'
-        'questionSummaryWidgets.length; ${this.widget.questionSummaryWidgets.length.toString()}]');
-    // return WitsOverflowScaffold(
-    //   firestore: this.widget._firestore,
-    //   auth: this.widget._auth,
-    //   body: Scrollbar(
-    //     isAlwaysShown: true,
-    //     // interactive: true,
-    //     child: SingleChildScrollView(
-    //       child: Column(
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           SingleChildScrollView(
-    //             // padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-    //             scrollDirection: Axis.horizontal,
-    //             child: SizedBox(
-    //             //   width: 800,
-    //               // child: GridView.builder(
-    //
-    //               child: Column(
-    //                 mainAxisAlignment: MainAxisAlignment.start,
-    //                 children: this.widget.questionSummaryWidgets,
-    //               ),
-    //             ),
-    //           )
-    //         ],
-    //       ),
-    //     ),
-    //   )
-    // );
-
-    // ============================================================================================
 
     List<Widget> c = [
       Container(
@@ -225,51 +187,5 @@ class _SearchResultsState extends State<SearchResults> {
             ),
           ),
         ));
-
-    // ============================================================================================
-
-    // return WitsOverflowScaffold(
-    //   firestore: this.widget._firestore,
-    //   auth: this.widget._auth,
-    //   body: Column(
-    // body: ListView(
-    // padding: EdgeInsets,
-    // itemCount: this.widget.questionSummaryWidgets.length,
-    // itemBuilder: (context, index){
-    //   return this.widget.questionSummaryWidgets[index];
-    // return Container(
-    //   child: this.widget.questionSummaryWidgets[index],
-    // );
-    // },
-    // mainAxisAlignment: MainAxisAlignment.start,
-    // crossAxisAlignment: CrossAxisAlignment.start,
-    // children: this.widget.questionSummaryWidgets,
-    // children: [
-    // Container(
-    //   color: Colors.blue,
-    //   margin: EdgeInsets.fromLTRB(50, 20, 20, 50),
-    //   child: Text(
-    //     toTitleCase('${this.widget.keyword}'),
-    //     style: TextStyle(
-    //       fontSize: 30,
-    //       fontWeight: FontWeight.w600,
-    //     ),
-    //   ),
-    // ),
-    // Container(
-    //   color: Colors.blue,
-    //   child: ListView(
-    // SingleChildScrollView(
-    //   padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-    //   child: ListView(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    // mainAxisAlignment: MainAxisAlignment.start,
-    // children: this.widget.questionSummaryWidgets,
-    // ),
-    // ),
-    // ),
-    // ],
-    // ),
-    // );
   }
 }
