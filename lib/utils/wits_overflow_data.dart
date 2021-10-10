@@ -31,6 +31,9 @@ class WitsOverflowData {
     this.users = this.firestore.collection('users');
   }
 
+  // Get image url
+  // Future<String> getURL() {}
+
   Future<List<Map<String, dynamic>>> fetchUserAnswers(
       {required String userId}) async {
     List<Map<String, dynamic>> userAnswers = [];

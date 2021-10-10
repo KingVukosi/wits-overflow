@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:wits_overflow/startup/wits_overflow_app.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
+import 'package:wits_overflow/widgets/BuildImage.dart';
 import 'package:wits_overflow/widgets/widgets.dart';
 // import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 // import 'package:wits_overflow/screens/question_and_answers_screen.dart';
@@ -22,6 +23,8 @@ class QuestionWidget extends StatelessWidget {
   final String body;
   final Timestamp createdAt;
   final String authorDisplayName;
+
+  final String image;
 
   final String authorId;
 
@@ -41,6 +44,7 @@ class QuestionWidget extends StatelessWidget {
     required this.createdAt,
     required this.authorDisplayName,
     required this.authorId,
+    required this.image,
     this.editorId,
     this.editorDisplayName,
     this.editedAt,
@@ -177,6 +181,20 @@ class QuestionWidget extends StatelessWidget {
           child: Text(
             this.body,
             // this.getQuestionBody(),
+          ),
+        ),
+
+        // Place image here
+
+        Container(
+          key: Key('id_question_${this.id}_downvote_btn'),
+          alignment: Alignment.center,
+          // padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ImageBuilder(imageFile: this.image),
+            ],
           ),
         ),
 

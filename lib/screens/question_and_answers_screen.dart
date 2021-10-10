@@ -311,6 +311,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                 id: this.widget.id,
                 title: this.question['title'],
                 body: this.question['body'],
+                image: this.question['image'],
                 votes: this._calculateVotes(this.questionVotes),
                 createdAt: this.question['createdAt'],
                 authorDisplayName: this.questionAuthor['displayName'],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:wits_overflow/utils/DataModel.dart';
 
 class DroppedFileWidget extends StatelessWidget {

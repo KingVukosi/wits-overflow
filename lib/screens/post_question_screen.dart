@@ -41,7 +41,7 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
 
   uhtml.File? file;
 
-  String? URL;
+  String? imageURL;
 
   late final Future<List<Map<String, dynamic>>> coursesFuture;
 
@@ -122,7 +122,7 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
         'courseId': _selectedCourseId,
         'moduleId': _selectedModuleId,
         'title': titleController.text,
-        'image': URL,
+        'image': imageURL,
         'body': bodyController.text,
         'authorId': witsOverflowData.getCurrentUser()!.uid,
         'tags': [_selectedCourseCode, _selectedModuleCode]
@@ -357,8 +357,13 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
 
   // Function to combine all elemnts involved in making a post
   makePost() async {
-    await uploadImage(file!, imageName: 'images/${DateTime.now()}');
-    this._addQuestion();
+    if (imageURL != null) {
+      await uploadImage(file!, imageName: 'images/${DateTime.now()}');
+      this._addQuestion();
+    } else {
+      imageURL = 'NULL';
+      this._addQuestion();
+    }
   }
 
   // To create file from user selected image
@@ -388,7 +393,7 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
       // Wait until the file is uploaded then store the download url
       var imageUri = await uploadTaskSnapshot.ref.getDownloadURL();
       setState(() {
-        URL = imageUri.toString();
+        imageURL = imageUri.toString();
       });
       // print(URL);
     } catch (e) {
