@@ -4,9 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
-import 'package:wits_overflow/widgets/favourites_tab.dart';
-import 'package:wits_overflow/widgets/my_posts_tab.dart';
-import 'package:wits_overflow/widgets/recent_activity_tab.dart';
+// import 'package:wits_overflow/widgets/favourites_tab.dart';
+// import 'package:wits_overflow/widgets/my_posts_tab.dart';
+import 'package:wits_overflow/widgets/question_summary.dart';
+// import 'package:wits_overflow/widgets/recent_activity_tab.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
 //ignore: must_be_immutable
@@ -27,9 +28,9 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   late Future<List<Map<String, dynamic>>> questions;
-  late RecentActivityTab recentActivityTab;
-  late FavouritesTab favouritesTab;
-  late MyPostsTab myPostsTab;
+  late QuestionSummaries recentActivityTab;
+  late QuestionSummaries favouritesTab;
+  late QuestionSummaries myPostsTab;
   WitsOverflowData witsOverflowData = WitsOverflowData();
   @override
   void initState() {
@@ -39,17 +40,22 @@ class HomeScreenState extends State<HomeScreen> {
         .witsOverflowData
         .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
 
-    this.recentActivityTab = RecentActivityTab(
+    this.recentActivityTab = QuestionSummaries(
+      futureQuestions: this.witsOverflowData.fetchLatestQuestions(10),
       firestore: this.widget._firestore,
       auth: this.widget._auth,
     );
 
-    this.favouritesTab = FavouritesTab(
+    this.favouritesTab = QuestionSummaries(
+      futureQuestions: this.witsOverflowData.fetchUserFavouriteQuestions(
+          userId: this.witsOverflowData.getCurrentUser()!.uid),
       firestore: this.widget._firestore,
       auth: this.widget._auth,
     );
 
-    this.myPostsTab = MyPostsTab(
+    this.myPostsTab = QuestionSummaries(
+      futureQuestions: this.witsOverflowData.fetchUserQuestions(
+          userId: this.witsOverflowData.getCurrentUser()!.uid),
       firestore: this.widget._firestore,
       auth: this.widget._auth,
     );
@@ -58,7 +64,6 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('[HOME SCREEN: build]');
     return WitsOverflowScaffold(
       body: DefaultTabController(
         length: 3,

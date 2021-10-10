@@ -14,6 +14,8 @@ class SearchResults extends StatefulWidget {
   final _auth;
   late final String keyword;
 
+  List<Widget> questionSummaryWidgets = [];
+
   SearchResults({Key? key, required keyword, firestore, auth})
       : this._firestore =
             firestore == null ? FirebaseFirestore.instance : firestore,
@@ -27,7 +29,6 @@ class SearchResults extends StatefulWidget {
 }
 
 class _SearchResultsState extends State<SearchResults> {
-  List<Widget> questionSummaryWidgets = [];
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
   bool _questionMatchKeyWord(Map<String, dynamic> question) {
@@ -35,6 +36,7 @@ class _SearchResultsState extends State<SearchResults> {
     bool found = false;
 
     bool _questionTagsMatchKeyWord(List<String> tags) {
+      print('[_questionTagsMatchKeyWord -> tags: $tags]');
       for (int i = 0; i < tags.length; i++) {
         if (tags[i].contains(this.widget.keyword)) {
           return true;
@@ -42,6 +44,7 @@ class _SearchResultsState extends State<SearchResults> {
       }
       return false;
     }
+    // List<String> tags = (question['tags'] as List).m
 
     if (question['title']
         .toString()
@@ -53,7 +56,9 @@ class _SearchResultsState extends State<SearchResults> {
         .toLowerCase()
         .contains(this.widget.keyword)) {
       found = true;
-    } else if (_questionTagsMatchKeyWord(question['tags'])) {
+    } else if (_questionTagsMatchKeyWord(((question['tags'] as List).map((e) {
+      return (e as String);
+    }).toList()))) {
       found = true;
     }
     return found;
@@ -71,64 +76,70 @@ class _SearchResultsState extends State<SearchResults> {
     print('[SEARCH: MATCHED QUESTIONS (${patch.docs.length})]');
     while (patch.docs.isNotEmpty) {
       // QueryDocumentSnapshot<Map<String, dynamic>
-      this.questionSummaryWidgets.addAll(
-      patch.docs.where((question){
-        Map<String, dynamic> questionData = question.data();
-        questionData.addAll({'id': question.id});
-        bool match = _questionMatchKeyWord(questionData);
-        return match;
-      }).toList()
-      .map((question){
-        Map<String, dynamic> questionData = question.data();
-        questionData.addAll({'id': question.id});
-        return FutureBuilder(
-          future: Future.wait([
-            this.witsOverflowData.fetchUserInformation(questionData['authorId']),
-            this.witsOverflowData.fetchQuestionAnswers(questionData['id']),
-            this.witsOverflowData.fetchQuestionVotes(questionData['id']),
-          ]),
-          builder: (BuildContext context, AsyncSnapshot<List<Object?>> snapshot){
-            if(snapshot.hasData){
-              print('[FUTURE RETURNED, ADDING QUESTION SUMMARY WIDGET]');
-              Map<String, dynamic> author = (snapshot.data?[0] as Map<String, dynamic>);
+      this.widget.questionSummaryWidgets.addAll(patch.docs
+          .where((question) {
+            Map<String, dynamic> questionData = question.data();
+            questionData.addAll({'id': question.id});
+            bool match = _questionMatchKeyWord(questionData);
+            return match;
+          })
+          .toList()
+          .map((question) {
+            Map<String, dynamic> questionData = question.data();
+            questionData.addAll({'id': question.id});
+            return FutureBuilder(
+              future: Future.wait([
+                this
+                    .witsOverflowData
+                    .fetchUserInformation(questionData['authorId']),
+                this.witsOverflowData.fetchQuestionAnswers(questionData['id']),
+                this.witsOverflowData.fetchQuestionVotes(questionData['id']),
+              ]),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Object?>> snapshot) {
+                if (snapshot.hasData) {
+                  print('[FUTURE RETURNED, ADDING QUESTION SUMMARY WIDGET]');
+                  Map<String, dynamic> author =
+                      (snapshot.data?[0] as Map<String, dynamic>);
 
-              List<Map<String, dynamic>> questionVotes = snapshot.data?[1] as List<Map<String, dynamic>>;
+                  List<Map<String, dynamic>> questionVotes =
+                      snapshot.data?[2] as List<Map<String, dynamic>>;
 
-              List<Map<String, dynamic>> questionAnswers = snapshot.data?[2] as List<Map<String, dynamic>>;
-              print('[QUESTION: $questionData, AUTHOR: $author, QUESTION VOTES: $questionVotes, QUESTION ANSWERS: $questionAnswers}]');
-              // return Container(
-              //   color: Colors.red,
-              //   width: 100,
-              //   height: 100,
-              // );
-              return new QuestionSummary(
-                answers: questionAnswers,
-                questionId: questionData['id'],
-                title: questionData['title'],
-                votes: questionVotes,
-                createdAt: questionData['createdAt'],
-                tags: questionData['tags'],
-                authorDisplayName: author['displayName'],
-              );
-            }else if(snapshot.hasError){
-              print('[FUTURE RETURNED WITH ERRORS]');
-              return Text('ERRORS: (${questionData['id']})');
-            }
-            else{
-              print('[FUTURE LOADING...]');
-              return Container(
-                color: Color.fromRGBO(100, 100, 100, 0.2),
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
-        );
-      }).toList());
+                  List<Map<String, dynamic>> questionAnswers =
+                      snapshot.data?[1] as List<Map<String, dynamic>>;
+                  print(
+                      '[QUESTION: $questionData, AUTHOR: $author, QUESTION VOTES: $questionVotes, QUESTION ANSWERS: $questionAnswers}]');
+                  // return Container(
+                  //   color: Colors.red,
+                  //   width: 100,
+                  //   height: 100,
+                  // );
+                  return new QuestionSummary(
+                    answers: questionAnswers,
+                    questionId: questionData['id'],
+                    title: questionData['title'],
+                    votes: questionVotes,
+                    createdAt: questionData['createdAt'],
+                    tags: questionData['tags'],
+                    authorDisplayName: author['displayName'],
+                  );
+                } else if (snapshot.hasError) {
+                  print('[FUTURE RETURNED WITH ERRORS]');
+                  return Text('ERRORS: (${questionData['id']})');
+                } else {
+                  print('[FUTURE LOADING...]');
+                  return Container(
+                    color: Color.fromRGBO(100, 100, 100, 0.2),
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            );
+          })
+          .toList());
 
       // ======================================================================
-      this.setState((){
-
-      });
+      this.setState(() {});
       patch = await this
           .widget
           ._firestore
@@ -153,41 +164,112 @@ class _SearchResultsState extends State<SearchResults> {
 
   @override
   Widget build(BuildContext context) {
-    print('[_SearchResultsState.build, question widgets: ${this.questionSummaryWidgets}]');
-    return WitsOverflowScaffold(
-      firestore: this.widget._firestore,
-      auth: this.widget._auth,
-      body: ListView.builder(
-        itemCount: this.questionSummaryWidgets.length,
-        itemBuilder: (context, index){
-          return this.questionSummaryWidgets[index];
-        },
-        // mainAxisAlignment: MainAxisAlignment.start,
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        // children: this.questionSummaryWidgets,
-        // children: [
-        //   Container(
-        //     color: Colors.white12,
-        //     margin: EdgeInsets.fromLTRB(50, 20, 20, 50),
-        //     child: Text(
-        //       toTitleCase('${this.widget.keyword}'),
-        //       style: TextStyle(
-        //         fontSize: 30,
-        //         fontWeight: FontWeight.w600,
-        //       ),
-        //     ),
-        //   ),
-        //   ListView(
-          // SingleChildScrollView(
-          //   padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     mainAxisAlignment: MainAxisAlignment.start,
-          //     children: this.questionSummaryWidgets,
-            // ),
-          // ),
-        // ],
+    print(
+        '[_SearchResultsState.build, questionSummaryWidgets: ${this.widget.questionSummaryWidgets}\n'
+        'questionSummaryWidgets.length; ${this.widget.questionSummaryWidgets.length.toString()}]');
+    // return WitsOverflowScaffold(
+    //   firestore: this.widget._firestore,
+    //   auth: this.widget._auth,
+    //   body: Scrollbar(
+    //     isAlwaysShown: true,
+    //     // interactive: true,
+    //     child: SingleChildScrollView(
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           SingleChildScrollView(
+    //             // padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+    //             scrollDirection: Axis.horizontal,
+    //             child: SizedBox(
+    //             //   width: 800,
+    //               // child: GridView.builder(
+    //
+    //               child: Column(
+    //                 mainAxisAlignment: MainAxisAlignment.start,
+    //                 children: this.widget.questionSummaryWidgets,
+    //               ),
+    //             ),
+    //           )
+    //         ],
+    //       ),
+    //     ),
+    //   )
+    // );
+
+    // ============================================================================================
+
+    List<Widget> c = [
+      Container(
+        // color: Colors.blue,
+        margin: EdgeInsets.fromLTRB(50, 20, 20, 50),
+        child: Text(
+          toTitleCase('${this.widget.keyword}'),
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
-    );
+    ];
+    c.addAll(this.widget.questionSummaryWidgets);
+    return WitsOverflowScaffold(
+        firestore: this.widget._firestore,
+        auth: this.widget._auth,
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: c,
+            ),
+          ),
+        ));
+
+    // ============================================================================================
+
+    // return WitsOverflowScaffold(
+    //   firestore: this.widget._firestore,
+    //   auth: this.widget._auth,
+    //   body: Column(
+    // body: ListView(
+    // padding: EdgeInsets,
+    // itemCount: this.widget.questionSummaryWidgets.length,
+    // itemBuilder: (context, index){
+    //   return this.widget.questionSummaryWidgets[index];
+    // return Container(
+    //   child: this.widget.questionSummaryWidgets[index],
+    // );
+    // },
+    // mainAxisAlignment: MainAxisAlignment.start,
+    // crossAxisAlignment: CrossAxisAlignment.start,
+    // children: this.widget.questionSummaryWidgets,
+    // children: [
+    // Container(
+    //   color: Colors.blue,
+    //   margin: EdgeInsets.fromLTRB(50, 20, 20, 50),
+    //   child: Text(
+    //     toTitleCase('${this.widget.keyword}'),
+    //     style: TextStyle(
+    //       fontSize: 30,
+    //       fontWeight: FontWeight.w600,
+    //     ),
+    //   ),
+    // ),
+    // Container(
+    //   color: Colors.blue,
+    //   child: ListView(
+    // SingleChildScrollView(
+    //   padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+    //   child: ListView(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    // mainAxisAlignment: MainAxisAlignment.start,
+    // children: this.widget.questionSummaryWidgets,
+    // ),
+    // ),
+    // ),
+    // ],
+    // ),
+    // );
   }
 }
