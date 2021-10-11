@@ -35,7 +35,6 @@ class _SearchResultsState extends State<SearchResults> {
     bool found = false;
 
     bool _questionTagsMatchKeyWord(List<String> tags) {
-      print('[_questionTagsMatchKeyWord -> tags: $tags]');
       for (int i = 0; i < tags.length; i++) {
         if (tags[i].contains(this.widget.keyword)) {
           return true;
@@ -95,7 +94,6 @@ class _SearchResultsState extends State<SearchResults> {
               builder: (BuildContext context,
                   AsyncSnapshot<List<Object?>> snapshot) {
                 if (snapshot.hasData) {
-                  print('[FUTURE RETURNED, ADDING QUESTION SUMMARY WIDGET]');
                   Map<String, dynamic> author =
                       (snapshot.data?[0] as Map<String, dynamic>);
 
@@ -104,13 +102,6 @@ class _SearchResultsState extends State<SearchResults> {
 
                   List<Map<String, dynamic>> questionAnswers =
                       snapshot.data?[1] as List<Map<String, dynamic>>;
-                  print(
-                      '[QUESTION: $questionData, AUTHOR: $author, QUESTION VOTES: $questionVotes, QUESTION ANSWERS: $questionAnswers}]');
-                  // return Container(
-                  //   color: Colors.red,
-                  //   width: 100,
-                  //   height: 100,
-                  // );
                   return new QuestionSummary(
                     answers: questionAnswers,
                     questionId: questionData['id'],
@@ -121,10 +112,8 @@ class _SearchResultsState extends State<SearchResults> {
                     authorDisplayName: author['displayName'],
                   );
                 } else if (snapshot.hasError) {
-                  print('[FUTURE RETURNED WITH ERRORS]');
                   return Text('ERRORS: (${questionData['id']})');
                 } else {
-                  print('[FUTURE LOADING...]');
                   return Container(
                     color: Color.fromRGBO(100, 100, 100, 0.2),
                     child: CircularProgressIndicator(),
@@ -151,6 +140,7 @@ class _SearchResultsState extends State<SearchResults> {
   @override
   void initState() {
     super.initState();
+
     this
         .witsOverflowData
         .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
@@ -179,7 +169,7 @@ class _SearchResultsState extends State<SearchResults> {
         auth: this.widget._auth,
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

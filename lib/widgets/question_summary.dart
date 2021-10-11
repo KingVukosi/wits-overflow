@@ -43,18 +43,20 @@ class QuestionSummary extends StatelessWidget {
       List<Widget> list = <Widget>[];
 
       for (var i = 0; i < this.tags.length; i++) {
-        list.add(Container(
-          margin: EdgeInsets.only(right: 5),
-          color: Color.fromRGBO(225, 236, 244, 1),
-          child: Padding(
-              padding: EdgeInsets.all(5),
-              child: Text(
-                this.tags[i],
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Color.fromRGBO(57, 115, 157, 1),
-                ),
-              )),
+        list.add(Flexible(
+          child: Container(
+            margin: EdgeInsets.only(right: 5),
+            color: Color.fromRGBO(225, 236, 244, 1),
+            child: Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  this.tags[i],
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Color.fromRGBO(57, 115, 157, 1),
+                  ),
+                )),
+          ),
         ));
       }
       return new Row(children: list);
@@ -153,52 +155,59 @@ class QuestionSummary extends StatelessWidget {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(this.title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color.fromRGBO(0, 116, 204, 1),
-                                    fontWeight: FontWeight.bold,
-                                    //fontWeight: FontWeight.bold
-                                  )),
+                              Flexible(
+                                child: Text(this.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color.fromRGBO(0, 116, 204, 1),
+                                      fontWeight: FontWeight.bold,
+                                      //fontWeight: FontWeight.bold
+                                    )),
+                              ),
 
                               Divider(color: Colors.white, height: 4),
 
                               // badges/tags
-                              _createBadges(),
+                              Flexible(child: _createBadges()),
 
                               Divider(color: Colors.white, height: 5),
 
                               // datetime
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: Text(
-                                        formatDateTime(
-                                            DateTime.fromMillisecondsSinceEpoch(
-                                                this
+                              Flexible(
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                        child: Text(
+                                            formatDateTime(DateTime
+                                                .fromMillisecondsSinceEpoch(this
                                                     .createdAt
                                                     .millisecondsSinceEpoch)),
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            color: Theme.of(context)
-                                                .disabledColor)),
-                                  ),
-
-                                  // author display name
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: Text(
-                                      this.authorDisplayName,
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 13,
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Theme.of(context)
+                                                    .disabledColor)),
                                       ),
                                     ),
-                                  )
-                                ],
+
+                                    // author display name
+                                    Flexible(
+                                      child: Container(
+                                        margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                        child: Text(
+                                          this.authorDisplayName,
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ])))
               ])),
@@ -321,34 +330,85 @@ class _QuestionSummariesState extends State<QuestionSummaries> {
 
   @override
   Widget build(BuildContext context) {
+    print('[_QuestionSummariesState.build]');
     if (this._loading == true) {
       return Center(child: CircularProgressIndicator());
     }
-    return Scrollbar(
-      isAlwaysShown: true,
-      // interactive: true,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: 800,
-                child: GridView.builder(
-                    scrollDirection: Axis.vertical,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, childAspectRatio: 7 / 2),
-                    shrinkWrap: true,
-                    itemCount: this.questionSummaryWidgets.length,
-                    itemBuilder: (context, index) {
-                      return this.questionSummaryWidgets[index];
-                    }),
-              ),
-            )
-          ],
-        ),
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: 800,
+              child: GridView.builder(
+                  scrollDirection: Axis.vertical,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, childAspectRatio: 7 / 2),
+                  shrinkWrap: true,
+                  itemCount: this.questionSummaryWidgets.length,
+                  itemBuilder: (context, index) {
+                    return this.questionSummaryWidgets[index];
+                  }),
+            ),
+          )
+        ],
       ),
     );
+
+    // return SingleChildScrollView(
+    //   child: Container(
+    //     padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: this.questionSummaryWidgets,
+    //     ),
+    //   ),
+    // );
+
+    // =========================================================================
+
+    // return SingleChildScrollView(
+    //   child: Container(
+    //     padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: this.questionSummaryWidgets,
+    //     ),
+    //   ),
+    // );
+
+    // =========================================================================
+
+    // return Scrollbar(
+    //   isAlwaysShown: true,
+    //   // interactive: true,
+    //   child: SingleChildScrollView(
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: [
+    //         SingleChildScrollView(
+    //           scrollDirection: Axis.horizontal,
+    //           child: SizedBox(
+    //             width: 800,
+    //             child: GridView.builder(
+    //                 scrollDirection: Axis.vertical,
+    //                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    //                     crossAxisCount: 2, childAspectRatio: 7 / 2),
+    //                 shrinkWrap: true,
+    //                 itemCount: this.questionSummaryWidgets.length,
+    //                 itemBuilder: (context, index) {
+    //                   return this.questionSummaryWidgets[index];
+    //                 }),
+    //           ),
+    //         )
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }

@@ -34,7 +34,6 @@ class HomeScreenState extends State<HomeScreen> {
   WitsOverflowData witsOverflowData = WitsOverflowData();
   @override
   void initState() {
-    print('HOME SCREEN: initState');
     super.initState();
     this
         .witsOverflowData

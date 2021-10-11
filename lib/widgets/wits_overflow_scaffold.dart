@@ -42,7 +42,6 @@ class WitsOverflowScaffold extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    // print('[DEVICE WIDTH: ${MediaQuery.of(context).size.width}, HEIGHT: ${MediaQuery.of(context).size.height}]');
     late var image;
     if (this._auth.currentUser?.photoURL == null) {
       image = ExactAssetImage('assets/images/default_avatar.png');

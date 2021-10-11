@@ -63,7 +63,6 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
   }
 
   void submitAnswer(String body) async {
-    print('[ANSWER EDIT: SUBMITTING ANSWER ]');
     setState(() {
       isBusy = true;
     });
@@ -104,8 +103,6 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
         ),
       );
     }
-
-    print('[BUILDING ANSWER EDIT FORM SCREEN]');
 
     return WitsOverflowScaffold(
       auth: this.widget._auth,
@@ -213,7 +210,6 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                       child: ElevatedButton(
                         key: Key('id_submit'),
                         onPressed: () {
-                          print('ON PRESS: UPDATING QUESTION ANSWER');
                           this.submitAnswer(bodyController.text.toString());
                         },
                         child: Text('Submit'),
