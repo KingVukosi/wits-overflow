@@ -99,6 +99,7 @@ void main() {
         'body': questionBody,
         'authorId': questionAuthor['id'],
         'moduleId': module['id'],
+        'image': 'NULL',
         'courseId': course['id'],
         'createdAt': createdAt,
         'tags': tags,
