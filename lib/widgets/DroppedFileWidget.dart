@@ -10,12 +10,14 @@ class DroppedFileWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          buildImage(),
-          if (droppedFile != null) buildFileDetails(droppedFile!),
-        ],
+  Widget build(BuildContext context) => Expanded(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildImage(),
+            if (droppedFile != null) buildFileDetails(droppedFile!),
+          ],
+        ),
       );
 
   Widget buildImage() {
@@ -50,7 +52,7 @@ class DroppedFileWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text('${DateTime.now()}',
+          Text('Selected Image',
               style: style.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Text(droppedFile!.mime, style: style),

@@ -264,90 +264,96 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                 ),
                 Divider(color: Colors.white, height: 10),
                 // Image Drop Section
-                Row(
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          height: 160,
-                          padding: EdgeInsets.all(10),
-                          color: highlight == true ? Colors.grey : Colors.blue,
-                          child: DottedBorder(
-                            borderType: BorderType.RRect,
-                            color: Colors.white,
-                            padding: EdgeInsets.zero,
-                            child: Stack(
-                              children: [
-                                DropzoneView(
-                                    onDrop: uploadedFile,
-                                    onCreated: (dropController) =>
-                                        this.controller = dropController,
-                                    onHover: () {
-                                      setState(() {
-                                        highlight = true;
-                                      });
-                                    },
-                                    onLeave: () {
-                                      setState(() {
-                                        highlight = false;
-                                      });
-                                    }),
-                                Center(
-                                  child: Column(children: [
-                                    SizedBox(height: 10),
-                                    Icon(
-                                      Icons.cloud_upload,
-                                      size: 50,
-                                      color: Colors.white,
-                                    ),
-                                    Text("Drop image here"),
-                                    SizedBox(height: 14),
-                                    ElevatedButton.icon(
-                                      onPressed: () async {
-                                        final events =
-                                            await controller.pickFiles();
-                                        if (events.isEmpty) return;
-                                        uploadedFile(events.first);
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            height: 160,
+                            padding: EdgeInsets.all(10),
+                            color:
+                                highlight == true ? Colors.grey : Colors.blue,
+                            child: DottedBorder(
+                              borderType: BorderType.RRect,
+                              color: Colors.white,
+                              padding: EdgeInsets.zero,
+                              child: Stack(
+                                children: [
+                                  DropzoneView(
+                                      onDrop: uploadedFile,
+                                      onCreated: (dropController) =>
+                                          this.controller = dropController,
+                                      onHover: () {
+                                        setState(() {
+                                          highlight = true;
+                                        });
                                       },
-                                      icon: Icon(Icons.search),
-                                      label: Text("Choose an image"),
-                                      style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20),
-                                        primary: Colors.blue[300],
-                                        shape: RoundedRectangleBorder(),
+                                      onLeave: () {
+                                        setState(() {
+                                          highlight = false;
+                                        });
+                                      }),
+                                  Center(
+                                    child: Column(children: [
+                                      SizedBox(height: 10),
+                                      Icon(
+                                        Icons.cloud_upload,
+                                        size: 50,
+                                        color: Colors.white,
                                       ),
-                                    ),
-                                  ]),
-                                )
-                              ],
+                                      Text("Drop image here"),
+                                      SizedBox(height: 14),
+                                      ElevatedButton.icon(
+                                        onPressed: () async {
+                                          final events =
+                                              await controller.pickFiles();
+                                          if (events.isEmpty) return;
+                                          uploadedFile(events.first);
+                                        },
+                                        icon: Icon(Icons.search),
+                                        label: Text("Choose an image"),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          primary: Colors.blue[300],
+                                          shape: RoundedRectangleBorder(),
+                                        ),
+                                      ),
+                                    ]),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: // Dropped Image
-                          Container(
-                        alignment: Alignment.center,
-                        // padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            DroppedFileWidget(droppedFile: droppedFile),
-                          ],
+                      Expanded(
+                        child: // Dropped Image
+                            Container(
+                          alignment: Alignment.center,
+                          // padding: EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              DroppedFileWidget(droppedFile: droppedFile),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Divider(color: Colors.white, height: 10),
-                Container(
-                  child: ElevatedButton.icon(
-                    onPressed: () => {makePost()},
-                    icon: Icon(Icons.post_add),
-                    label: Text('Submit'),
+                Expanded(
+                  child: Container(
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      onPressed: () => {makePost()},
+                      icon: Icon(Icons.post_add),
+                      label: Text('Submit'),
+                    ),
                   ),
                 ),
               ],
