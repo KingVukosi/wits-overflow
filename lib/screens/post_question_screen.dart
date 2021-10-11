@@ -10,7 +10,7 @@ import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:universal_html/html.dart' as uhtml;
 import 'package:firebase/firebase.dart' as fb;
-import 'dart:html' as html;
+// import 'dart:html' as html;
 
 class PostQuestionScreen extends StatefulWidget {
   // late WitsOverflowData witsOverflowData;// = WitsOverflowData();
@@ -357,12 +357,14 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
 
   // Function to combine all elemnts involved in making a post
   makePost() async {
-    if (imageURL != null) {
+    if (file != null) {
       await uploadImage(file!, imageName: 'images/${DateTime.now()}');
       this._addQuestion();
+      print(imageURL);
     } else {
       imageURL = 'NULL';
       this._addQuestion();
+      // print(imageURL);
     }
   }
 
@@ -381,7 +383,7 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   }
 
   // Function to upload image to firebase storage
-  Future uploadImage(html.File image, {required String imageName}) async {
+  Future uploadImage(uhtml.File image, {required String imageName}) async {
     try {
       //Upload Profile Photo
       fb.StorageReference _storage = fb

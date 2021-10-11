@@ -1,9 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:wits_overflow/utils/DataModel.dart';
 
-import 'dart:html';
-import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart';
 import 'dart:ui' as ui;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,8 +23,8 @@ class MyImage extends StatelessWidget {
       (int _) => ImageElement()..src = imageUrl,
     );
     return Container(
-      height: 120,
-      width: 120,
+      height: 160,
+      width: 160,
       child: HtmlElementView(
         viewType: imageUrl,
       ),
@@ -79,8 +77,6 @@ class ImageBuilder extends StatelessWidget {
 }
 
 buildFileDetails(String imageFile) {
-  final style = TextStyle(fontSize: 20);
-
   return Container(
     margin: EdgeInsets.only(left: 24),
     child: new Center(
