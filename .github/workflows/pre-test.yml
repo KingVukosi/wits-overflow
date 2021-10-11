@@ -41,7 +41,7 @@ jobs:
 
       # Run widget tests for our flutter project.
       - name: Run widget tests 
-        run: flutter test --coverage
+        run: flutter test --platform chrome --coverage
       #   run: ls -R
 
       # Upload coverage to https://app.codecov.io/
