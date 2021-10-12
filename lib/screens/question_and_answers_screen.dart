@@ -30,39 +30,8 @@ class QuestionAndAnswersScreen extends StatefulWidget {
 
 class _QuestionState extends State<QuestionAndAnswersScreen> {
   late Map<String, dynamic> question;
-  //
-  // List<Map<String, dynamic>> questionVotes = [];
-  // List<Map<String, dynamic>> questionComments = [];
+
   List<Map<String, dynamic>> questionAnswers = [];
-  //
-  // late Map<String, dynamic> questionAuthor;
-  // late Map<String, dynamic> questionEditor = {};
-  //
-  // // holds user information for each question comment
-  // // question comments (comments that belong to the question)
-  // // not answers
-  // Map<String, Map<String, dynamic>> questionCommentsAuthors =
-  //     Map<String, Map<String, dynamic>>();
-  //
-  // // holds user information for each question answer
-  // Map<String, Map<String, dynamic>> questionAnswersAuthors =
-  //     Map<String, Map<String, dynamic>>();
-  //
-  // // holds votes information for each answer
-  // Map<String, List<Map<String, dynamic>>> questionAnswersVotes =
-  //     Map<String, List<Map<String, dynamic>>>();
-  //
-  // // holds votes information for each answer
-  // Map<String, Map<String, dynamic>> questionAnswerEditors =
-  //     Map<String, Map<String, dynamic>>();
-  //
-  // Map<String, List<Map<String, dynamic>>> questionAnswersComments = {};
-  //
-  // // holds author information to each question-answer comments
-  // // hold author information for each comment that belongs to answers
-  // Map<String, Map<String, Map<String, dynamic>>>
-  //     questionAnswersCommentsAuthors =
-  //     {}; // = Map<String, Map<String, dynamic>>();
 
   bool isBusy = true;
 
@@ -77,148 +46,15 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
   }
 
   Future<void> getData() async {
-    // retrieve necessary data from firebase to view this page
-    //
-    // // get votes information for each answer
-    // Future<Map<String, List<Map<String, dynamic>>>> getAnswerVotes() async {
-    //   Map<String, List<Map<String, dynamic>>> answerVotes = Map();
-    //   for (var i = 0; i < this.questionAnswers.length; i++) {
-    //     List<Map<String, dynamic>>? votes =
-    //         await witsOverflowData.fetchQuestionAnswerVotes(
-    //             this.widget.id, this.questionAnswers[i]['id']);
-    //     answerVotes.addAll({this.questionAnswers[i]['id']: votes!});
-    //   }
-    //   return answerVotes;
-    // }
-    //
-    // // get user information for each comment
-    // Future<Map<String, Map<String, dynamic>>> getQuestionCommentsAuthors() async {
-    //   Map<String, Map<String, dynamic>> commentsUsers = Map();
-    //   for (var i = 0; i < this.questionComments.length; i++) {
-    //     Map<String, dynamic>? user = await witsOverflowData
-    //         .fetchUserInformation(this.questionComments[i]['authorId']);
-    //     commentsUsers.addAll({this.questionComments[i]['id']: user!});
-    //   }
-    //   return commentsUsers;
-    // }
-    //
-    // // get user (author) information for each answer
-    // Future<Map<String, Map<String, dynamic>>> getQuestionAnswersAuthors() async {
-    //   Map<String, Map<String, dynamic>> answersUsers = Map();
-    //   for (var i = 0; i < this.questionAnswers.length; i++) {
-    //     Map<String, dynamic>? user = await witsOverflowData
-    //         .fetchUserInformation(this.questionAnswers[i]['authorId']);
-    //     answersUsers.addAll({this.questionAnswers[i]['id']: user!});
-    //   }
-    //   return answersUsers;
-    // }
-    //
-    // // for each answer, get user information the of the editor
-    // Future<Map<String, Map<String, dynamic>>> getAnswerEditors() async {
-    //   Map<String, Map<String, dynamic>> editors = {};
-    //   for (int i = 0; i < this.questionAnswers.length; i++) {
-    //     String? editorId = this.questionAnswers[i]['editorId'];
-    //     String answerId = this.questionAnswers[i]['id'];
-    //     if (editorId != null) {
-    //       Map<String, dynamic>? userInfo =
-    //           await witsOverflowData.fetchUserInformation(editorId);
-    //       if (userInfo != null) {
-    //         editors.addAll({answerId: userInfo});
-    //       }
-    //     }
-    //   }
-    //   return editors;
-    // }
-    //
-    // // for each comment in question answers, get user information
-    // Future<Map<String, Map<String, Map<String, dynamic>>>>
-    //     getAnswersCommentsAuthors() async {
-    //   Map<String, Map<String, Map<String, dynamic>>> results = {};
-    //   for (int k = 0; k < this.questionAnswersComments.entries.length; k++) {
-    //     // key - answer id
-    //     // value - list of comments
-    //     // {
-    //     //   answerId:
-    //     //    {
-    //     //      commentId: user information (Map)
-    //     //    }
-    //     // }
-    //
-    //     // looping through the comments that belong to the current
-    //     // answer (answer with id answerCommentEntry.key) in the iteration
-    //     String answerId = this.questionAnswersComments.entries.elementAt(k).key;
-    //     List<Map<String, dynamic>> answerComments =
-    //         this.questionAnswersComments.entries.elementAt(k).value;
-    //     Map<String, Map<String, dynamic>> commentsAuthors = {};
-    //     for (int i = 0; i < answerComments.length; i++) {
-    //       Map<String, dynamic> comment = answerComments[i];
-    //       Map<String, dynamic>? userInfo =
-    //           await witsOverflowData.fetchUserInformation(comment['authorId']);
-    //
-    //       commentsAuthors.addAll({
-    //         comment['id']: userInfo!,
-    //       });
-    //     }
-    //
-    //     results.addAll({
-    //       answerId: commentsAuthors,
-    //     });
-    //   }
-    //   return results;
-    // }
-    //
-    // // for each answer, get comments
-    // Future<Map<String, List<Map<String, dynamic>>>> getAnswersComments() async {
-    //   Map<String, List<Map<String, dynamic>>> answersComments = {};
-    //   for (int i = 0; i < this.questionAnswers.length; i++) {
-    //     List<Map<String, dynamic>>? answerComments = await this
-    //         .witsOverflowData
-    //         .fetchQuestionAnswerComments(
-    //             questionId: this.widget.id,
-    //             answerId: this.questionAnswers[i]['id']);
-    //     answersComments.addAll({
-    //       this.questionAnswers[i]['id']:
-    //           answerComments == null ? [] : answerComments,
-    //     });
-    //   }
-    //   return answersComments;
-    // }
-    //
+
     this.question = (await witsOverflowData.fetchQuestion(this.widget.id))!;
-    // print('[QUESTION: $question]');
-    // this.questionAuthor = witsOverflowData.fetchUserInformation(this.question['authorId']);
-    // this.questionEditor = this.question['editorId'] == null
-    //     ? {}
-    //     : (await witsOverflowData
-    //         .fetchUserInformation(this.question['editorId']))!;
-    //
-    // this.questionVotes = witsOverflowData.fetchQuestionVotes(this.widget.id);
-    //
-    // FutureBuilder(
-    //   future: Future.wait([
-    //     witsOverflowData.fetchQuestion(this.widget.id),
-    //     witsOverflowData.fetchUserInformation(this.question['authorId']),
-    //   ]),
-    //   builder: (){
-    //
-    //   }
-    // );
-    // this.questionComments = witsOverflowData.fetchQuestionComments(this.widget.id);
+
     await witsOverflowData.fetchQuestionAnswers(this.widget.id).then((value) {
       if (value != null) {
         this.questionAnswers = value;
       }
     });
-    // this.questionAnswers = fQuestionAnswers == null ? [];
-    //
-    // this.questionAnswersVotes = getAnswerVotes();
-    // this.questionAnswersAuthors = getQuestionAnswersAuthors();
-    // this.questionAnswerEditors = getAnswerEditors();
-    // this.questionCommentsAuthors = getQuestionCommentsAuthors();
-    // this.questionAnswersComments = getAnswersComments();
-    // this.questionAnswersCommentsAuthors = getAnswersCommentsAuthors();
 
-    // stores information of the user that first asked the question
     setState(() {
       this.isBusy = false;
     });
@@ -230,8 +66,6 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
           Future.wait([witsOverflowData.fetchQuestionVotes(this.widget.id)]),
       builder: (BuildContext context, AsyncSnapshot<List<Object?>> snapshot) {
         if (snapshot.hasData) {
-          // Map<String, dynamic> question = snapshot.data![0] as  Map<String, dynamic>;
-          // Map<String, dynamic> questionAuthor = snapshot.data![0] as Map<String, dynamic>;
           List<Map<String, dynamic>> questionVotes =
               snapshot.data![0] as List<Map<String, dynamic>>;
 
@@ -470,50 +304,6 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
         }
       },
     );
-
-    // List<Widget> answers = <Widget>[];
-    // for (var i = 0; i < this.questionAnswers.length; i++) {
-    //   bool? accepted = this.questionAnswers[i]['accepted'];
-    //   String answerId = this.questionAnswers[i]['id'];
-    //   var editedAt = this.questionAnswers[i]['editedAt'];
-    //   String authorDisplayName =
-    //       this.questionAnswersAuthors[answerId]!['displayName'];
-    //   List<Map<String, dynamic>>? votes =
-    //       this.questionAnswersVotes[this.questionAnswers[i]['id']];
-    //   String? editorDisplayName =
-    //       this.questionAnswerEditors[answerId]?['displayName'];
-    //   List<Map<String, dynamic>>? comments =
-    //       this.questionAnswersComments[answerId];
-    //   Map<String, Map<String, dynamic>>? commentsAuthors =
-    //       this.questionAnswersCommentsAuthors[answerId];
-    //   answers.add(
-    //     Answer(
-    //       id: this.questionAnswers[i]['id'],
-    //       authorDisplayName: authorDisplayName,
-    //       votes: votes == null ? [] : votes,
-    //       body: this.questionAnswers[i]['body'],
-    //       answeredAt: (this.questionAnswers[i]['answeredAt'] as Timestamp),
-    //       accepted: accepted == null ? false : accepted,
-    //       authorId: this.questionAnswers[i]['authorId'],
-    //       questionId: this.question['id'],
-    //       questionAuthorId: this.question['authorId'],
-    //       editorId: this.questionAnswers[i]['editorId'],
-    //       editorDisplayName: editorDisplayName,
-    //       editedAt: editedAt,
-    //       comments: comments == null ? [] : comments,
-    //       commentsAuthors: commentsAuthors == null ? {} : commentsAuthors,
-    //       firestore: this.widget._firestore,
-    //       auth: this.widget._auth,
-    //     ),
-    //   );
-    // }
-
-    // return Container(
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: answers,
-    //   ),
-    // );
   }
 
   int _calculateVotes(List<Map<String, dynamic>> votes) {
@@ -548,21 +338,6 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
               /// votes, up-vote and down-vote
 
               this._buildQuestionWidget(),
-              // QuestionWidget(
-              //   id: this.widget.id,
-              //   title: this.question['title'],
-              //   body: this.question['body'],
-              //   votes: this._calculateVotes(this.questionVotes),
-              //   createdAt: this.question['createdAt'],
-              //   authorDisplayName: this.questionAuthor['displayName'],
-              //   authorId: this.question['authorId'],
-              //   editorId: this.question['editorId'],
-              //   editedAt: this.question['editedAt'],
-              //   editorDisplayName: this.questionEditor['editorDisplayName'],
-              //   auth: this.widget._auth,
-              //   firestore: this.widget._firestore,
-              // ),
-
               /// comments list
               this._buildCommentsWidget(),
 
