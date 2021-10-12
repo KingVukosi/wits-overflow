@@ -1,36 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wits_overflow/widgets/answers.dart';
+// import 'package:wits_overflow/forms/answer_edit_form.dart';
+import 'package:wits_overflow/forms/question_edit_form.dart';
 import 'package:wits_overflow/utils/functions.dart';
 
 import '../utils.dart';
 
 void main() {
-  /// test individual answer widget
-  /// TESTS
-  ///   * display information
-  ///     - author's display name
-  ///     - editor's display name if edit and author are different users
-  ///     - date posted
-  ///     - date updated
-  ///     - number of up_votes/down_votes
-  ///     - answer status (whether is correct)
-  ///     - comments (these tests are covered in comments_test.dart)
-  ///       - comment body
-  ///       - comment author
-  ///       - comment date
-  ///       - add a comment / show more comments button
-  ///   * the question author can accept answer
-  ///   * the question author can change accepted answer to another
-  ///   * only one answer can be accepted
-  ///   * only the question author can accept answers
-  ///   * user cannot vote more than once
-  ///   * when a user change vote, maybe from downvote (-1) voting to upvote (1)
-  group('Test answer widget', () {
+  group("Test question post form screen", () {
     late FakeFirebaseFirestore firestore;
     late MockFirebaseAuth auth;
     late Map<String, dynamic> question;
@@ -235,163 +216,10 @@ void main() {
       }
     });
 
-    /// test that the answer widget displays the
-    /// 1 - answer's body
-    /// 2 - author's display name,
-    /// 3 - editor's display name
-    /// 4 - date when the answer was added  - [DateTime(2021, 3, 21, 13, 59)] - [Mar 21 '21 at 13:59]
-    /// 5 - date when the was last edited
-    /// 6 -  number of votes
-    /// 7 - if accepted,
-    testWidgets('display valid answer information',
+    testWidgets('displays question title & body',
         (WidgetTester widgetTester) async {
-      Answer answerWidget = Answer(
-        id: answer['id'],
-        body: answer['body'],
-        answeredAt: answer['answeredAt'],
-        votes: votes,
-        accepted: answer['accepted'] == null ? false : answer['accepted'],
-        authorId: answerAuthorInfo['uid'],
-        authorDisplayName: answerAuthorInfo['displayName'],
+      QuestionEditForm questionEditForm = QuestionEditForm(
         questionId: question['id'],
-        questionAuthorId: questionAuthorInfo['uid'],
-        editorDisplayName: answerEditorInfo['displayName'],
-        editedAt: Timestamp.fromDate(DateTime(2021, 3, 24, 1, 14)),
-        firestore: firestore,
-        auth: auth,
-      );
-
-      Widget testWidget = new MediaQuery(
-          data: new MediaQueryData(),
-          child: new Directionality(
-            textDirection: TextDirection.rtl,
-            child: answerWidget,
-          ));
-
-      await widgetTester.pumpWidget(testWidget);
-
-      // 1 - answer's body
-      expect(find.text(answer['body']), findsOneWidget);
-
-      // 2 - author's display name
-      expect(find.text(answerAuthorInfo['displayName']), findsOneWidget);
-
-      // 3 - editor's display name
-      expect(find.text(answerEditorInfo['displayName']), findsOneWidget);
-
-      // 4 - createdAt
-      expect(find.text('Mar 21 \'21 at 13:59'), findsOneWidget);
-
-      // 5 - editedAt
-      expect(find.text('Mar 24 \'21 at 1:14'), findsOneWidget);
-
-      // 6 - aggregate of votes
-      expect(find.text('3'), findsOneWidget);
-
-      // TODO: test that the correct answer icon is present in the widget tree
-    });
-
-    testWidgets('upvote and downvote buttons',
-        (WidgetTester widgetTester) async {
-      Answer answerWidget = Answer(
-        id: answer['id'],
-        body: answer['body'],
-        answeredAt: answer['answeredAt'],
-        votes: votes,
-        accepted: answer['accepted'] == null ? false : answer['accepted'],
-        authorId: answerAuthorInfo['uid'],
-        authorDisplayName: answerAuthorInfo['displayName'],
-        questionId: question['id'],
-        questionAuthorId: questionAuthorInfo['uid'],
-        editorDisplayName: answerEditorInfo['displayName'],
-        editedAt: Timestamp.fromDate(DateTime(2021, 3, 24, 1, 14)),
-        firestore: firestore,
-        auth: auth,
-      );
-
-      // Widget testWidget = new MediaQuery(
-      //     data: new MediaQueryData(),
-      //     child: new Directionality(
-      //       textDirection: TextDirection.rtl,
-      //       child: answerWidget,
-      //     )
-      // );
-
-      Widget testWidget = new MediaQuery(
-          data: new MediaQueryData(),
-          child: new Directionality(
-              textDirection: TextDirection.rtl,
-              child: MaterialApp(
-                home: Scaffold(
-                    body: Center(
-                        child: Container(
-                            child: ListView(children: <Widget>[
-                  answerWidget,
-                ])))),
-              )));
-
-      await widgetTester.pumpWidget(testWidget);
-
-      // tap the down upvote button
-      await widgetTester
-          .tap(find.byKey(Key('answer_${answer['id']}_upvote_btn')));
-
-      Map<String, dynamic> questionAuthorVote;
-      await firestore
-          .collection(COLLECTIONS['questions'])
-          .doc(question['id'])
-          .collection('answers')
-          .doc(answer['id'])
-          .collection('votes')
-          .where('user', isEqualTo: questionAuthorInfo['uid'])
-          .get()
-          .then((value) async {
-        // questionAuthorVote = value.doc
-        expect(1, value.docs.length);
-        questionAuthorVote = value.docs.elementAt(0).data();
-        expect(1, questionAuthorVote['value']);
-        expect(questionAuthorInfo['uid'], questionAuthorVote['user']);
-
-        await value.docs.elementAt(0).reference.delete();
-      });
-
-      // tap the downvote button
-      await widgetTester
-          .tap(find.byKey(Key('answer_${answer['id']}_downvote_btn')));
-      await firestore
-          .collection(COLLECTIONS['questions'])
-          .doc(question['id'])
-          .collection('answers')
-          .doc(answer['id'])
-          .collection('votes')
-          .where('user', isEqualTo: questionAuthorInfo['uid'])
-          .get()
-          .then((value) async {
-        // questionAuthorVote = value.doc
-        expect(1, value.docs.length);
-        questionAuthorVote = value.docs.elementAt(0).data();
-        expect(-1, questionAuthorVote['value']);
-        expect(questionAuthorInfo['uid'], questionAuthorVote['user']);
-
-        await value.docs.elementAt(0).reference.delete();
-      });
-      // TODO: test that the correct answer icon is present in the widget tree
-    });
-
-    testWidgets('navigate to answer edit form',
-        (WidgetTester widgetTester) async {
-      Answer answerWidget = Answer(
-        id: answer['id'],
-        body: answer['body'],
-        answeredAt: answer['answeredAt'],
-        votes: votes,
-        accepted: answer['accepted'] == null ? false : answer['accepted'],
-        authorId: answerAuthorInfo['uid'],
-        authorDisplayName: answerAuthorInfo['displayName'],
-        questionId: question['id'],
-        questionAuthorId: questionAuthorInfo['uid'],
-        editorDisplayName: answerEditorInfo['displayName'],
-        editedAt: Timestamp.fromDate(DateTime(2021, 3, 24, 1, 14)),
         firestore: firestore,
         auth: auth,
       );
@@ -402,26 +230,56 @@ void main() {
               textDirection: TextDirection.rtl,
               child: MaterialApp(
                 home: Scaffold(
-                    body: Center(
-                        child: Container(
-                            child: ListView(children: <Widget>[
-                  answerWidget,
-                ])))),
+                  body: questionEditForm,
+                ),
               )));
 
       await widgetTester.pumpWidget(testWidget);
+      await widgetTester.pump();
 
-      // tap the down upvote button
-      await widgetTester.tap(find.byKey(
-          Key('id_answer_navigate_to_answer_edit_form_${answer['id']}')));
+      expect(find.text(question['title']), findsOneWidget);
+      expect(find.textContaining(question['body']), findsOneWidget);
+    });
+
+    testWidgets('update answer information on valid data',
+        (WidgetTester widgetTester) async {
+      QuestionEditForm questionEditForm = QuestionEditForm(
+        questionId: question['id'],
+        firestore: firestore,
+        auth: auth,
+      );
+
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              child: MaterialApp(
+                home: Scaffold(
+                  body: questionEditForm,
+                ),
+              )));
+
+      await widgetTester.pumpWidget(testWidget);
+      await widgetTester.pump();
+
+      String titleEdit = 'test question title edit 1';
+      String bodyEdit = 'test question body edit 1';
+      await widgetTester.enterText(find.byKey(Key('id_edit_title')), titleEdit);
+      await widgetTester.enterText(find.byKey(Key('id_edit_body')), bodyEdit);
+
+      await widgetTester.tap(find.byKey(Key('id_submit')));
+
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(question['id'])
+          .get()
+          .then((value) {
+        // expect(1, value.docs.length);
+
+        // Map<String, dynamic> answer = value.docs.elementAt(0).data();
+        expect(value['title'], titleEdit);
+        expect(value['body'], bodyEdit);
+      });
     });
   });
-
-  /// test a collection of answers
-  /// widget to be tested - Answers
-  /// TESTS
-  ///   * paginator - display at most 5 answers
-  ///   * show correct number of answers
-  ///   * (OTHER TESTS ARE COVERED IN "Test answer widget")
-  group('Test answers widget', () {});
 }
