@@ -36,6 +36,9 @@ class _CommentsState extends State<Comments> {
             displayName:
                 this.widget.commentsAuthors[comment['id']]!['displayName'],
           ));
+      this.listComments.add(Divider(
+            height: 8,
+          ));
     }
 
     // building show more comments / Add a comment button
@@ -90,6 +93,9 @@ class _CommentsState extends State<Comments> {
               displayName:
                   this.widget.commentsAuthors[comment['id']]!['displayName'],
             ));
+        this.listComments.add(Divider(
+              height: 8,
+            ));
       }
 
       this.button = TextButton(
@@ -112,8 +118,11 @@ class _CommentsState extends State<Comments> {
 
   @override
   build(BuildContext buildContext) {
-    return Column(
-      children: listComments,
+    return Container(
+      padding: EdgeInsets.fromLTRB(70, 0, 50, 0),
+      child: Column(
+        children: listComments,
+      ),
     );
   }
 }
@@ -130,17 +139,14 @@ class Comment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Size size = MediaQuery.of(context).size;
     return Container(
       child: Row(
         children: [
-          // Container(
-          //   width: 20,
-          //   color: Color.fromRGBO(0, 0, 0, 0.02),
-          // ),
           Expanded(
               flex: 1,
               child: Container(
-                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                 child: RichText(
                   text: TextSpan(
                     text: this.body + ' - ',
@@ -149,7 +155,7 @@ class Comment extends StatelessWidget {
                       TextSpan(
                         text: this.displayName,
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                           color: Colors.blue,
                         ),
                       ),

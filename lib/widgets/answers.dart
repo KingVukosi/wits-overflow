@@ -355,6 +355,8 @@ class _AnswerState extends State<Answer> {
                   width: 50,
                   height: 25,
                   child: TextButton(
+                    key: Key(
+                        'id_answer_navigate_to_answer_edit_form_${this.widget.id}'),
                     style: ButtonStyle(
                       padding: MaterialStateProperty.all(EdgeInsets.all(2)),
                       // backgroundColor: MaterialStateProperty.all(Colors.red),
@@ -498,6 +500,8 @@ class _AnswerState extends State<Answer> {
                 Navigator.push(this.context,
                     MaterialPageRoute(builder: (BuildContext buildContext) {
                   return QuestionAnswerCommentForm(
+                      firestore: this.widget._firestore,
+                      auth: this.widget._auth,
                       questionId: this.widget.questionId,
                       answerId: this.widget.id);
                 }));
