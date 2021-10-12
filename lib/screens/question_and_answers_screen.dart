@@ -46,7 +46,6 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
   }
 
   Future<void> getData() async {
-
     this.question = (await witsOverflowData.fetchQuestion(this.widget.id))!;
 
     await witsOverflowData.fetchQuestionAnswers(this.widget.id).then((value) {
@@ -338,6 +337,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
               /// votes, up-vote and down-vote
 
               this._buildQuestionWidget(),
+
               /// comments list
               this._buildCommentsWidget(),
 

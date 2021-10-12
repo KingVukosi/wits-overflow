@@ -40,7 +40,6 @@ void main() {
       auth = await loginUser(mockUser);
       witsOverflowData = WitsOverflowData();
       witsOverflowData.initialize(firestore: firestore, auth: auth);
-
     });
 
     test('Mock fetches correct data', () async {
@@ -69,7 +68,6 @@ void main() {
     //   expect(userInfo['email'], fUserInfo?['email']);
     // });
 
-
     test('fetch questions', () async {
       await witsOverflowData.fetchQuestions();
     });
@@ -77,7 +75,7 @@ void main() {
     test('fetch user information', () async {
       // add user information to the database
       Map<String, dynamic>? fUserInfo =
-      await witsOverflowData.fetchUserInformation(userInfo['id']);
+          await witsOverflowData.fetchUserInformation(userInfo['id']);
       expect(userInfo['displayName'], fUserInfo?['displayName']);
       expect(userInfo['uid'], fUserInfo?['uid']);
       expect(userInfo['email'], fUserInfo?['email']);
@@ -98,7 +96,7 @@ void main() {
     // late List<Map<String, dynamic>> comments;
     // late Map<String, Map<String, dynamic>> commentsAuthors;
     late List<Map<String, dynamic>> votes;
-    late Map<String, dynamic> questionAuthorInfo;
+    // late Map<String, dynamic> questionAuthorInfo;
     late Map<String, dynamic> answerAuthorInfo;
     late Map<String, dynamic> answerEditorInfo;
 
@@ -113,7 +111,6 @@ void main() {
         'isEmailVerified': true,
       };
     }
-
 
     setUp(() async {
       firestore = FakeFirebaseFirestore();
@@ -371,35 +368,25 @@ void main() {
       }
     });
 
-
-    test('fetch question comments', (){
+    test('fetch question comments', () {
       witsOverflowData.fetchQuestionComments(question['id']);
     });
 
-    test('fetch question comments', (){
+    test('fetch question comments', () {
       witsOverflowData.fetchQuestionVotes(question['id']);
     });
 
-
-    test('fetch question answers', (){
+    test('fetch question answers', () {
       witsOverflowData.fetchQuestionAnswers(question['id']);
     });
 
-
-    test('fetch module questions', (){
+    test('fetch module questions', () {
       witsOverflowData.fetchModuleQuestions(moduleId: module['id']);
     });
 
-    test('fetch module questions', (){
-      witsOverflowData.fetchQuestionAnswerComments(questionId: question['id'], answerId: answer['id']);
+    test('fetch module questions', () {
+      witsOverflowData.fetchQuestionAnswerComments(
+          questionId: question['id'], answerId: answer['id']);
     });
-
-
-
-
-
-
-
-
   });
 }
