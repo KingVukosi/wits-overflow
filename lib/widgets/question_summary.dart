@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
+import 'package:wits_overflow/utils/wits_overflow_data.dart';
 
 class QuestionSummary extends StatelessWidget {
   // final Map<String, dynamic> data;
@@ -41,18 +43,20 @@ class QuestionSummary extends StatelessWidget {
       List<Widget> list = <Widget>[];
 
       for (var i = 0; i < this.tags.length; i++) {
-        list.add(Container(
-          margin: EdgeInsets.only(right: 5),
-          color: Color.fromRGBO(225, 236, 244, 1),
-          child: Padding(
-              padding: EdgeInsets.all(5),
-              child: Text(
-                this.tags[i],
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Color.fromRGBO(57, 115, 157, 1),
-                ),
-              )),
+        list.add(Flexible(
+          child: Container(
+            margin: EdgeInsets.only(right: 5),
+            color: Color.fromRGBO(225, 236, 244, 1),
+            child: Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  this.tags[i],
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Color.fromRGBO(57, 115, 157, 1),
+                  ),
+                )),
+          ),
         ));
       }
       return new Row(children: list);
@@ -60,7 +64,6 @@ class QuestionSummary extends StatelessWidget {
 
     return GestureDetector(
         onTap: () {
-          print('[NAVIGATING TO QUESTIONS ANSWERS PAGES]');
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -152,55 +155,260 @@ class QuestionSummary extends StatelessWidget {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(this.title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color.fromRGBO(0, 116, 204, 1),
-                                    fontWeight: FontWeight.bold,
-                                    //fontWeight: FontWeight.bold
-                                  )),
+                              Flexible(
+                                child: Text(this.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color.fromRGBO(0, 116, 204, 1),
+                                      fontWeight: FontWeight.bold,
+                                      //fontWeight: FontWeight.bold
+                                    )),
+                              ),
 
                               Divider(color: Colors.white, height: 4),
 
                               // badges/tags
-                              _createBadges(),
+                              Flexible(child: _createBadges()),
 
                               Divider(color: Colors.white, height: 5),
 
                               // datetime
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: Text(
-                                        formatDateTime(
-                                            DateTime.fromMillisecondsSinceEpoch(
-                                                this
+                              Flexible(
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                        child: Text(
+                                            formatDateTime(DateTime
+                                                .fromMillisecondsSinceEpoch(this
                                                     .createdAt
                                                     .millisecondsSinceEpoch)),
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            color: Theme.of(context)
-                                                .disabledColor)),
-                                  ),
-
-                                  // author display name
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: Text(
-                                      this.authorDisplayName,
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 13,
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: Theme.of(context)
+                                                    .disabledColor)),
                                       ),
                                     ),
-                                  )
-                                ],
+
+                                    // author display name
+                                    Flexible(
+                                      child: Container(
+                                        margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                        child: Text(
+                                          this.authorDisplayName,
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ])))
               ])),
         ));
+  }
+}
+
+class QuestionSummaries extends StatefulWidget {
+  late final _firestore;
+  late final _auth;
+  final Future<List<Map<String, dynamic>>> futureQuestions;
+
+  QuestionSummaries({required this.futureQuestions, firestore, auth}) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
+  }
+
+  @override
+  _QuestionSummariesState createState() => _QuestionSummariesState();
+}
+
+class _QuestionSummariesState extends State<QuestionSummaries> {
+  bool _loading = false;
+
+  WitsOverflowData witsOverflowData = WitsOverflowData();
+
+  List<Map<String, dynamic>> questions = [];
+  late Map<String, List<Map<String, dynamic>>> questionVotes =
+      {}; // holds votes information for each question
+  late Map<String, Map<String, dynamic>> questionAuthors =
+      {}; // hold question author information for each question
+  late Map<String, List<Map<String, dynamic>>> questionAnswers =
+      {}; // hold question author information for each question
+
+  List<Widget> questionSummaryWidgets = [];
+  // int added = 0;
+
+  void getData() async {
+    await this.widget.futureQuestions.then((value) {
+      this.questions = value;
+    });
+
+    if (this.questions.isEmpty) {
+      this.questionSummaryWidgets.add(Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.auto_awesome,
+                    size: 64,
+                  ),
+                  Text(
+                    'No favorites to show',
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                ],
+              ),
+            ),
+          ));
+      return;
+    }
+
+    for (int i = 0; i < this.questions.length; i++) {
+      Map<String, dynamic> question = this.questions[i];
+      String questionId = question['id'];
+      FutureBuilder futureBuilder = FutureBuilder(
+        future: Future.wait([
+          this.witsOverflowData.fetchUserInformation(question['authorId']),
+          this.witsOverflowData.fetchQuestionVotes(questionId),
+          this.witsOverflowData.fetchQuestionAnswers(questionId)
+        ]),
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.hasData) {
+            Map<String, dynamic> author =
+                (snapshot.data?[0] as Map<String, dynamic>);
+
+            List<Map<String, dynamic>> questionVotes =
+                snapshot.data?[1] as List<Map<String, dynamic>>;
+
+            List<Map<String, dynamic>> questionAnswers =
+                snapshot.data?[2] as List<Map<String, dynamic>>;
+            QuestionSummary questionSummary = new QuestionSummary(
+              answers: questionAnswers,
+              questionId: question['id'],
+              title: question['title'],
+              votes: questionVotes,
+              createdAt: question['createdAt'],
+              tags: question['tags'],
+              authorDisplayName: author['displayName'],
+            );
+            return questionSummary;
+          } else if (snapshot.hasError) {
+            return Text('Error occurred');
+          } else {
+            return Container(
+                child: Padding(
+              padding: EdgeInsets.all(0),
+            ));
+          }
+        },
+      );
+      this.questionSummaryWidgets.add(futureBuilder);
+    }
+    if (this.mounted) {
+      this.setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    this._loading = false;
+    this
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    this.getData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('[_QuestionSummariesState.build]');
+    if (this._loading == true) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: 800,
+              child: GridView.builder(
+                  scrollDirection: Axis.vertical,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, childAspectRatio: 7 / 2),
+                  shrinkWrap: true,
+                  itemCount: this.questionSummaryWidgets.length,
+                  itemBuilder: (context, index) {
+                    return this.questionSummaryWidgets[index];
+                  }),
+            ),
+          )
+        ],
+      ),
+    );
+
+    // return SingleChildScrollView(
+    //   child: Container(
+    //     padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: this.questionSummaryWidgets,
+    //     ),
+    //   ),
+    // );
+
+    // =========================================================================
+
+    // return SingleChildScrollView(
+    //   child: Container(
+    //     padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: this.questionSummaryWidgets,
+    //     ),
+    //   ),
+    // );
+
+    // =========================================================================
+
+    // return Scrollbar(
+    //   isAlwaysShown: true,
+    //   // interactive: true,
+    //   child: SingleChildScrollView(
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: [
+    //         SingleChildScrollView(
+    //           scrollDirection: Axis.horizontal,
+    //           child: SizedBox(
+    //             width: 800,
+    //             child: GridView.builder(
+    //                 scrollDirection: Axis.vertical,
+    //                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    //                     crossAxisCount: 2, childAspectRatio: 7 / 2),
+    //                 shrinkWrap: true,
+    //                 itemCount: this.questionSummaryWidgets.length,
+    //                 itemBuilder: (context, index) {
+    //                   return this.questionSummaryWidgets[index];
+    //                 }),
+    //           ),
+    //         )
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }

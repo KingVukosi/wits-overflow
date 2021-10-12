@@ -27,7 +27,7 @@ class AnswerEditForm extends StatefulWidget {
       auth})
       : this._firestore =
             firestore == null ? FirebaseFirestore.instance : firestore,
-        this._auth = firestore == null ? FirebaseAuth.instance : firestore;
+        this._auth = firestore == null ? FirebaseAuth.instance : auth;
 
   @override
   _AnswerEditFormState createState() {
@@ -37,11 +37,10 @@ class AnswerEditForm extends StatefulWidget {
 
 class _AnswerEditFormState extends State<AnswerEditForm> {
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController bodyController;
 
   bool isBusy = true;
   Map<String, dynamic>? question;
-
-  late TextEditingController bodyController;
 
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
@@ -143,7 +142,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                   padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    toTitleCase(this.question?['title']),
+                    this.question?['title'],
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
@@ -189,6 +188,7 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                       // color:Color.fromARGB(1000, 100, 100, 100),
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: TextFormField(
+                        key: Key('id_edit_answer'),
                         controller: this.bodyController,
                         maxLines: 15,
                         minLines: 10,
@@ -206,14 +206,13 @@ class _AnswerEditFormState extends State<AnswerEditForm> {
                     ),
                     Container(
                       width: double.infinity,
-                      // color:Color.fromARGB(1000, 100, 100, 100),
-                      // alignment: Alignment.bottomCenter,
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: ElevatedButton(
+                        key: Key('id_submit'),
                         onPressed: () {
                           this.submitAnswer(bodyController.text.toString());
                         },
-                        child: Text('Sumbit'),
+                        child: Text('Submit'),
                       ),
                     )
                   ],

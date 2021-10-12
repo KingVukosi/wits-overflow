@@ -1,98 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:wits_overflow/screens/search_results_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
-import 'package:wits_overflow/utils/wits_overflow_data.dart';
-import 'package:wits_overflow/widgets/question_summary.dart';
-import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
 import '../utils.dart';
 
 void main() {
-  group('Test question summary widget', () {
-    /// test the question summary widget
-    ///  TEST:
-    ///   * test that relevant information is displayed
-    ///   * test that the question title is displayed in title form
-    ///   * Date should be displayed in a correct format
-    ///   * should redirect to question and answer page on onclick
-    testWidgets(
-        'display question title, datetime, tags, number of answers, aggregate votes',
-        (WidgetTester tester) async {
-      // data should have these keys:
-      //  * tags      (list)
-      //  * votes     (int)
-      //  * title     (String)
-      //  * createdAt (Timestamp)
-
-      // data
-      String questionId = 'questionId1';
-      String title = 'test question summary title';
-      Timestamp createdAt = Timestamp.fromDate(DateTime(2021, 1, 1, 10, 23));
-      List<String> tags = ['One', 'Two', 'Three'];
-      List<Map<String, dynamic>> votes = [
-        {'value': 1},
-        {'value': 1},
-        {'value': 1},
-        {'value': 1},
-        {'value': 1},
-      ];
-
-      // correct values
-      String correctDataFormat = 'Jan 1 \'21 at 10:23';
-
-      Map<String, dynamic> data = {
-        'title': title,
-        'createdAt': createdAt,
-        'tags': tags,
-        'votes': votes,
-      };
-
-      QuestionSummary questionSummary = QuestionSummary(
-        title: title,
-        createdAt: createdAt,
-        tags: tags,
-        votes: votes,
-        authorDisplayName: 'testFirstName1 testLastName1',
-        questionId: questionId,
-        answers: [],
-      );
-
-      Widget testWidget = new MediaQuery(
-          data: new MediaQueryData(),
-          child: new Directionality(
-            textDirection: TextDirection.rtl,
-            child: questionSummary,
-          ));
-
-      await tester.pumpWidget(testWidget);
-
-      final titleFinder = find.text(title);
-
-      final votesFinder = find.textContaining('5'); //.text('votes');
-
-      final badgeOneFinder = find.textContaining(data['tags'][0]);
-      final badgeTwoFinder = find.textContaining(data['tags'][1]);
-      final badgeThreeFinder = find.textContaining(data['tags'][2]);
-
-      final createdAtFinder = find.text(correctDataFormat);
-
-      expect(titleFinder, findsOneWidget);
-      expect(votesFinder, findsOneWidget);
-
-      expect(badgeOneFinder, findsOneWidget);
-      expect(badgeTwoFinder, findsOneWidget);
-      expect(badgeThreeFinder, findsOneWidget);
-
-      expect(createdAtFinder, findsOneWidget);
-    });
-  });
-
   ///
-  group('Test question summaries widget', () {
+  group('Test search results screen', () {
     late FakeFirebaseFirestore firestore;
     late MockFirebaseAuth auth;
     late List<Map<String, dynamic>> questions;
@@ -236,45 +154,30 @@ void main() {
       }
     });
 
-    testWidgets(
-        'displays question title, author\'s display name, datetime & tags',
+    testWidgets('display matched question summary widget of matched questions',
         (WidgetTester tester) async {
-      WitsOverflowData witsOverflowData = WitsOverflowData();
-      witsOverflowData.initialize(firestore: firestore, auth: auth);
-
-      Future<List<Map<String, dynamic>>> futureQuestions =
-          witsOverflowData.fetchQuestions();
-
-      QuestionSummaries questionSummaries = QuestionSummaries(
-        futureQuestions: futureQuestions,
+      SearchResults searchResults = SearchResults(
+        keyword: 'test',
         firestore: firestore,
         auth: auth,
       );
 
       Widget testWidget = new MediaQuery(
-          data: new MediaQueryData(),
+          data: new MediaQueryData(
+            size: Size(5000, 5000),
+          ),
           child: new Directionality(
               textDirection: TextDirection.rtl,
+              // child: searchResults
               child: MaterialApp(
-                home: WitsOverflowScaffold(
-                  firestore: firestore,
-                  auth: auth,
-                  body: questionSummaries,
-                ),
+                home: searchResults,
               )));
 
       await tester.pumpWidget(testWidget);
       await tester.pump(Duration(seconds: 5));
       await tester.pump();
 
-      // print('[questionSummaries: ${questionSummaries.toStringDeep()}]');
-      // Finder f = find.byType(Text);
-      // print('NUMBER OF WIDGETS WITH TEXT: ${f.evaluate().length}]');
-      // List<Element> elements = f.evaluate().toList();
-      // elements.forEach((element) {
-      //   print('WIDGET WITH TEXT: ${element}');
-      // });
-
+      // print('[questionSummaries: $searchResults]');
       for (int i = 0; i < questions.length; i++) {
         final titleFinder = find.text(questions[i]['title']);
 
@@ -297,64 +200,64 @@ void main() {
       }
     });
 
-    testWidgets('when list of questions is empty', (WidgetTester tester) async {
-      await firestore
-          .collection(COLLECTIONS['questions'])
-          .get()
-          .then((fQuestions) {
-        for (int i = 0; i < fQuestions.docs.length; i++) {
-          fQuestions.docs.elementAt(i).reference.delete();
-        }
-      });
-
-      WitsOverflowData witsOverflowData = WitsOverflowData();
-      witsOverflowData.initialize(firestore: firestore, auth: auth);
-
-      Future<List<Map<String, dynamic>>> futureQuestions =
-          witsOverflowData.fetchQuestions();
-
-      QuestionSummaries questionSummaries = QuestionSummaries(
-        futureQuestions: futureQuestions,
-        firestore: firestore,
-        auth: auth,
-      );
-
-      Widget testWidget = new MediaQuery(
-          data: new MediaQueryData(),
-          child: new Directionality(
-              textDirection: TextDirection.rtl,
-              child: MaterialApp(
-                home: WitsOverflowScaffold(
-                  firestore: firestore,
-                  auth: auth,
-                  body: questionSummaries,
-                ),
-              )));
-
-      await tester.pumpWidget(testWidget);
-      await tester.pump();
-
-      for (int i = 0; i < questions.length; i++) {
-        final titleFinder = find.text(questions[i]['title']);
-
-        // final votesFinder = find.textContaining('5'); //.text('votes');
-
-        // List<String> tags = questions[i]['tags'];
-        final badgeOneFinder = find.textContaining(questions[i]['tags'][0]);
-        final badgeTwoFinder = find.textContaining(questions[i]['tags'][1]);
-        final badgeThreeFinder = find.textContaining(questions[i]['tags'][2]);
-
-        // final createdAtFinder = find.text(correctDataFormat);
-
-        expect(titleFinder, findsNothing);
-        // expect(votesFinder, findsOneWidget);
-
-        expect(badgeOneFinder, findsNothing);
-        expect(badgeTwoFinder, findsNothing);
-        expect(badgeThreeFinder, findsNothing);
-
-        // expect(createdAtFinder, findsOneWidget);
-      }
-    });
+    // testWidgets('when list of questions is empty', (WidgetTester tester) async{
+    //
+    //   await firestore.collection(COLLECTIONS['questions']).get().then((fQuestions){
+    //     for(int i = 0; i < fQuestions.docs.length; i++){
+    //       fQuestions.docs.elementAt(i).reference.delete();
+    //     }
+    //   });
+    //
+    //   WitsOverflowData witsOverflowData = WitsOverflowData();
+    //   witsOverflowData.initialize(firestore: firestore, auth: auth);
+    //
+    //   Future<List<Map<String, dynamic>>> futureQuestions = witsOverflowData.fetchQuestions();
+    //
+    //   QuestionSummaries questionSummaries = QuestionSummaries(
+    //     futureQuestions: futureQuestions,
+    //     firestore: firestore,
+    //     auth: auth,
+    //   );
+    //
+    //   Widget testWidget = new MediaQuery(
+    //       data: new MediaQueryData(),
+    //       child: new Directionality(
+    //           textDirection: TextDirection.rtl,
+    //           child: MaterialApp(
+    //             home: WitsOverflowScaffold(
+    //               firestore: firestore,
+    //               auth: auth,
+    //               body: questionSummaries,
+    //             ),
+    //           )
+    //       )
+    //   );
+    //
+    //   await tester.pumpWidget(testWidget);
+    //   await tester.pump();
+    //
+    //   for(int i = 0; i < questions.length; i++){
+    //
+    //     final titleFinder = find.text(questions[i]['title']);
+    //
+    //     // final votesFinder = find.textContaining('5'); //.text('votes');
+    //
+    //     // List<String> tags = questions[i]['tags'];
+    //     final badgeOneFinder = find.textContaining(questions[i]['tags'][0]);
+    //     final badgeTwoFinder = find.textContaining(questions[i]['tags'][1]);
+    //     final badgeThreeFinder = find.textContaining(questions[i]['tags'][2]);
+    //
+    //     // final createdAtFinder = find.text(correctDataFormat);
+    //
+    //     expect(titleFinder, findsNothing);
+    //     // expect(votesFinder, findsOneWidget);
+    //
+    //     expect(badgeOneFinder, findsNothing);
+    //     expect(badgeTwoFinder, findsNothing);
+    //     expect(badgeThreeFinder, findsNothing);
+    //
+    //     // expect(createdAtFinder, findsOneWidget);
+    //   }
+    // });
   });
 }

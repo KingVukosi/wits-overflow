@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wits_overflow/screens/search_results_screen.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/side_drawer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,7 +42,6 @@ class WitsOverflowScaffold extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    // print('[DEVICE WIDTH: ${MediaQuery.of(context).size.width}, HEIGHT: ${MediaQuery.of(context).size.height}]');
     late var image;
     if (this._auth.currentUser?.photoURL == null) {
       image = ExactAssetImage('assets/images/default_avatar.png');
@@ -138,6 +138,12 @@ class WitsOverflowScaffold extends StatelessWidget {
                     margin: EdgeInsets.only(right: 5, top: 4.5),
                     width: 250,
                     child: TextField(
+                      onSubmitted: (String keyword) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return SearchResults(keyword: keyword);
+                        }));
+                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,

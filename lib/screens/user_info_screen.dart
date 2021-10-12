@@ -8,12 +8,23 @@ import 'package:wits_overflow/widgets/user_info_scaffold.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserInfoScreen extends StatefulWidget {
+  late final _firestore;
+  late final _auth;
+
+  UserInfoScreen({firestore, auth}) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
+  }
+
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
-  String userId = FirebaseAuth.instance.currentUser!.uid;
+  WitsOverflowData witsOverflowData = WitsOverflowData();
+
+  late String userId; // = this.wits!.uid;
 
   int questionCount = 0;
   int answerCount = 0;
@@ -25,49 +36,46 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   bool _isSigningOut = false;
 
   getData() async {
+    this.userId = this.witsOverflowData.getCurrentUser()!.uid;
     this.questionCount = 0;
     this.answerCount = 0;
     this.favoriteCount = 0;
 
-    await FirebaseFirestore.instance
-        .collection('questions-2')
-        .where("authorId", isEqualTo: this.userId)
-        .get()
-        .then((docs) {
+    await this
+        .witsOverflowData
+        .fetchUserQuestions(userId: userId)
+        .then((questions) {
       setState(() {
-        this.questionCount += docs.size;
+        this.questionCount += questions.length;
       });
     });
 
-    WitsOverflowData()
+    this
+        .witsOverflowData
         .fetchUserQuestions(userId: this.userId)
         .then((questions) {
       questions.forEach((question) async {
         var questionId = question['id'];
-
-        await FirebaseFirestore.instance
-            .collection('questions-2')
-            .doc(questionId)
-            .collection('answers')
-            .get()
-            .then((docs) {
+        await this
+            .witsOverflowData
+            .fetchQuestionAnswers(questionId)
+            .then((answers) {
           setState(() {
-            this.answerCount += docs.size;
+            this.answerCount += answers == null ? 0 : answers.length;
           });
         });
       });
     });
 
-    await FirebaseFirestore.instance
-        .collection('favourites-2')
-        .doc(this.userId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        setState(() {
-          this.favoriteCount += (doc['favouriteQuestions'].length as int);
-        });
-      }
+    await this
+        .witsOverflowData
+        .fetchUserFavouriteQuestions(userId: userId)
+        .then((questions) {
+      // if (doc.exists) {
+      setState(() {
+        this.favoriteCount += questions.length;
+      });
+      // }
     });
   }
 
@@ -92,6 +100,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
   @override
   void initState() {
+    this
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
     this.getData();
 
     super.initState();
@@ -99,10 +110,19 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    authorName = FirebaseAuth.instance.currentUser!.displayName!;
-    authorEmail = FirebaseAuth.instance.currentUser!.email!;
+    authorName = this.witsOverflowData.getCurrentUser()!.displayName!;
+    authorEmail = this.witsOverflowData.getCurrentUser()!.email!;
+
+    late var image;
+    if (this.widget._auth.currentUser?.photoURL == null) {
+      image = ExactAssetImage('assets/images/default_avatar.png');
+    } else {
+      image = NetworkImage(this.widget._auth.currentUser?.photoURL!);
+    }
 
     return UserInfoScaffold(
+      firestore: this.widget._firestore,
+      auth: this.widget._auth,
       body: SingleChildScrollView(
         child: Center(
           child: Container(
@@ -138,10 +158,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       margin: EdgeInsets.only(right: 100, top: 70, left: 0),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                FirebaseAuth.instance.currentUser!.photoURL!),
-                            fit: BoxFit.fill),
+                        image: DecorationImage(image: image, fit: BoxFit.fill),
                       ),
                     ),
                     Column(
