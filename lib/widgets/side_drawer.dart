@@ -45,12 +45,14 @@ class SideDrawer extends StatelessWidget {
                         padding: EdgeInsets.only(
                             top: 40, left: 10, right: 10, bottom: 10),
                         child: GestureDetector(
+                            key: Key('id_drawer_navigate_to_user_profile'),
                             onTap: () => {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              UserInfoScreen())),
+                                          builder: (context) => UserInfoScreen(
+                                              firestore: this._firestore,
+                                              auth: this._auth))),
                                 },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,13 +100,16 @@ class SideDrawer extends StatelessWidget {
                       Divider(color: Colors.grey[200], height: 1),
                       Container(
                         child: ListTile(
+                          key: Key('id_drawer_navigate_to_home'),
                           leading: Icon(Icons.home),
                           title: Text('Home'),
                           onTap: () => {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => HomeScreen())),
+                                    builder: (context) => HomeScreen(
+                                        firestore: this._firestore,
+                                        auth: this._auth))),
                           },
                         ),
                       ),
@@ -113,12 +118,14 @@ class SideDrawer extends StatelessWidget {
                         child: ListTile(
                           leading: Icon(Icons.post_add_outlined),
                           title: Text('Post Question'),
+                          key: Key('id_drawer_navigate_to_post_question'),
                           onTap: () => {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        PostQuestionScreen())),
+                                    builder: (context) => PostQuestionScreen(
+                                        firestore: this._firestore,
+                                        auth: this._auth))),
                           },
                         ),
                       ),
@@ -162,6 +169,8 @@ class SideDrawer extends StatelessWidget {
                                                               courseData[
                                                                   'id']) {
                                                             return ListTile(
+                                                              key: Key(
+                                                                  'id_side_drawer_navigate_to_module_${moduleData['id']}'),
                                                               title: Text(
                                                                   moduleData[
                                                                       'name']),

@@ -191,3 +191,37 @@ class UserCard extends StatelessWidget {
     );
   }
 }
+
+class NotificationWidget extends StatelessWidget {
+  final String message;
+  final Timestamp timestamp;
+
+  NotificationWidget({required this.message, required this.timestamp});
+
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(5),
+        margin: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          border: Border.all(
+              style: BorderStyle.solid,
+              width: 1,
+              color: Color.fromRGBO(100, 100, 200, 0.7)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              this.message,
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 3),
+              child: Text(
+                formatDateTime(this.timestamp.toDate()),
+                style: TextStyle(color: Color.fromRGBO(100, 100, 100, 0.5)),
+              ),
+            ),
+          ],
+        ));
+  }
+}

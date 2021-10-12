@@ -330,7 +330,6 @@ class _QuestionSummariesState extends State<QuestionSummaries> {
 
   @override
   Widget build(BuildContext context) {
-    print('[_QuestionSummariesState.build]');
     if (this._loading == true) {
       return Center(child: CircularProgressIndicator());
     }

@@ -8,7 +8,7 @@ import 'package:wits_overflow/widgets/side_drawer.dart';
 class UserInfoScaffold extends StatelessWidget {
   late final Future<List<Map<String, dynamic>>> _courses;
   late final Future<List<Map<String, dynamic>>> _modules;
-  late final FloatingActionButton? _floatingActionButton;
+  // late final FloatingActionButton? _floatingActionButton;
   final Widget body;
 
   WitsOverflowData witsOverflowData = WitsOverflowData();
@@ -46,7 +46,7 @@ class UserInfoScaffold extends StatelessWidget {
       floatingActionButton,
       firestore,
       auth}) {
-    this._floatingActionButton = floatingActionButton;
+    // this._floatingActionButton = floatingActionButton;
 
     this._firestore =
         firestore == null ? FirebaseFirestore.instance : firestore;
@@ -69,56 +69,56 @@ class UserInfoScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (this._floatingActionButton != null) {
-      return GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Scaffold(
-            appBar: AppBar(
-                leading: Container(
-                  margin: EdgeInsets.only(right: 30),
-                  child: BackButton(
-                    color: Colors.white,
-                  ),
+    // if (this._floatingActionButton != null) {
+    //   return GestureDetector(
+    //     onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+    //     child: Scaffold(
+    //         appBar: AppBar(
+    //             leading: Container(
+    //               margin: EdgeInsets.only(right: 30),
+    //               child: BackButton(
+    //                 color: Colors.white,
+    //               ),
+    //             ),
+    //             elevation: 1,
+    //             title: Text(
+    //               'Wits Overflow',
+    //               style: TextStyle(
+    //                 fontSize: 15,
+    //                 color: Colors.white,
+    //               ),
+    //             ),
+    //             actions: []),
+    //         drawer: SideDrawer(courses: this._courses, modules: this._modules),
+    //         body: this.body),
+    //   );
+    // } else {
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+          appBar: AppBar(
+              leading: Container(
+                margin: EdgeInsets.only(right: 30),
+                child: BackButton(
+                  color: Colors.white,
                 ),
-                elevation: 1,
-                title: Text(
-                  'Wits Overflow',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
+              ),
+              elevation: 1,
+              title: Text(
+                'Wits Overflow',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white,
                 ),
-                actions: []),
-            drawer: SideDrawer(courses: this._courses, modules: this._modules),
-            body: this.body),
-      );
-    } else {
-      return GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Scaffold(
-            appBar: AppBar(
-                leading: Container(
-                  margin: EdgeInsets.only(right: 30),
-                  child: BackButton(
-                    color: Colors.white,
-                  ),
-                ),
-                elevation: 1,
-                title: Text(
-                  'Wits Overflow',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
-                ),
-                actions: []),
-            drawer: SideDrawer(
-                courses: this._courses,
-                modules: this._modules,
-                firestore: this._firestore,
-                auth: this._auth),
-            body: this.body),
-      );
-    }
+              ),
+              actions: []),
+          drawer: SideDrawer(
+              courses: this._courses,
+              modules: this._modules,
+              firestore: this._firestore,
+              auth: this._auth),
+          body: this.body),
+    );
+    // }
   }
 }
