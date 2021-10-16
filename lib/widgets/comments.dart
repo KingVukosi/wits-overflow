@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wits_overflow/utils/functions.dart';
 import 'BuildImage.dart';
 
 class Comments extends StatefulWidget {

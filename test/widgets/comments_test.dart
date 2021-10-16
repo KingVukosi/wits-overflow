@@ -25,6 +25,7 @@ void main() {
           child: new Directionality(
               textDirection: TextDirection.rtl,
               child: Comment(
+                image: 'NULL',
                 body: body,
                 commentedAt: commentedAt,
                 displayName: 'testFirstName1 testLastName1',

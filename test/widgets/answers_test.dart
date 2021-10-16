@@ -246,6 +246,7 @@ void main() {
     testWidgets('display valid answer information',
         (WidgetTester widgetTester) async {
       Answer answerWidget = Answer(
+        image: answer['image'],
         id: answer['id'],
         body: answer['body'],
         answeredAt: answer['answeredAt'],
@@ -294,6 +295,7 @@ void main() {
     testWidgets('upvote and downvote buttons',
         (WidgetTester widgetTester) async {
       Answer answerWidget = Answer(
+        image: answer['image'],
         id: answer['id'],
         body: answer['body'],
         answeredAt: answer['answeredAt'],
@@ -381,6 +383,7 @@ void main() {
     testWidgets('navigate to answer edit form',
         (WidgetTester widgetTester) async {
       Answer answerWidget = Answer(
+        image: answer['image'],
         id: answer['id'],
         body: answer['body'],
         answeredAt: answer['answeredAt'],
