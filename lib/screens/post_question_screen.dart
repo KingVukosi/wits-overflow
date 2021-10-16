@@ -5,8 +5,8 @@ import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 import 'dart:async';
-import 'package:universal_html/html.dart' as html;
-import 'package:firebase/firebase.dart' as fb;
+// import 'package:universal_html/html.dart' as html;
+// import 'package:firebase/firebase.dart' as fb;
 
 class PostQuestionScreen extends StatefulWidget {
   // late WitsOverflowData witsOverflowData;// = WitsOverflowData();
@@ -260,13 +260,13 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
             ))));
   }
 
-  Future<Uri> uploadImageFile(html.File image,
-      {required String imageName}) async {
-    fb.StorageReference storageRef = fb.storage().ref('images/$imageName');
-    fb.UploadTaskSnapshot uploadTaskSnapshot =
-        await storageRef.put(image).future;
+  // Future<Uri> uploadImageFile(html.File image,
+  //     {required String imageName}) async {
+  //   fb.StorageReference storageRef = fb.storage().ref('images/$imageName');
+  //   fb.UploadTaskSnapshot uploadTaskSnapshot =
+  //       await storageRef.put(image).future;
 
-    Uri imageUri = await uploadTaskSnapshot.ref.getDownloadURL();
-    return imageUri;
-  }
+  //   Uri imageUri = await uploadTaskSnapshot.ref.getDownloadURL();
+  //   return imageUri;
+  // }
 }
