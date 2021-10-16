@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:universal_html/html.dart';
 import 'dart:ui' as ui;
@@ -7,10 +8,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 class MyImage extends StatelessWidget {
   final String? imageFile;
+  final bool? question;
 
   const MyImage({
     Key? key,
     required this.imageFile,
+    required this.question,
   }) : super(key: key);
 
   @override
@@ -22,22 +25,34 @@ class MyImage extends StatelessWidget {
       imageUrl,
       (int _) => ImageElement()..src = imageUrl,
     );
-    return Container(
-      height: 160,
-      width: 160,
-      child: HtmlElementView(
-        viewType: imageUrl,
-      ),
-    );
+    if (question == true) {
+      return Container(
+        height: 160,
+        width: 160,
+        child: HtmlElementView(
+          viewType: imageUrl,
+        ),
+      );
+    } else {
+      return Container(
+        height: 80,
+        width: 80,
+        child: HtmlElementView(
+          viewType: imageUrl,
+        ),
+      );
+    }
   }
 }
 
 class ImageBuilder extends StatelessWidget {
   final String? imageFile;
+  final bool? question;
 
   const ImageBuilder({
     Key? key,
     required this.imageFile,
+    required this.question,
   }) : super(key: key);
 
   @override
@@ -52,7 +67,10 @@ class ImageBuilder extends StatelessWidget {
   Widget buildImage() {
     if (imageFile == 'NULL') return SizedBox(height: 1);
 
-    return MyImage(imageFile: imageFile);
+    return MyImage(
+      imageFile: imageFile,
+      question: question,
+    );
 
     // return Image.network(
     //   imageFile!,

@@ -502,6 +502,7 @@ class _AnswerState extends State<Answer> {
                       answerId: this.widget.id);
                 }));
               },
+              // image: this.widget.image,
             ),
           ),
         ],

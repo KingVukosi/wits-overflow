@@ -331,14 +331,16 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                       ),
                       Expanded(
                         child: // Dropped Image
-                            Container(
-                          alignment: Alignment.center,
-                          // padding: EdgeInsets.all(16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              DroppedFileWidget(droppedFile: droppedFile),
-                            ],
+                            ClipRRect(
+                          child: Container(
+                            alignment: Alignment.center,
+                            // padding: EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                DroppedFileWidget(droppedFile: droppedFile),
+                              ],
+                            ),
                           ),
                         ),
                       ),

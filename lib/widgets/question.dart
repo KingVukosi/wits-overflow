@@ -193,7 +193,7 @@ class QuestionWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ImageBuilder(imageFile: this.image),
+              ImageBuilder(imageFile: this.image, question: true),
             ],
           ),
         ),

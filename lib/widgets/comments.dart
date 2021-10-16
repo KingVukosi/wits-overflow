@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/utils/functions.dart';
+import 'BuildImage.dart';
 
 class Comments extends StatefulWidget {
   /// just displays a list of comments
@@ -10,10 +11,11 @@ class Comments extends StatefulWidget {
   final Map<String, Map<String, dynamic>> commentsAuthors;
   final onAddComments;
 
-  Comments(
-      {required this.comments,
-      required this.commentsAuthors,
-      required this.onAddComments});
+  Comments({
+    required this.comments,
+    required this.commentsAuthors,
+    required this.onAddComments,
+  });
 
   @override
   _CommentsState createState() => _CommentsState();
@@ -35,6 +37,7 @@ class _CommentsState extends State<Comments> {
             commentedAt: comment['commentedAt'] as Timestamp,
             displayName:
                 this.widget.commentsAuthors[comment['id']]!['displayName'],
+            image: comment['image'],
           ));
     }
 
@@ -89,6 +92,7 @@ class _CommentsState extends State<Comments> {
               commentedAt: comment['commentedAt'] as Timestamp,
               displayName:
                   this.widget.commentsAuthors[comment['id']]!['displayName'],
+              image: comment['image'],
             ));
       }
 
@@ -122,11 +126,13 @@ class Comment extends StatelessWidget {
   final String displayName;
   final String body;
   final Timestamp commentedAt;
+  final String image;
 
   Comment(
       {required this.displayName,
       required this.body,
-      required this.commentedAt});
+      required this.commentedAt,
+      required this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -139,26 +145,35 @@ class Comment extends StatelessWidget {
           // ),
           Expanded(
               flex: 1,
-              child: Container(
-                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                child: RichText(
-                  text: TextSpan(
-                    text: this.body + ' - ',
-                    style: DefaultTextStyle.of(context).style,
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: this.displayName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: RichText(
+                      text: TextSpan(
+                        text: this.body + ' - ',
+                        style: DefaultTextStyle.of(context).style,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: this.displayName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                ' ' + formatDateTime(this.commentedAt.toDate()),
+                          ),
+                        ],
                       ),
-                      TextSpan(
-                        text: ' ' + formatDateTime(this.commentedAt.toDate()),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  ImageBuilder(
+                    imageFile: image,
+                    question: false,
+                  )
+                ],
               )),
         ],
       ),

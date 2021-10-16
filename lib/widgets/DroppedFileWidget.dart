@@ -10,14 +10,12 @@ class DroppedFileWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            buildImage(),
-            if (droppedFile != null) buildFileDetails(droppedFile!),
-          ],
-        ),
+  Widget build(BuildContext context) => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          buildImage(),
+          if (droppedFile != null) buildFileDetails(droppedFile!),
+        ],
       );
 
   Widget buildImage() {

@@ -31,9 +31,6 @@ class WitsOverflowData {
     this.users = this.firestore.collection('users');
   }
 
-  // Get image url
-  // Future<String> getURL() {}
-
   Future<List<Map<String, dynamic>>> fetchUserAnswers(
       {required String userId}) async {
     List<Map<String, dynamic>> userAnswers = [];
@@ -402,11 +399,13 @@ class WitsOverflowData {
       {required String questionId,
       required String body,
       required String authorId,
+      required String image,
       DateTime? commentedAt}) async {
     Map<String, dynamic>? comment;
     Map<String, dynamic> data = {
       'body': body,
       'authorId': authorId,
+      'image': image,
       'commentedAt': commentedAt == null ? DateTime.now() : commentedAt,
     };
     await this
@@ -425,12 +424,14 @@ class WitsOverflowData {
       {required String questionId,
       required String answerId,
       required String body,
+      required String image,
       required String authorId,
       DateTime? commentedAt}) async {
     Map<String, dynamic>? comment;
     Map<String, dynamic> data = {
       'body': body,
       'authorId': authorId,
+      'image': image,
       'commentedAt': commentedAt == null ? DateTime.now() : commentedAt,
     };
     await this
@@ -451,6 +452,7 @@ class WitsOverflowData {
       {required String questionId,
       required String authorId,
       required String body,
+      required String image,
       DateTime? answeredAt}) async {
     // TODO: check id user has already voted, if yes, then throw error
     Map<String, dynamic>? answer;
@@ -463,6 +465,7 @@ class WitsOverflowData {
         'id': value.id,
         'body': body,
         'authorId': authorId,
+        'image': image,
         'answeredAt': answeredAt == null ? DateTime.now() : answeredAt,
       };
     });
