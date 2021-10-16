@@ -7,8 +7,8 @@ import 'dart:ui' as ui;
 import 'package:url_launcher/url_launcher.dart';
 
 class MyImage extends StatelessWidget {
-  final String? imageFile;
-  final bool? question;
+  final String imageFile;
+  final bool question;
 
   const MyImage({
     Key? key,
@@ -18,7 +18,7 @@ class MyImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String imageUrl = imageFile!;
+    String imageUrl = imageFile;
     // https://github.com/flutter/flutter/issues/41563
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
@@ -46,8 +46,8 @@ class MyImage extends StatelessWidget {
 }
 
 class ImageBuilder extends StatelessWidget {
-  final String? imageFile;
-  final bool? question;
+  final String imageFile;
+  final bool question;
 
   const ImageBuilder({
     Key? key,
@@ -60,7 +60,7 @@ class ImageBuilder extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           buildImage(),
-          if (imageFile != 'NULL') buildFileDetails(imageFile!),
+          if (imageFile != 'NULL') buildFileDetails(imageFile),
         ],
       );
 

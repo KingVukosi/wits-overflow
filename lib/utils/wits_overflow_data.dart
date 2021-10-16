@@ -459,13 +459,14 @@ class WitsOverflowData {
     await this.questions.doc(questionId).collection('answers').add({
       'authorId': authorId,
       'body': body,
+      'image': image,
       'answeredAt': answeredAt == null ? DateTime.now() : answeredAt
     }).then((value) {
       answer = {
         'id': value.id,
         'body': body,
-        'authorId': authorId,
         'image': image,
+        'authorId': authorId,
         'answeredAt': answeredAt == null ? DateTime.now() : answeredAt,
       };
     });

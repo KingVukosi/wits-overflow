@@ -18,6 +18,8 @@ import 'package:wits_overflow/forms/answer_edit_form.dart';
 import 'package:wits_overflow/widgets/comments.dart';
 import 'package:wits_overflow/widgets/widgets.dart';
 
+import 'BuildImage.dart';
+
 class Answer extends StatefulWidget {
   final String questionId;
   final String id;
@@ -34,6 +36,8 @@ class Answer extends StatefulWidget {
   final Timestamp? editedAt;
   final List<Map<String, dynamic>> comments;
   final Map<String, Map<String, dynamic>> commentsAuthors;
+
+  final String image;
 
   final _firestore;
   final _auth;
@@ -53,6 +57,7 @@ class Answer extends StatefulWidget {
     this.editorDisplayName,
     this.editedAt,
     this.editorId,
+    required this.image,
     firestore,
     auth,
   })  : this._firestore =
@@ -64,6 +69,7 @@ class Answer extends StatefulWidget {
 }
 
 class _AnswerState extends State<Answer> {
+  String image = 'NULL';
   bool isBusy = true;
 
   late Map<String, dynamic>? answer;
@@ -127,6 +133,7 @@ class _AnswerState extends State<Answer> {
 
     this.setState(() {
       this.isBusy = false;
+      image = answer!['image'];
     });
   }
 
@@ -314,6 +321,7 @@ class _AnswerState extends State<Answer> {
                 ),
 
                 /// answer body
+
                 Expanded(
                   child: Container(
                     padding: EdgeInsets.all(5),
@@ -323,6 +331,11 @@ class _AnswerState extends State<Answer> {
                       softWrap: true,
                     ),
                   ),
+                ),
+                // Image building section
+                ImageBuilder(
+                  imageFile: image,
+                  question: false,
                 ),
               ],
             ),

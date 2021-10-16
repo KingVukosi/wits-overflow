@@ -248,6 +248,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                             'AUTHOR: $author\n'
                             'EDITOR: $editor]\n');
                         return Answer(
+                          image: answers[i]['image'],
                           id: answers[i]['id'],
                           body: answers[i]['body'],
                           answeredAt: answers[i]['answeredAt'],
