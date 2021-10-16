@@ -40,8 +40,28 @@ jobs:
         run: flutter analyze .
 
       # Run widget tests for our flutter project.
-      - name: Run widget tests 
-        run: flutter test --coverage
+      - name: Run widget tests (forms) 
+        run: flutter test\forms --coverage
+      - name: Run widget tests (utils) 
+        run: flutter test\utils --coverage
+      - name: Run widget tests (widgets) 
+        run: flutter test\widgets --coverage
+      - name: Run widget tests (forms) 
+        run: flutter test\forms --coverage
+      - name: Run widget tests (home screen) 
+        run: flutter test\screen\home_screen_test.dart --coverage
+      - name: Run widget tests (module questions screen) 
+        run: flutter test\screen\module_questions_screen_test.dart --coverage
+      - name: Run widget tests (notifications screen) 
+        run: flutter test\screen\notifications_screen_test.dart --coverage
+      - name: Run widget tests (question and answers screen) 
+        run: flutter test\screen\question_and_answers_screen_test.dart --coverage
+      - name: Run widget tests (search results screen) 
+        run: flutter test\screen\search_results_screen_test.dart --coverage
+      - name: Run widget tests (user info) 
+        run: flutter test\screen\user_info_test.dart --coverage
+      - name: Run widget tests (post questions screen) 
+        run: flutter test test\screens --platform chrome --coverage
       #   run: ls -R
 
       # Upload coverage to https://app.codecov.io/
