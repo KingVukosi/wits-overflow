@@ -225,3 +225,10 @@ class NotificationWidget extends StatelessWidget {
         ));
   }
 }
+
+Widget getCircularProgressIndicator(){
+  return Container(
+    margin: const EdgeInsets.all(8.0),
+    child: Center(child: CircularProgressIndicator()),
+  );
+}

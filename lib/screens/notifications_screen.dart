@@ -32,18 +32,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   late bool _loading = true;
 
   List<Map<String, dynamic>> notifications = [];
-  // questions that the user have authored
-  // late List<Map<String, dynamic>> userQuestions;
-  // late List<Map<String, dynamic>> userFavouriteQuestions;
-  //
-  //
-  // // questions at hat the user have edited
-  // late Map<String, List<Map<String, dynamic>>> questionVotes =
-  //     {}; // holds votes information for each question
-  // late Map<String, Map<String, dynamic>> questionAuthors =
-  //     {}; // hold question author information for each question
-  // late Map<String, List<Map<String, dynamic>>> questionAnswers =
-  //     {}; // hold question author information for each question
 
   WitsOverflowData witsOverflowData = new WitsOverflowData();
 
@@ -137,7 +125,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               .then((answerComments) {
             if (answerComments != null) {
               for (int i = 0; i < answerComments.length; i++) {
-                String userUid = answerComments[i]['user'];
+                String userUid = answerComments[i]['authorId'];
                 this
                     .witsOverflowData
                     .fetchUserInformation(userUid)

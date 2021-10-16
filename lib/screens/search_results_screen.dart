@@ -36,7 +36,7 @@ class _SearchResultsState extends State<SearchResults> {
 
     bool _questionTagsMatchKeyWord(List<String> tags) {
       for (int i = 0; i < tags.length; i++) {
-        if (tags[i].contains(this.widget.keyword)) {
+        if (tags[i].toLowerCase().contains(this.widget.keyword)) {
           return true;
         }
       }

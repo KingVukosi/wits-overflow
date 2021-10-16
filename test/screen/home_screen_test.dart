@@ -313,28 +313,28 @@ void main() {
       await widgetTester.tap(find.byKey(Key('id_drawer_navigate_to_home')));
     });
 
-    // testWidgets('Navigate to module', (WidgetTester widgetTester) async {
-    //   HomeScreen homeScreen = HomeScreen(
-    //     firestore: firestore,
-    //     auth: auth,
-    //   );
-    //
-    //   Widget testWidget = new MediaQuery(
-    //       data: new MediaQueryData(),
-    //       child: new Directionality(
-    //           textDirection: TextDirection.rtl,
-    //           child: MaterialApp(
-    //             home: Scaffold(
-    //               body: homeScreen,
-    //             ),
-    //           )));
-    //
-    //   await widgetTester.pumpWidget(testWidget);
-    //   await widgetTester.pump();
-    //
-    //
-    //   // navigate to
-    //   await widgetTester.tap(find.byKey(Key('id_drawer_navigate_module_${module['id']}')));
-    // });
+    testWidgets('Navigate to notifications screen', (WidgetTester widgetTester) async {
+      HomeScreen homeScreen = HomeScreen(
+        firestore: firestore,
+        auth: auth,
+      );
+
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              child: MaterialApp(
+                home: Scaffold(
+                  body: homeScreen,
+                ),
+              )));
+
+      await widgetTester.pumpWidget(testWidget);
+      await widgetTester.pump();
+
+
+      // navigate to
+      await widgetTester.tap(find.byKey(Key('id_navigate_notifications')));
+    });
   });
 }

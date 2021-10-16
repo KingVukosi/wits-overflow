@@ -80,43 +80,48 @@ class _AnswerState extends State<Answer> {
     // if the user is the author of the question
 
     // retrieve answer from database
-    CollectionReference<Map<String, dynamic>> questionAnswersCollection =
-        FirebaseFirestore.instance
-            .collection('questions-2')
-            .doc(this.widget.id)
-            .collection('answers');
-    DocumentSnapshot<Map<String, dynamic>> answer =
-        await questionAnswersCollection.doc(answerId).get();
+    if(this.widget.authorId == this.witsOverflowData.getCurrentUser()?.uid) {
+      CollectionReference<Map<String, dynamic>> questionAnswersCollection =
+      this.widget._firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(this.widget.id)
+          .collection('answers');
+      DocumentSnapshot<Map<String, dynamic>> answer =
+      await questionAnswersCollection.doc(answerId).get();
 
-    bool accepted = (answer.data()!['accepted'] == null)
-        ? false
-        : answer.data()!['accepted'];
+      bool accepted = (answer.data()!['accepted'] == null)
+          ? false
+          : answer.data()!['accepted'];
 
-    bool value = false;
-    if (accepted == true) {
-      // change answer
-      value = false;
-    } else {
-      value = true;
-      // all other answer should change status
-      QuerySnapshot<Map<String, dynamic>> acceptedAnswer =
-          await questionAnswersCollection
-              .where('accepted', isEqualTo: true)
-              .get();
-      for (var i = 0; i < acceptedAnswer.docs.length; i++) {
-        acceptedAnswer.docs.elementAt(i).reference.update({'accepted': false});
+      bool value = false;
+      if (accepted == true) {
+        // change answer
+        value = false;
+      } else {
+        value = true;
+        // all other answer should change status
+        QuerySnapshot<Map<String, dynamic>> acceptedAnswer =
+        await questionAnswersCollection
+            .where('accepted', isEqualTo: true)
+            .get();
+        for (var i = 0; i < acceptedAnswer.docs.length; i++) {
+          acceptedAnswer.docs
+              .elementAt(i)
+              .reference
+              .update({'accepted': false});
+        }
       }
-    }
 
-    answer.reference.update({'accepted': value}).then((value) {
-      showNotification(context, 'Changed answer status');
-      Navigator.push(context,
-          MaterialPageRoute(builder: (BuildContext context) {
-        return QuestionAndAnswersScreen(this.widget.id);
-      })).catchError((error) {
-        showNotification(context, 'Error occurred');
+      answer.reference.update({'accepted': value}).then((value) {
+        showNotification(context, 'Changed answer status');
+        Navigator.push(context,
+            MaterialPageRoute(builder: (BuildContext context) {
+              return QuestionAndAnswersScreen(this.widget.id);
+            })).catchError((error) {
+          showNotification(context, 'Error occurred');
+        });
       });
-    });
+    }
   }
 
   void getData() async {
@@ -134,6 +139,7 @@ class _AnswerState extends State<Answer> {
     if (this.widget.accepted == true) {
       // if answer is correct
       return GestureDetector(
+        key: Key('id_ans\wer_${this.widget.id}_status'),
         onTap: () {
           this.changeAnswerStatus(answerId: this.widget.id);
         },
@@ -141,7 +147,7 @@ class _AnswerState extends State<Answer> {
           'assets/icons/answer_correct.svg',
           semanticsLabel: 'Feed button',
           placeholderBuilder: (context) {
-            return Icon(Icons.error, color: Colors.deepOrange);
+            return Icon(Icons.error, color: Colors.grey);
           },
           height: 25,
         ),
@@ -156,7 +162,7 @@ class _AnswerState extends State<Answer> {
             'assets/icons/answer_correct_placeholder.svg',
             semanticsLabel: 'Feed button',
             placeholderBuilder: (context) {
-              return Icon(Icons.error, color: Colors.deepOrange);
+              return Icon(Icons.error, color: Colors.grey);
             },
             height: 25,
           ),
