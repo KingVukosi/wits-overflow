@@ -4,7 +4,8 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wits_overflow/forms/answer_edit_form.dart';
+// import 'package:wits_overflow/forms/answer_edit_form.dart';
+import 'package:wits_overflow/forms/question_edit_form.dart';
 import 'package:wits_overflow/utils/functions.dart';
 
 import '../utils.dart';
@@ -217,10 +218,8 @@ void main() {
 
     testWidgets('displays question title & body',
         (WidgetTester widgetTester) async {
-      AnswerEditForm answerEditForm = AnswerEditForm(
+      QuestionEditForm questionEditForm = QuestionEditForm(
         questionId: question['id'],
-        answerId: answer['id'],
-        body: answer['body'],
         firestore: firestore,
         auth: auth,
       );
@@ -231,7 +230,7 @@ void main() {
               textDirection: TextDirection.rtl,
               child: MaterialApp(
                 home: Scaffold(
-                  body: answerEditForm,
+                  body: questionEditForm,
                 ),
               )));
 
@@ -242,11 +241,10 @@ void main() {
       expect(find.textContaining(question['body']), findsOneWidget);
     });
 
-    testWidgets('add answer on valid data', (WidgetTester widgetTester) async {
-      AnswerEditForm answerEditForm = AnswerEditForm(
+    testWidgets('update answer information on valid data',
+        (WidgetTester widgetTester) async {
+      QuestionEditForm questionEditForm = QuestionEditForm(
         questionId: question['id'],
-        answerId: answer['id'],
-        body: answer['body'],
         firestore: firestore,
         auth: auth,
       );
@@ -257,29 +255,30 @@ void main() {
               textDirection: TextDirection.rtl,
               child: MaterialApp(
                 home: Scaffold(
-                  body: answerEditForm,
+                  body: questionEditForm,
                 ),
               )));
 
       await widgetTester.pumpWidget(testWidget);
       await widgetTester.pump();
 
-      String answerBody = 'test question answer body edit';
-      await widgetTester.enterText(
-          find.byKey(Key('id_edit_answer')), answerBody);
+      String titleEdit = 'test question title edit 1';
+      String bodyEdit = 'test question body edit 1';
+      await widgetTester.enterText(find.byKey(Key('id_edit_title')), titleEdit);
+      await widgetTester.enterText(find.byKey(Key('id_edit_body')), bodyEdit);
+
       await widgetTester.tap(find.byKey(Key('id_submit')));
 
       await firestore
           .collection(COLLECTIONS['questions'])
           .doc(question['id'])
-          .collection('answers')
-          .where('editorId', isEqualTo: questionAuthorInfo['uid'])
           .get()
           .then((value) {
-        expect(1, value.docs.length);
-        Map<String, dynamic> answer = value.docs.elementAt(0).data();
-        expect(questionAuthorInfo['uid'], answer['editorId']);
-        expect(answerBody, answer['body']);
+        // expect(1, value.docs.length);
+
+        // Map<String, dynamic> answer = value.docs.elementAt(0).data();
+        expect(value['title'], titleEdit);
+        expect(value['body'], bodyEdit);
       });
     });
   });

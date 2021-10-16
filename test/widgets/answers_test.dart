@@ -377,6 +377,44 @@ void main() {
       });
       // TODO: test that the correct answer icon is present in the widget tree
     });
+
+    testWidgets('navigate to answer edit form',
+        (WidgetTester widgetTester) async {
+      Answer answerWidget = Answer(
+        id: answer['id'],
+        body: answer['body'],
+        answeredAt: answer['answeredAt'],
+        votes: votes,
+        accepted: answer['accepted'] == null ? false : answer['accepted'],
+        authorId: answerAuthorInfo['uid'],
+        authorDisplayName: answerAuthorInfo['displayName'],
+        questionId: question['id'],
+        questionAuthorId: questionAuthorInfo['uid'],
+        editorDisplayName: answerEditorInfo['displayName'],
+        editedAt: Timestamp.fromDate(DateTime(2021, 3, 24, 1, 14)),
+        firestore: firestore,
+        auth: auth,
+      );
+
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              child: MaterialApp(
+                home: Scaffold(
+                    body: Center(
+                        child: Container(
+                            child: ListView(children: <Widget>[
+                  answerWidget,
+                ])))),
+              )));
+
+      await widgetTester.pumpWidget(testWidget);
+
+      // tap the down upvote button
+      await widgetTester.tap(find.byKey(
+          Key('id_answer_navigate_to_answer_edit_form_${answer['id']}')));
+    });
   });
 
   /// test a collection of answers

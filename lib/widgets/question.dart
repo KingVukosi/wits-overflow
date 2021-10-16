@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wits_overflow/forms/question_edit_form.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
 // import 'package:wits_overflow/forms/question_answer_form.dart';
@@ -60,6 +61,8 @@ class QuestionWidget extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return Column(
       children: [
         Container(
@@ -78,7 +81,9 @@ class QuestionWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Container(
-                    color: Color.fromRGBO(214, 217, 220, 0.2),
+                    width: 50,
+                    // color: Color.fromRGBO(214, 217, 220, 0.2),
+                    margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
                     child: Column(
                       // mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
@@ -102,18 +107,22 @@ class QuestionWidget extends StatelessWidget {
                             semanticsLabel: 'Feed button',
                             placeholderBuilder: (context) {
                               return Icon(Icons.error,
-                                  color: Colors.deepOrange);
+                                  color: Color.fromRGBO(100, 100, 100, 0.2));
                             },
-                            height: 12.5,
+                            height: (1.9 / 100) * (size.width),
                           ),
                         ),
-                        Text(
-                          // this.questionVotes!.docs.length.toString(),
-                          this.votes.toString(),
-                          style: TextStyle(
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, (1 / 100) * size.width,
+                              0, (1 / 100) * size.width),
+                          child: Text(
+                            // this.questionVotes!.docs.length.toString(),
+                            this.votes.toString(),
+                            style: TextStyle(
                               // backgroundColor: Colors.black12,
-                              // fontSize: 20,
-                              ),
+                              fontSize: (2.7 / 100) * size.width,
+                            ),
+                          ),
                         ),
                         TextButton(
                           key: Key('id_question_${this.id}_downvote_btn'),
@@ -134,9 +143,9 @@ class QuestionWidget extends StatelessWidget {
                             semanticsLabel: 'Feed button',
                             placeholderBuilder: (context) {
                               return Icon(Icons.error,
-                                  color: Colors.deepOrange);
+                                  color: Color.fromRGBO(100, 100, 100, 0.2));
                             },
-                            height: 12.5,
+                            height: (1.9 / 100) * (size.width),
                           ),
                         ),
                       ],
@@ -248,7 +257,17 @@ class QuestionWidget extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            print('[EDIT ANSWER BUTTON PRESSED]');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                return QuestionEditForm(
+                                  questionId: this.id,
+                                  firestore: this._firestore,
+                                  auth: this._auth,
+                                );
+                              }),
+                            );
                           },
                         ),
                       ),
