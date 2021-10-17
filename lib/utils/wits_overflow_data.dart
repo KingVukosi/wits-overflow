@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wits_overflow/utils/functions.dart';
 
 /// before any class methods can be called, you have to
@@ -295,9 +299,65 @@ class WitsOverflowData {
     return results;
   }
 
-  Future<DocumentReference<Map<String, dynamic>>> addQuestion(
-      Map<String, dynamic> data) async {
-    return questions.add(data);
+  Future<String?> uploadFile(File _image) async {
+    // print('[uploadFile -> path = ${_image.path}]');
+    // int index = _image.path.lastIndexOf('.');
+    // String ext = _image.path.substring(index, _image.path.length);
+    String path = 'image/${Timestamp.now().millisecondsSinceEpoch.toString()}';
+    print('[UPLOADING IMAGE WITH PATH: $path]');
+    String? url;
+    await FirebaseStorage.instance
+        .ref()
+        .child(path).putFile(_image).then((p0) async {
+          url = await p0.ref.getDownloadURL();
+    });
+
+    return url;
+
+    // StorageUploadTask uploadTask = storageReference.putFile(_image);
+    // await uploadTask.onComplete;
+    // print('File Uploaded');
+    // String returnURL;
+    // await storageReference.getDownloadURL().then((fileURL) {
+    //   returnURL =  fileURL;
+    // });
+    // return returnURL;
+  }
+
+  Future<Map<String, dynamic>> addQuestion({
+    required String moduleId,
+    required String courseId,
+    required String title,
+    required String body,
+    required String authorId,
+    required DateTime createdAt,
+    required List<String> tags,
+    XFile? image,
+
+  }) async {
+    print('[ADD QUESTION]');
+    String? url;
+    if(image != null){
+      url = await this.uploadFile(File(image.path));
+    }
+    print('[ADDED IMAGE]');
+
+    print('[ADDING QUESTION INFO]');
+    Map<String, dynamic> question = {
+      'authorId': authorId,
+      'moduleId': moduleId,
+      'courseId': courseId,
+      'title': title,
+      'body': body,
+      'createdAt': createdAt,
+      'tags': tags,
+      'image_url': url,
+    };
+
+    await this.questions.add(question).then((value){
+      question['id'] = value.id;
+    });
+    return question;
   }
 
   Future<void> addFavouriteQuestion(
