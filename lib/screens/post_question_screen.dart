@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +7,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
+// import "dart:io" as dart_io if (kIsNotWeb) "dart:html" as dart_html;
+// import 'dart:html' if  'dart:io';
+
+bool kIsNotWeb = !kIsWeb;
+
+
+
 
 class PostQuestionScreen extends StatefulWidget {
   // late WitsOverflowData witsOverflowData;// = WitsOverflowData();
@@ -169,23 +175,9 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   }
 
   Future getImage(bool gallery) async {
-    // ImagePicker picker = ImagePicker();
-    // PickedFile? pickedFile;
-    // Let user select photo from gallery
 
     final ImagePicker _picker = ImagePicker();
-    // Pick an image
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
-    // if(gallery) {
-    //   pickedFile = await picker.pickImage(
-    //     source: ImageSource.gallery,);
-    // }
-    // // Otherwise open camera to get new photo
-    // else{
-    //   pickedFile = await picker.getImage(
-    //     source: ImageSource.camera,);
-    // }
 
     if(image != null){
       imageForSendToAPI = await image.readAsBytes();
@@ -193,15 +185,7 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
     }
     setState(() {
       if (image != null) {
-        // _images.add(File(pickedFile.path));
-        // _image = File(pickedFile.path); // Use if you only need a single picture
         _image = image;
-        // _image = File(image.path, );
-        // if (kIsWeb) {
-        //   _image = Image.network(pickedFile.path);
-        // } else {
-        //   _image = Image.file(File(pickedFile.path));
-        // }
       } else {
         print('No image selected.');
       }
@@ -210,13 +194,55 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+
+    late Widget imageView;
+
+    if(this._image != null){
+      print('[BUILDING -> image is not none, path = ${this._image!.path}]');
+
+      // if ((defaultTargetPlatform == TargetPlatform.iOS) || (defaultTargetPlatform == TargetPlatform.android)) {
+      //   // Some android/ios specific code
+      //   print('BUILDING FOR iOS / android');
+      //   imageView = Container(
+      //     child: Image.file(dart_io.File(this._image!.path)),
+      //   );
+      //
+      // }
+      // else if ((defaultTargetPlatform == TargetPlatform.linux) || (defaultTargetPlatform == TargetPlatform.macOS) || (defaultTargetPlatform == TargetPlatform.windows)) {
+      //   // Some desktop specific code there
+      //   print('BUILDING FOR linux / macOS / windows');
+      //   imageView = Container(
+      //       child: Image.file(dart_io.File(this._image!.path)),
+      //   );
+      // }
+      // else {
+      //   // Some web specific code there
+      //   print('BUILDING FOR web');
+      //   imageView = Container(
+      //       child: Image.network(this._image!.path),
+      //   );
+      // }
+
+        imageView = Container(
+          child: Image.memory(this.imageForSendToAPI!),
+        );
+    }
+    else{
+      imageView = Container(
+        child: Padding(padding: EdgeInsets.all(10)),
+      );
+    }
+
+
+
     return WitsOverflowScaffold(
-        auth: this._auth,
-        firestore: this._firestore,
-        body: Container(
-            padding: EdgeInsets.all(10),
-            child: Form(
-                child: ListView(
+      auth: this._auth,
+      firestore: this._firestore,
+      body: Container(
+        padding: EdgeInsets.all(10),
+          child: Form(
+            child: ListView(
               children: [
                 FutureBuilder<List<Map<String, dynamic>>>(
                     future: this.coursesFuture,
@@ -318,12 +344,8 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                   ),
                 ),
                 Divider(color: Colors.white, height: 10),
-                _image == null ? Container(padding: EdgeInsets.all(10)) :
-                Container(
-                    child: kIsWeb ? Image.network(_image!.path) : Image.file(File(_image!.path)),
-                )
-
-              ],
-            ))));
-  }
+                imageView,
+            ],
+        ))));
+}
 }

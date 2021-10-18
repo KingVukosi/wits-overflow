@@ -1,5 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart' as firebase_core;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/forms/question_answer_form.dart';
@@ -21,7 +24,7 @@ class QuestionAndAnswersScreen extends StatefulWidget {
 
   QuestionAndAnswersScreen(this.id, {firestore, auth})
       : this._firestore =
-            firestore == null ? FirebaseFirestore.instance : firestore,
+            firestore == null ? firebase_core.FirebaseFirestore.instance : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
@@ -30,12 +33,10 @@ class QuestionAndAnswersScreen extends StatefulWidget {
 
 class _QuestionState extends State<QuestionAndAnswersScreen> {
   late Map<String, dynamic> question;
-
   List<Map<String, dynamic>> questionAnswers = [];
-
   bool isBusy = true;
-
   WitsOverflowData witsOverflowData = WitsOverflowData();
+  Widget? questionImage;
 
   void initState() {
     super.initState();
@@ -50,9 +51,61 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
 
     await witsOverflowData.fetchQuestionAnswers(this.widget.id).then((value) {
       if (value != null) {
+        print('[QUESTION : $question]');
         this.questionAnswers = value;
       }
     });
+
+    if(this.question['image_url'] != null){
+      // 1634512672170
+
+
+      // Directory appDocDir = await getApplicationDocumentsDirectory();
+      // File downloadToFile = File('${appDocDir.path}/download-logo.png');
+
+      try {
+        Uint8List? uint8list = await firebase_storage.FirebaseStorage.instance
+            .ref('images/1634512672170').getData();
+        if(uint8list != null){
+          this.questionImage = Image.memory(uint8list);
+        }
+        else{
+          print('[uint8list IS NULL]');
+        }
+      } on firebase_core.FirebaseException catch (e) {
+        print('[FAILED TO FETCH QUESTION IMAGE, ERROR -> $e]');
+      }
+
+
+      // try {
+      //   Response response = await Dio().get(this.question['image_url'], options: Options(
+      //     headers: {
+      //       "Access-Control-Allow-Origin": ["*"],
+      //       "Access-Control-Allow-Headers": ["Access-Control-Allow-Headers", "Origin,Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers"],
+      //       })
+      //   );
+      //   Uint8List uint8list = response.data as Uint8List;
+      //   print('[FETCHED QUESTION IMAGE]');
+      //   Widget image = Image.memory(uint8list);
+      // } catch (e) {
+      //   print('[FAILED TO FETCH QUESTION IMAGE]');
+      // }
+
+      // ======================================================================
+
+      // ui.platformViewRegistry.registerViewFactory(
+      //   imageUrl,
+      //       (int _) => ImageElement()..src = imageUrl,
+      // );
+
+      // ui.platformViewRegistry.registerViewFactory(
+      //   imageUrl,
+      //       (int _) => ImageElement()..src = imageUrl,
+      // );
+      // return HtmlElementView(
+      //   viewType: imageUrl,
+      // );
+    }
 
     setState(() {
       this.isBusy = false;
@@ -315,6 +368,11 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget? image;
+    // Uint8List.
+    // if(this.question['image_url'] != null){
+    //   image = Image.network(this.question['image_url']);
+    // }
     if (this.isBusy) {
       return WitsOverflowScaffold(
         firestore: this.widget._firestore,
@@ -337,6 +395,8 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
               /// votes, up-vote and down-vote
 
               this._buildQuestionWidget(),
+
+              this.questionImage == null ? Padding(padding: EdgeInsets.all(0)) : Container(child: questionImage),
 
               /// comments list
               this._buildCommentsWidget(),

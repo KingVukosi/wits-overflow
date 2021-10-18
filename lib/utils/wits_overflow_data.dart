@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io';/**/
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wits_overflow/utils/functions.dart';
@@ -299,18 +300,33 @@ class WitsOverflowData {
     return results;
   }
 
-  Future<String?> uploadFile(File _image) async {
-    // print('[uploadFile -> path = ${_image.path}]');
+  Future<String?> uploadFile(XFile image) async {
+    // print('[uploadFile -> path = ${image.path}]');
     // int index = _image.path.lastIndexOf('.');
     // String ext = _image.path.substring(index, _image.path.length);
-    String path = 'image/${Timestamp.now().millisecondsSinceEpoch.toString()}';
+    String path = '${Timestamp.now().millisecondsSinceEpoch.toString()}';
     print('[UPLOADING IMAGE WITH PATH: $path]');
     String? url;
-    await FirebaseStorage.instance
-        .ref()
-        .child(path).putFile(_image).then((p0) async {
-          url = await p0.ref.getDownloadURL();
-    });
+    Uint8List data = await image.readAsBytes();
+    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref('images/$path');
+    // try {
+      // Upload raw data.
+      await ref.putData(data);
+      url = await ref.getDownloadURL();
+    return url;
+      // Uint8List? downloadedData = await ref.getData();
+      // prints -> Hello World!
+      // print(utf8.decode(downloadedData));
+    // }
+    // on firebase_core.FirebaseException catch (e) {
+      // e.g, e.code == 'canceled'
+    // }
+
+    // await FirebaseStorage.instance
+    //     .ref()
+    //     .child(path).putFile(image).then((p0) async {
+    //       url = await p0.ref.getDownloadURL();
+    // });
 
     return url;
 
@@ -338,7 +354,7 @@ class WitsOverflowData {
     print('[ADD QUESTION]');
     String? url;
     if(image != null){
-      url = await this.uploadFile(File(image.path));
+      url = await this.uploadFile(image);
     }
     print('[ADDED IMAGE]');
 
