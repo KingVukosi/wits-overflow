@@ -1,9 +1,19 @@
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
+// import "dart:io" as dart_io if (kIsNotWeb) "dart:html" as dart_html;
+// import 'dart:html' if  'dart:io';
+
+bool kIsNotWeb = !kIsWeb;
+
+
+
 
 class PostQuestionScreen extends StatefulWidget {
   // late WitsOverflowData witsOverflowData;// = WitsOverflowData();
@@ -32,6 +42,10 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   late List<Map<String, dynamic>>? _modules;
 
   late Future<List<Map<String, dynamic>>> modulesFuture;
+
+  XFile? _image; // Used only if you need a single picture
+  Uint8List? imageForSendToAPI;
+  // U
 
   String? _selectedCourseId;
   String? _selectedCourseCode;
@@ -100,22 +114,25 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
 
   void _addQuestion() {
     if (_validQuestion()) {
-      witsOverflowData.addQuestion({
-        'createdAt': DateTime.now(),
-        'courseId': _selectedCourseId,
-        'moduleId': _selectedModuleId,
-        'title': titleController.text,
-        'body': bodyController.text,
-        'authorId': witsOverflowData.getCurrentUser()!.uid,
-        'tags': [_selectedCourseCode, _selectedModuleCode]
-      }).then((DocumentReference<Map<String, dynamic>> question) {
+      witsOverflowData.addQuestion(
+        createdAt: DateTime.now(),
+        courseId: _selectedCourseId!,
+        moduleId: _selectedModuleId!,
+        title: titleController.text,
+        body: bodyController.text,
+        authorId: witsOverflowData.getCurrentUser()!.uid,
+        image: this._image,
+        tags: [_selectedCourseCode!, _selectedModuleCode!]
+      ).then((Map<String, dynamic> question) {
         _notify('Question added.');
         Navigator.push(context, MaterialPageRoute(
           builder: (BuildContext context) {
-            return QuestionAndAnswersScreen(question.id);
+            return QuestionAndAnswersScreen(question['id']);
           },
         ));
       }).catchError((error) {
+
+        print('[ERROR OCCURRED : $error]');
         _notify("Error occurred");
       });
     }
@@ -157,15 +174,75 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
     super.initState();
   }
 
+  Future getImage(bool gallery) async {
+
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if(image != null){
+      imageForSendToAPI = await image.readAsBytes();
+
+    }
+    setState(() {
+      if (image != null) {
+        _image = image;
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+
+
+    late Widget imageView;
+
+    if(this._image != null){
+      print('[BUILDING -> image is not none, path = ${this._image!.path}]');
+
+      // if ((defaultTargetPlatform == TargetPlatform.iOS) || (defaultTargetPlatform == TargetPlatform.android)) {
+      //   // Some android/ios specific code
+      //   print('BUILDING FOR iOS / android');
+      //   imageView = Container(
+      //     child: Image.file(dart_io.File(this._image!.path)),
+      //   );
+      //
+      // }
+      // else if ((defaultTargetPlatform == TargetPlatform.linux) || (defaultTargetPlatform == TargetPlatform.macOS) || (defaultTargetPlatform == TargetPlatform.windows)) {
+      //   // Some desktop specific code there
+      //   print('BUILDING FOR linux / macOS / windows');
+      //   imageView = Container(
+      //       child: Image.file(dart_io.File(this._image!.path)),
+      //   );
+      // }
+      // else {
+      //   // Some web specific code there
+      //   print('BUILDING FOR web');
+      //   imageView = Container(
+      //       child: Image.network(this._image!.path),
+      //   );
+      // }
+
+        imageView = Container(
+          child: Image.memory(this.imageForSendToAPI!),
+        );
+    }
+    else{
+      imageView = Container(
+        child: Padding(padding: EdgeInsets.all(10)),
+      );
+    }
+
+
+
     return WitsOverflowScaffold(
-        auth: this._auth,
-        firestore: this._firestore,
-        body: Container(
-            padding: EdgeInsets.all(10),
-            child: Form(
-                child: ListView(
+      auth: this._auth,
+      firestore: this._firestore,
+      body: Container(
+        padding: EdgeInsets.all(10),
+          child: Form(
+            child: ListView(
               children: [
                 FutureBuilder<List<Map<String, dynamic>>>(
                     future: this.coursesFuture,
@@ -246,14 +323,29 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                       border: OutlineInputBorder()),
                 ),
                 Divider(color: Colors.white, height: 10),
+
+                RawMaterialButton(
+                  fillColor: Theme.of(context).hintColor,
+                  child: Icon(Icons.add_photo_alternate_rounded,
+                    color: Colors.white,),
+                  elevation: 8,
+                  onPressed: () {
+                    getImage(true);
+                  },
+                  padding: EdgeInsets.all(15),
+                  shape: CircleBorder(),
+                ),
+                Divider(color: Colors.white, height: 10),
                 Container(
                   child: ElevatedButton.icon(
                     onPressed: () => {this._addQuestion()},
                     icon: Icon(Icons.post_add),
                     label: Text('Submit'),
                   ),
-                )
-              ],
-            ))));
-  }
+                ),
+                Divider(color: Colors.white, height: 10),
+                imageView,
+            ],
+        ))));
+}
 }
