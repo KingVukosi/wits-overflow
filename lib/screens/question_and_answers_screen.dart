@@ -339,11 +339,6 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget? image;
-    // Uint8List.
-    // if(this.question['image_url'] != null){
-    //   image = Image.network(this.question['image_url']);
-    // }
     if (this.isBusy) {
       return WitsOverflowScaffold(
         firestore: this.widget._firestore,
