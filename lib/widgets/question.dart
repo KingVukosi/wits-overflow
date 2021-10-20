@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wits_overflow/forms/question_edit_form.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
@@ -16,7 +20,10 @@ import 'package:wits_overflow/widgets/widgets.dart';
 // import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 // import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 
-class QuestionWidget extends StatelessWidget {
+import 'package:cloud_firestore/cloud_firestore.dart' as firebase_core;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
+class QuestionWidget extends StatefulWidget {
   final int votes;
   final String id;
   final String title;
@@ -29,6 +36,8 @@ class QuestionWidget extends StatelessWidget {
   final String? editorId;
   final String? editorDisplayName;
   final Timestamp? editedAt;
+
+  final String? imageURL;
 
   late final WitsOverflowData witsOverflowData = WitsOverflowData();
   late final _firestore;
@@ -47,6 +56,7 @@ class QuestionWidget extends StatelessWidget {
     this.editedAt,
     firestore,
     auth,
+    this.imageURL,
   }) {
     this._firestore =
         firestore == null ? FirebaseFirestore.instance : firestore;
@@ -56,8 +66,56 @@ class QuestionWidget extends StatelessWidget {
         .initialize(firestore: this._firestore, auth: this._auth);
   }
 
+  @override
+  _QuestionWidgetState createState() => _QuestionWidgetState();
+}
+
+class _QuestionWidgetState extends State<QuestionWidget> {
+  bool isBusy = true;
+  Widget? questionImage;
+
+  Future<void> getImage() async {
+    String iurl = this.widget.imageURL!;
+    print("imageURL: $iurl");
+    if (this.widget.imageURL != null) {
+      try {
+        Uint8List? uint8list = await firebase_storage.FirebaseStorage.instance
+            .ref(this.widget.imageURL)
+            .getData();
+        if (uint8list != null) {
+          this.questionImage = Image.memory(uint8list);
+          print(this.questionImage);
+        } else {
+          print('[uint8list IS NULL]');
+        }
+      } on firebase_core.FirebaseException catch (e) {
+        print('[FAILED TO FETCH QUESTION IMAGE, ERROR -> $e]');
+      }
+    }
+
+    setState(() {
+      this.isBusy = false;
+    });
+  }
+
+  void initState() {
+    super.initState();
+    this
+        .widget
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    getImage();
+    print("Question Image: $questionImage");
+  }
+
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    if (this.isBusy) {
+      Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
     return Column(
       children: [
@@ -84,13 +142,14 @@ class QuestionWidget extends StatelessWidget {
                       // mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         TextButton(
-                          key: Key('id_question_${this.id}_upvote_btn'),
+                          key: Key('id_question_${this.widget.id}_upvote_btn'),
                           onPressed: () {
                             WitsOverflowData().voteQuestion(
                               context: context,
                               value: 1,
-                              questionId: this.id,
-                              userId: witsOverflowData.getCurrentUser()!.uid,
+                              questionId: this.widget.id,
+                              userId:
+                                  widget.witsOverflowData.getCurrentUser()!.uid,
                             );
                           },
                           style: TextButton.styleFrom(
@@ -113,7 +172,7 @@ class QuestionWidget extends StatelessWidget {
                               0, (1 / 100) * size.width),
                           child: Text(
                             // this.questionVotes!.docs.length.toString(),
-                            this.votes.toString(),
+                            this.widget.votes.toString(),
                             style: TextStyle(
                               // backgroundColor: Colors.black12,
                               fontSize: (2.7 / 100) * size.width,
@@ -121,13 +180,16 @@ class QuestionWidget extends StatelessWidget {
                           ),
                         ),
                         TextButton(
-                          key: Key('id_question_${this.id}_downvote_btn'),
+                          key:
+                              Key('id_question_${this.widget.id}_downvote_btn'),
                           onPressed: () {
                             WitsOverflowData().voteQuestion(
                                 context: context,
-                                questionId: this.id,
+                                questionId: this.widget.id,
                                 value: -1,
-                                userId: witsOverflowData.getCurrentUser()!.uid);
+                                userId: widget.witsOverflowData
+                                    .getCurrentUser()!
+                                    .uid);
                           },
                           style: TextButton.styleFrom(
                             minimumSize: Size(0, 0),
@@ -157,7 +219,7 @@ class QuestionWidget extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.all(5),
                   child: Text(
-                    this.title,
+                    this.widget.title,
                     style: TextStyle(
                       color: Colors.blue,
                       fontSize: 20,
@@ -184,7 +246,7 @@ class QuestionWidget extends StatelessWidget {
           ),
           padding: EdgeInsets.all(15),
           child: Text(
-            this.body,
+            this.widget.body,
             // this.getQuestionBody(),
           ),
         ),
@@ -244,9 +306,9 @@ class QuestionWidget extends StatelessWidget {
                               MaterialPageRoute(
                                   builder: (BuildContext context) {
                                 return QuestionEditForm(
-                                  questionId: this.id,
-                                  firestore: this._firestore,
-                                  auth: this._auth,
+                                  questionId: this.widget.id,
+                                  firestore: this.widget._firestore,
+                                  auth: this.widget._auth,
                                 );
                               }),
                             );
@@ -298,10 +360,12 @@ class QuestionWidget extends StatelessWidget {
                     ),
                     onPressed: () => {
                       this
+                          .widget
                           .witsOverflowData
                           .addFavouriteQuestion(
-                            userId: witsOverflowData.getCurrentUser()!.uid,
-                            questionId: this.id,
+                            userId:
+                                widget.witsOverflowData.getCurrentUser()!.uid,
+                            questionId: this.widget.id,
                           )
                           .then((result) {
                         showNotification(context, 'Favourite added.');
@@ -320,13 +384,35 @@ class QuestionWidget extends StatelessWidget {
           ),
         ),
 
+        this.questionImage == null
+            ? Padding(padding: EdgeInsets.all(0))
+            : Container(child: this.questionImage),
+        this.questionImage == null
+            ? Padding(padding: EdgeInsets.all(0))
+            : Center(
+                child: new RichText(
+                  text: new TextSpan(
+                    children: [
+                      new TextSpan(
+                        text: 'Click To Download Image',
+                        style: new TextStyle(color: Colors.blue, fontSize: 20),
+                        recognizer: new TapGestureRecognizer()
+                          ..onTap = () {
+                            launch(this.widget.imageURL!);
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
         UserCard(
-          createdAt: this.createdAt,
-          authorId: this.authorId,
-          authorDisplayName: authorDisplayName,
-          editorId: this.editorId,
-          editorDisplayName: this.editorDisplayName,
-          editedAt: this.editedAt,
+          createdAt: this.widget.createdAt,
+          authorId: this.widget.authorId,
+          authorDisplayName: widget.authorDisplayName,
+          editorId: this.widget.editorId,
+          editorDisplayName: this.widget.editorDisplayName,
+          editedAt: this.widget.editedAt,
         )
       ],
     );

@@ -12,9 +12,6 @@ import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
 bool kIsNotWeb = !kIsWeb;
 
-
-
-
 class PostQuestionScreen extends StatefulWidget {
   // late WitsOverflowData witsOverflowData;// = WitsOverflowData();
   late final _firestore;
@@ -115,15 +112,17 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   void _addQuestion() {
     if (_validQuestion()) {
       witsOverflowData.addQuestion(
-        createdAt: DateTime.now(),
-        courseId: _selectedCourseId!,
-        moduleId: _selectedModuleId!,
-        title: titleController.text,
-        body: bodyController.text,
-        authorId: witsOverflowData.getCurrentUser()!.uid,
-        image: this._image,
-        tags: [_selectedCourseCode!, _selectedModuleCode!]
-      ).then((Map<String, dynamic> question) {
+          createdAt: DateTime.now(),
+          courseId: _selectedCourseId!,
+          moduleId: _selectedModuleId!,
+          title: titleController.text,
+          body: bodyController.text,
+          authorId: witsOverflowData.getCurrentUser()!.uid,
+          image: this._image,
+          tags: [
+            _selectedCourseCode!,
+            _selectedModuleCode!
+          ]).then((Map<String, dynamic> question) {
         _notify('Question added.');
         Navigator.push(context, MaterialPageRoute(
           builder: (BuildContext context) {
@@ -131,7 +130,6 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
           },
         ));
       }).catchError((error) {
-
         print('[ERROR OCCURRED : $error]');
         _notify("Error occurred");
       });
@@ -175,13 +173,11 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   }
 
   Future getImage(bool gallery) async {
-
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
-    if(image != null){
+    if (image != null) {
       imageForSendToAPI = await image.readAsBytes();
-
     }
     setState(() {
       if (image != null) {
@@ -194,55 +190,29 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-
     late Widget imageView;
 
-    if(this._image != null){
+    if (this._image != null) {
       print('[BUILDING -> image is not none, path = ${this._image!.path}]');
 
-      // if ((defaultTargetPlatform == TargetPlatform.iOS) || (defaultTargetPlatform == TargetPlatform.android)) {
-      //   // Some android/ios specific code
-      //   print('BUILDING FOR iOS / android');
-      //   imageView = Container(
-      //     child: Image.file(dart_io.File(this._image!.path)),
-      //   );
-      //
-      // }
-      // else if ((defaultTargetPlatform == TargetPlatform.linux) || (defaultTargetPlatform == TargetPlatform.macOS) || (defaultTargetPlatform == TargetPlatform.windows)) {
-      //   // Some desktop specific code there
-      //   print('BUILDING FOR linux / macOS / windows');
-      //   imageView = Container(
-      //       child: Image.file(dart_io.File(this._image!.path)),
-      //   );
-      // }
-      // else {
-      //   // Some web specific code there
-      //   print('BUILDING FOR web');
-      //   imageView = Container(
-      //       child: Image.network(this._image!.path),
-      //   );
-      // }
-
-        imageView = Container(
-          child: Image.memory(this.imageForSendToAPI!),
-        );
-    }
-    else{
+      imageView = Container(
+        height: 260,
+        width: 260,
+        child: Image.memory(this.imageForSendToAPI!),
+      );
+    } else {
       imageView = Container(
         child: Padding(padding: EdgeInsets.all(10)),
       );
     }
 
-
-
     return WitsOverflowScaffold(
-      auth: this._auth,
-      firestore: this._firestore,
-      body: Container(
-        padding: EdgeInsets.all(10),
-          child: Form(
-            child: ListView(
+        auth: this._auth,
+        firestore: this._firestore,
+        body: Container(
+            padding: EdgeInsets.all(10),
+            child: Form(
+                child: ListView(
               children: [
                 FutureBuilder<List<Map<String, dynamic>>>(
                     future: this.coursesFuture,
@@ -323,11 +293,12 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                       border: OutlineInputBorder()),
                 ),
                 Divider(color: Colors.white, height: 10),
-
                 RawMaterialButton(
                   fillColor: Theme.of(context).hintColor,
-                  child: Icon(Icons.add_photo_alternate_rounded,
-                    color: Colors.white,),
+                  child: Icon(
+                    Icons.add_photo_alternate_rounded,
+                    color: Colors.white,
+                  ),
                   elevation: 8,
                   onPressed: () {
                     getImage(true);
@@ -336,6 +307,8 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                   shape: CircleBorder(),
                 ),
                 Divider(color: Colors.white, height: 10),
+                imageView,
+                Divider(color: Colors.white, height: 10),
                 Container(
                   child: ElevatedButton.icon(
                     onPressed: () => {this._addQuestion()},
@@ -343,9 +316,7 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
                     label: Text('Submit'),
                   ),
                 ),
-                Divider(color: Colors.white, height: 10),
-                imageView,
-            ],
-        ))));
-}
+              ],
+            ))));
+  }
 }

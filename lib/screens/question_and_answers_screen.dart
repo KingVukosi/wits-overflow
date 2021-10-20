@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' as firebase_core;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
+// import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/forms/question_answer_form.dart';
 import 'package:wits_overflow/forms/question_comment_form.dart';
@@ -12,6 +13,7 @@ import 'package:wits_overflow/widgets/question.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 import 'package:wits_overflow/widgets/answers.dart';
 import 'package:wits_overflow/widgets/comments.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 // ---------------------------------------------------------------------------
 //             Dashboard class
@@ -23,8 +25,9 @@ class QuestionAndAnswersScreen extends StatefulWidget {
   late final _auth;
 
   QuestionAndAnswersScreen(this.id, {firestore, auth})
-      : this._firestore =
-            firestore == null ? firebase_core.FirebaseFirestore.instance : firestore,
+      : this._firestore = firestore == null
+            ? firebase_core.FirebaseFirestore.instance
+            : firestore,
         this._auth = auth == null ? FirebaseAuth.instance : auth;
 
   @override
@@ -56,55 +59,20 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
       }
     });
 
-    if(this.question['image_url'] != null){
-      // 1634512672170
-
-
-      // Directory appDocDir = await getApplicationDocumentsDirectory();
-      // File downloadToFile = File('${appDocDir.path}/download-logo.png');
-
+    if (this.question['image_url'] != null) {
       try {
         Uint8List? uint8list = await firebase_storage.FirebaseStorage.instance
-            .ref('images/1634512672170').getData();
-        if(uint8list != null){
+            .ref(this.question['image_url'])
+            .getData();
+        if (uint8list != null) {
           this.questionImage = Image.memory(uint8list);
-        }
-        else{
+          print(this.question['image_url']);
+        } else {
           print('[uint8list IS NULL]');
         }
       } on firebase_core.FirebaseException catch (e) {
         print('[FAILED TO FETCH QUESTION IMAGE, ERROR -> $e]');
       }
-
-
-      // try {
-      //   Response response = await Dio().get(this.question['image_url'], options: Options(
-      //     headers: {
-      //       "Access-Control-Allow-Origin": ["*"],
-      //       "Access-Control-Allow-Headers": ["Access-Control-Allow-Headers", "Origin,Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers"],
-      //       })
-      //   );
-      //   Uint8List uint8list = response.data as Uint8List;
-      //   print('[FETCHED QUESTION IMAGE]');
-      //   Widget image = Image.memory(uint8list);
-      // } catch (e) {
-      //   print('[FAILED TO FETCH QUESTION IMAGE]');
-      // }
-
-      // ======================================================================
-
-      // ui.platformViewRegistry.registerViewFactory(
-      //   imageUrl,
-      //       (int _) => ImageElement()..src = imageUrl,
-      // );
-
-      // ui.platformViewRegistry.registerViewFactory(
-      //   imageUrl,
-      //       (int _) => ImageElement()..src = imageUrl,
-      // );
-      // return HtmlElementView(
-      //   viewType: imageUrl,
-      // );
     }
 
     setState(() {
@@ -144,6 +112,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                     id: this.widget.id,
                     title: question['title'],
                     body: question['body'],
+                    imageURL: question['image_url'],
                     votes: this._calculateVotes(questionVotes),
                     createdAt: question['createdAt'],
                     authorDisplayName: questionAuthor['displayName'],
@@ -202,18 +171,19 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                     });
                   }
                   return Comments(
-                    comments: comments,
-                    commentsAuthors: commentAuthors,
-                    onAddComments: () {
-                      Navigator.push(
-                        this.context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                          return QuestionCommentForm(
-                              questionId: this.widget.id);
-                        }),
-                      );
-                    },
-                  );
+                      comments: comments,
+                      commentsAuthors: commentAuthors,
+                      onAddComments: () {
+                        Navigator.push(
+                          this.context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return QuestionCommentForm(
+                                questionId: this.widget.id);
+                          }),
+                        );
+                      },
+                      auth: widget._auth,
+                      firestore: widget._firestore);
                 } else if (commentsSnapshot.hasError) {
                   return Text('Error occurred',
                       style: TextStyle(color: Colors.red));
@@ -318,6 +288,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                           editorDisplayName: editor['displayName'],
                           firestore: this.widget._firestore,
                           auth: this.widget._auth,
+                          imageURL: answers[i]['image_url'],
                         );
                       } else if (snapshot.hasError) {
                         return Text('Error occurred',
@@ -396,7 +367,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
 
               this._buildQuestionWidget(),
 
-              this.questionImage == null ? Padding(padding: EdgeInsets.all(0)) : Container(child: questionImage),
+              SizedBox(height: 20),
 
               /// comments list
               this._buildCommentsWidget(),

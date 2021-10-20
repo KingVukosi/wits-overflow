@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
@@ -41,11 +44,30 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
 
   WitsOverflowData witsOverflowData = WitsOverflowData();
 
+  XFile? _image; // Used only if you need a single picture
+  Uint8List? imageForSendToAPI;
+
   void initState() {
     super.initState();
     witsOverflowData.initialize(
         firestore: this.widget._firestore, auth: this.widget._auth);
     this.getData();
+  }
+
+  Future getImage(bool gallery) async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      imageForSendToAPI = await image.readAsBytes();
+    }
+    setState(() {
+      if (image != null) {
+        _image = image;
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   void getData() async {
@@ -65,7 +87,10 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
     String authorId = witsOverflowData.getCurrentUser()!.uid;
     Map<String, dynamic>? questionComment =
         await witsOverflowData.postQuestionComment(
-            questionId: this.widget.questionId, body: body, authorId: authorId);
+            questionId: this.widget.questionId,
+            body: body,
+            authorId: authorId,
+            image: this._image);
 
     if (questionComment == null) {
       showNotification(this.context, 'Something went wrong', type: 'error');
@@ -87,6 +112,22 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
+    late Widget imageView;
+
+    if (this._image != null) {
+      print('[BUILDING -> image is not none, path = ${this._image!.path}]');
+
+      imageView = Container(
+        height: 260,
+        width: 260,
+        child: Image.memory(this.imageForSendToAPI!),
+      );
+    } else {
+      imageView = Container(
+        child: Padding(padding: EdgeInsets.all(10)),
+      );
+    }
+
     if (this.isBusy) {
       return WitsOverflowScaffold(
         auth: this.widget._auth,
@@ -186,6 +227,22 @@ class _QuestionCommentFormState extends State<QuestionCommentForm> {
                         },
                       ),
                     ),
+                    Divider(color: Colors.white, height: 10),
+                    RawMaterialButton(
+                      fillColor: Theme.of(context).hintColor,
+                      child: Icon(
+                        Icons.add_photo_alternate_rounded,
+                        color: Colors.white,
+                      ),
+                      elevation: 8,
+                      onPressed: () {
+                        getImage(true);
+                      },
+                      padding: EdgeInsets.all(15),
+                      shape: CircleBorder(),
+                    ),
+                    Divider(color: Colors.white, height: 10),
+                    imageView,
                     Container(
                       width: double.infinity,
                       // color:Color.fromARGB(1000, 100, 100, 100),

@@ -1,7 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wits_overflow/utils/functions.dart';
+import 'package:wits_overflow/utils/wits_overflow_data.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart' as firebase_core;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Comments extends StatefulWidget {
   /// just displays a list of comments
@@ -13,7 +22,9 @@ class Comments extends StatefulWidget {
   Comments(
       {required this.comments,
       required this.commentsAuthors,
-      required this.onAddComments});
+      required this.onAddComments,
+      auth,
+      firestore});
 
   @override
   _CommentsState createState() => _CommentsState();
@@ -35,6 +46,7 @@ class _CommentsState extends State<Comments> {
             commentedAt: comment['commentedAt'] as Timestamp,
             displayName:
                 this.widget.commentsAuthors[comment['id']]!['displayName'],
+            imageURL: comment['image_url'],
           ));
       this.listComments.add(Divider(
             height: 8,
@@ -127,19 +139,82 @@ class _CommentsState extends State<Comments> {
   }
 }
 
-class Comment extends StatelessWidget {
+class Comment extends StatefulWidget {
   final String displayName;
   final String body;
   final Timestamp commentedAt;
+  final String? imageURL;
 
-  Comment(
-      {required this.displayName,
-      required this.body,
-      required this.commentedAt});
+  late final WitsOverflowData witsOverflowData = WitsOverflowData();
+  late final _firestore;
+  late final _auth;
+
+  Comment({
+    required this.displayName,
+    required this.body,
+    required this.commentedAt,
+    firestore,
+    auth,
+    this.imageURL,
+  }) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
+    this
+        .witsOverflowData
+        .initialize(firestore: this._firestore, auth: this._auth);
+  }
+
+  @override
+  _CommentState createState() => _CommentState();
+}
+
+class _CommentState extends State<Comment> {
+  bool isBusy = true;
+  Widget? questionImage;
+
+  Future<void> getImage() async {
+    String iurl = this.widget.imageURL!;
+    print("imageURL: $iurl");
+    if (this.widget.imageURL != null) {
+      try {
+        Uint8List? uint8list = await firebase_storage.FirebaseStorage.instance
+            .ref(this.widget.imageURL)
+            .getData();
+        if (uint8list != null) {
+          this.questionImage = Image.memory(uint8list);
+          print(this.questionImage);
+        } else {
+          print('[uint8list IS NULL]');
+        }
+      } on firebase_core.FirebaseException catch (e) {
+        print('[FAILED TO FETCH QUESTION IMAGE, ERROR -> $e]');
+      }
+    }
+
+    setState(() {
+      this.isBusy = false;
+    });
+  }
+
+  void initState() {
+    super.initState();
+    this
+        .widget
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    getImage();
+    print("Question Image: $questionImage");
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
+    if (this.isBusy) {
+      Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return Container(
       child: Row(
         children: [
@@ -149,23 +224,46 @@ class Comment extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                 child: RichText(
                   text: TextSpan(
-                    text: this.body + ' - ',
+                    text: this.widget.body + ' - ',
                     style: DefaultTextStyle.of(context).style,
                     children: <TextSpan>[
                       TextSpan(
-                        text: this.displayName,
+                        text: this.widget.displayName,
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.blue,
                         ),
                       ),
                       TextSpan(
-                        text: ' ' + formatDateTime(this.commentedAt.toDate()),
+                        text: ' ' +
+                            formatDateTime(this.widget.commentedAt.toDate()),
                       ),
                     ],
                   ),
                 ),
               )),
+          this.questionImage == null
+              ? Padding(padding: EdgeInsets.all(0))
+              : Container(height: 20, width: 20, child: this.questionImage),
+          this.questionImage == null
+              ? Padding(padding: EdgeInsets.all(0))
+              : Center(
+                  child: new RichText(
+                    text: new TextSpan(
+                      children: [
+                        new TextSpan(
+                          text: 'Click To Download Image',
+                          style:
+                              new TextStyle(color: Colors.blue, fontSize: 20),
+                          recognizer: new TapGestureRecognizer()
+                            ..onTap = () {
+                              launch(this.widget.imageURL!);
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
         ],
       ),
     );

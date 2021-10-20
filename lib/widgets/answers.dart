@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 // import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wits_overflow/forms/question_answer_comment_form.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
@@ -17,6 +21,9 @@ import 'package:wits_overflow/screens/question_and_answers_screen.dart';
 import 'package:wits_overflow/forms/answer_edit_form.dart';
 import 'package:wits_overflow/widgets/comments.dart';
 import 'package:wits_overflow/widgets/widgets.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart' as firebase_core;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Answer extends StatefulWidget {
   final String questionId;
@@ -35,8 +42,11 @@ class Answer extends StatefulWidget {
   final List<Map<String, dynamic>> comments;
   final Map<String, Map<String, dynamic>> commentsAuthors;
 
-  final _firestore;
-  final _auth;
+  final String? imageURL;
+
+  late final WitsOverflowData witsOverflowData = WitsOverflowData();
+  late final _firestore;
+  late final _auth;
 
   Answer({
     required this.id,
@@ -55,9 +65,15 @@ class Answer extends StatefulWidget {
     this.editorId,
     firestore,
     auth,
-  })  : this._firestore =
-            firestore == null ? FirebaseFirestore.instance : firestore,
-        this._auth = auth == null ? FirebaseAuth.instance : auth;
+    this.imageURL,
+  }) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
+    this
+        .witsOverflowData
+        .initialize(firestore: this._firestore, auth: this._auth);
+  }
 
   @override
   _AnswerState createState() => _AnswerState();
@@ -65,15 +81,41 @@ class Answer extends StatefulWidget {
 
 class _AnswerState extends State<Answer> {
   bool isBusy = true;
+  Widget? questionImage;
+
+  Future<void> getImage() async {
+    if (this.widget.imageURL != null) {
+      try {
+        Uint8List? uint8list = await firebase_storage.FirebaseStorage.instance
+            .ref(this.widget.imageURL)
+            .getData();
+        if (uint8list != null) {
+          this.questionImage = Image.memory(uint8list);
+          print(this.questionImage);
+        } else {
+          print('[uint8list IS NULL]');
+        }
+      } on firebase_core.FirebaseException catch (e) {
+        print('[FAILED TO FETCH QUESTION IMAGE, ERROR -> $e]');
+      }
+    }
+
+    setState(() {
+      this.isBusy = false;
+    });
+  }
 
   late Map<String, dynamic>? answer;
-
-  WitsOverflowData witsOverflowData = WitsOverflowData();
 
   @override
   void initState() {
     super.initState();
-    this.getData();
+    this
+        .widget
+        .witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    getImage();
+    print("Question Image: $questionImage");
   }
 
   void changeAnswerStatus({required String answerId}) async {
@@ -120,9 +162,9 @@ class _AnswerState extends State<Answer> {
   }
 
   void getData() async {
-    witsOverflowData.initialize(
-        firestore: this.widget._firestore, auth: this.widget._auth);
-    this.answer = await witsOverflowData.fetchAnswer(
+    widget.witsOverflowData
+        .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
+    this.answer = await widget.witsOverflowData.fetchAnswer(
         questionId: this.widget.questionId, answerId: this.widget.id);
 
     this.setState(() {
@@ -147,7 +189,8 @@ class _AnswerState extends State<Answer> {
         ),
       );
     } else {
-      if (this.widget.authorId == this.witsOverflowData.getCurrentUser()?.uid) {
+      if (this.widget.authorId ==
+          this.widget.witsOverflowData.getCurrentUser()?.uid) {
         return GestureDetector(
           onTap: () {
             this.changeAnswerStatus(answerId: this.widget.id);
@@ -188,7 +231,7 @@ class _AnswerState extends State<Answer> {
       );
     } else {
       if (this.widget.questionAuthorId ==
-          this.witsOverflowData.getCurrentUser()?.uid) {
+          this.widget.witsOverflowData.getCurrentUser()?.uid) {
         return GestureDetector(
           onTap: () {
             this.changeAnswerStatus(answerId: this.widget.id);
@@ -212,6 +255,12 @@ class _AnswerState extends State<Answer> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.isBusy) {
+      Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -247,11 +296,12 @@ class _AnswerState extends State<Answer> {
                         TextButton(
                           key: Key('answer_${this.widget.id}_upvote_btn'),
                           onPressed: () {
-                            witsOverflowData.voteAnswer(
+                            widget.witsOverflowData.voteAnswer(
                               context: context,
                               value: 1,
                               answerId: this.widget.id,
-                              userId: witsOverflowData.getCurrentUser()!.uid,
+                              userId:
+                                  widget.witsOverflowData.getCurrentUser()!.uid,
                               questionId: this.widget.questionId,
                             );
                           },
@@ -282,11 +332,12 @@ class _AnswerState extends State<Answer> {
                         TextButton(
                           key: Key('answer_${this.widget.id}_downvote_btn'),
                           onPressed: () {
-                            witsOverflowData.voteAnswer(
+                            widget.witsOverflowData.voteAnswer(
                               context: context,
                               answerId: this.widget.id,
                               value: -1,
-                              userId: witsOverflowData.getCurrentUser()!.uid,
+                              userId:
+                                  widget.witsOverflowData.getCurrentUser()!.uid,
                               questionId: this.widget.questionId,
                             );
                           },
@@ -327,6 +378,29 @@ class _AnswerState extends State<Answer> {
               ],
             ),
           ),
+
+          this.questionImage == null
+              ? Padding(padding: EdgeInsets.all(0))
+              : Container(child: this.questionImage),
+          this.questionImage == null
+              ? Padding(padding: EdgeInsets.all(0))
+              : Center(
+                  child: new RichText(
+                    text: new TextSpan(
+                      children: [
+                        new TextSpan(
+                          text: 'Click To Download Image',
+                          style:
+                              new TextStyle(color: Colors.blue, fontSize: 20),
+                          recognizer: new TapGestureRecognizer()
+                            ..onTap = () {
+                              launch(this.widget.imageURL!);
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
 
           Container(
             child: Row(
@@ -414,81 +488,6 @@ class _AnswerState extends State<Answer> {
             editorDisplayName: this.widget.editorDisplayName,
             editedAt: this.widget.editedAt,
           ),
-
-          // /// author information
-          // Container(
-          //   decoration: BoxDecoration(
-          //     color: Color.fromRGBO(240, 248, 225, 1),
-          //     border: Border(
-          //       bottom: BorderSide(
-          //         width: 0.5,
-          //         color: Color.fromRGBO(239, 240, 241, 1),
-          //       ),
-          //     ),
-          //   ),
-          //   padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       // user information
-          //       Container(
-          //         child: Row(
-          //           children: [
-          //             // user avatar image
-          //             Container(
-          //                 child: Image(
-          //                     height: 25,
-          //                     width: 25,
-          //                     image: AssetImage(
-          //                         'assets/images/default_avatar.png'))),
-          //
-          //             // user information (display name, metadata)
-          //             Column(
-          //               children: [
-          //                 // user display name
-          //                 Text(this.authorDisplayName,
-          //                     // this.answersUsers[answerId]!.get('displayName'),
-          //                     style: TextStyle(
-          //                       color: Colors.blue,
-          //                     )),
-          //                 // user metadata
-          //                 Row(
-          //                   children: [],
-          //                 ),
-          //               ],
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //
-          //       // datetime
-          //       Container(
-          //         child: Column(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           crossAxisAlignment: CrossAxisAlignment.end,
-          //           children: [
-          //             Text(
-          //               'answered at',
-          //               style: TextStyle(
-          //                 fontWeight: FontWeight.w600,
-          //                 // backgroundColor: Colors.black12,
-          //               ),
-          //             ),
-          //             Text(
-          //               formatDateTime(this.answeredAt.toDate()),
-          //               style: TextStyle(
-          //                 fontWeight: FontWeight.w600,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          //
-          // /// editor information
-          // this._getEditorCard(),
 
           // comments
           Container(
