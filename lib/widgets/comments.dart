@@ -174,8 +174,6 @@ class _CommentState extends State<Comment> {
   Widget? questionImage;
 
   Future<void> getImage() async {
-    String iurl = this.widget.imageURL!;
-    print("imageURL: $iurl");
     if (this.widget.imageURL != null) {
       try {
         Uint8List? uint8list = await firebase_storage.FirebaseStorage.instance
