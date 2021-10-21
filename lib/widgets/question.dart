@@ -75,8 +75,8 @@ class _QuestionWidgetState extends State<QuestionWidget> {
   Widget? questionImage;
 
   Future<void> getImage() async {
-    String iurl = this.widget.imageURL!;
-    print("imageURL: $iurl");
+    // String iurl = this.widget.imageURL!;
+    // print("imageURL: $iurl");
     if (this.widget.imageURL != null) {
       try {
         Uint8List? uint8list = await firebase_storage.FirebaseStorage.instance
@@ -105,7 +105,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
         .witsOverflowData
         .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
     getImage();
-    print("Question Image: $questionImage");
+    // print("Question Image: $questionImage");
   }
 
   Widget build(BuildContext context) {

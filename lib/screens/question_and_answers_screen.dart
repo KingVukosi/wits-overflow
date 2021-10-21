@@ -54,7 +54,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
 
     await witsOverflowData.fetchQuestionAnswers(this.widget.id).then((value) {
       if (value != null) {
-        print('[QUESTION : $question]');
+        // print('[QUESTION : $question]');
         this.questionAnswers = value;
       }
     });
@@ -66,9 +66,9 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
             .getData();
         if (uint8list != null) {
           this.questionImage = Image.memory(uint8list);
-          print(this.question['image_url']);
+          // print(this.question['image_url']);
         } else {
-          print('[uint8list IS NULL]');
+          // print('[uint8list IS NULL]');
         }
       } on firebase_core.FirebaseException catch (e) {
         print('[FAILED TO FETCH QUESTION IMAGE, ERROR -> $e]');

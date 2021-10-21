@@ -492,6 +492,8 @@ class _AnswerState extends State<Answer> {
           // comments
           Container(
             child: Comments(
+              firestore: this.widget._firestore,
+              auth: this.widget._auth,
               comments: this.widget.comments,
               commentsAuthors: this.widget.commentsAuthors,
               onAddComments: () {

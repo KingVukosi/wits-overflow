@@ -18,13 +18,19 @@ class Comments extends StatefulWidget {
   final List<Map<String, dynamic>> comments;
   final Map<String, Map<String, dynamic>> commentsAuthors;
   final onAddComments;
+  late final _firestore;
+  late final _auth;
 
   Comments(
       {required this.comments,
       required this.commentsAuthors,
       required this.onAddComments,
       auth,
-      firestore});
+      firestore}) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
+  }
 
   @override
   _CommentsState createState() => _CommentsState();
@@ -42,6 +48,8 @@ class _CommentsState extends State<Comments> {
     for (var i = 0; i < numComments; i++) {
       Map<String, dynamic> comment = this.widget.comments[i];
       this.listComments.add(Comment(
+            firestore: this.widget._firestore,
+            auth: this.widget._auth,
             body: comment['body'],
             commentedAt: comment['commentedAt'] as Timestamp,
             displayName:
@@ -100,6 +108,8 @@ class _CommentsState extends State<Comments> {
       for (var i = 0; i < this.widget.comments.length; i++) {
         Map<String, dynamic> comment = this.widget.comments[i];
         this.listComments.add(Comment(
+              firestore: this.widget._firestore,
+              auth: this.widget._auth,
               body: comment['body'],
               commentedAt: comment['commentedAt'] as Timestamp,
               displayName:
@@ -174,8 +184,8 @@ class _CommentState extends State<Comment> {
   Widget? questionImage;
 
   Future<void> getImage() async {
-    String iurl = this.widget.imageURL!;
-    print("imageURL: $iurl");
+    // String? iurl = this.widget.imageURL;
+    // print("imageURL: $iurl");
     if (this.widget.imageURL != null) {
       try {
         Uint8List? uint8list = await firebase_storage.FirebaseStorage.instance
