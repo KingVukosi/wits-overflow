@@ -44,7 +44,6 @@ class Answer extends StatefulWidget {
 
   final String? imageURL;
 
-  late final WitsOverflowData witsOverflowData = WitsOverflowData();
   late final _firestore;
   late final _auth;
 
@@ -70,9 +69,6 @@ class Answer extends StatefulWidget {
     this._firestore =
         firestore == null ? FirebaseFirestore.instance : firestore;
     this._auth = auth == null ? FirebaseAuth.instance : auth;
-    this
-        .witsOverflowData
-        .initialize(firestore: this._firestore, auth: this._auth);
   }
 
   @override
@@ -81,6 +77,7 @@ class Answer extends StatefulWidget {
 
 class _AnswerState extends State<Answer> {
   bool isBusy = true;
+  WitsOverflowData witsOverflowData = WitsOverflowData();
   Widget? questionImage;
 
   Future<void> getImage() async {
@@ -111,60 +108,66 @@ class _AnswerState extends State<Answer> {
   void initState() {
     super.initState();
     this
-        .widget
         .witsOverflowData
         .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
     getImage();
-    print("Question Image: $questionImage");
+    // print("Question Image: $questionImage");
   }
 
   void changeAnswerStatus({required String answerId}) async {
     // if the user is the author of the question
 
     // retrieve answer from database
-    CollectionReference<Map<String, dynamic>> questionAnswersCollection =
-        FirebaseFirestore.instance
-            .collection('questions-2')
-            .doc(this.widget.id)
-            .collection('answers');
-    DocumentSnapshot<Map<String, dynamic>> answer =
-        await questionAnswersCollection.doc(answerId).get();
+    if (this.widget.authorId == this.witsOverflowData.getCurrentUser()?.uid) {
+      CollectionReference<Map<String, dynamic>> questionAnswersCollection = this
+          .widget
+          ._firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(this.widget.id)
+          .collection('answers');
+      DocumentSnapshot<Map<String, dynamic>> answer =
+          await questionAnswersCollection.doc(answerId).get();
 
-    bool accepted = (answer.data()!['accepted'] == null)
-        ? false
-        : answer.data()!['accepted'];
+      bool accepted = (answer.data()!['accepted'] == null)
+          ? false
+          : answer.data()!['accepted'];
 
-    bool value = false;
-    if (accepted == true) {
-      // change answer
-      value = false;
-    } else {
-      value = true;
-      // all other answer should change status
-      QuerySnapshot<Map<String, dynamic>> acceptedAnswer =
-          await questionAnswersCollection
-              .where('accepted', isEqualTo: true)
-              .get();
-      for (var i = 0; i < acceptedAnswer.docs.length; i++) {
-        acceptedAnswer.docs.elementAt(i).reference.update({'accepted': false});
+      bool value = false;
+      if (accepted == true) {
+        // change answer
+        value = false;
+      } else {
+        value = true;
+        // all other answer should change status
+        QuerySnapshot<Map<String, dynamic>> acceptedAnswer =
+            await questionAnswersCollection
+                .where('accepted', isEqualTo: true)
+                .get();
+        for (var i = 0; i < acceptedAnswer.docs.length; i++) {
+          acceptedAnswer.docs
+              .elementAt(i)
+              .reference
+              .update({'accepted': false});
+        }
       }
-    }
 
-    answer.reference.update({'accepted': value}).then((value) {
-      showNotification(context, 'Changed answer status');
-      Navigator.push(context,
-          MaterialPageRoute(builder: (BuildContext context) {
-        return QuestionAndAnswersScreen(this.widget.id);
-      })).catchError((error) {
-        showNotification(context, 'Error occurred');
+      answer.reference.update({'accepted': value}).then((value) {
+        showNotification(context, 'Changed answer status');
+        Navigator.push(context,
+            MaterialPageRoute(builder: (BuildContext context) {
+          return QuestionAndAnswersScreen(this.widget.id);
+        })).catchError((error) {
+          showNotification(context, 'Error occurred');
+        });
       });
-    });
+    }
   }
 
   void getData() async {
-    widget.witsOverflowData
+    this
+        .witsOverflowData
         .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
-    this.answer = await widget.witsOverflowData.fetchAnswer(
+    this.answer = await this.witsOverflowData.fetchAnswer(
         questionId: this.widget.questionId, answerId: this.widget.id);
 
     this.setState(() {
@@ -176,6 +179,7 @@ class _AnswerState extends State<Answer> {
     if (this.widget.accepted == true) {
       // if answer is correct
       return GestureDetector(
+        key: Key('id_ans\wer_${this.widget.id}_status'),
         onTap: () {
           this.changeAnswerStatus(answerId: this.widget.id);
         },
@@ -183,14 +187,13 @@ class _AnswerState extends State<Answer> {
           'assets/icons/answer_correct.svg',
           semanticsLabel: 'Feed button',
           placeholderBuilder: (context) {
-            return Icon(Icons.error, color: Colors.deepOrange);
+            return Icon(Icons.error, color: Colors.grey);
           },
           height: 25,
         ),
       );
     } else {
-      if (this.widget.authorId ==
-          this.widget.witsOverflowData.getCurrentUser()?.uid) {
+      if (this.widget.authorId == this.witsOverflowData.getCurrentUser()?.uid) {
         return GestureDetector(
           onTap: () {
             this.changeAnswerStatus(answerId: this.widget.id);
@@ -199,7 +202,7 @@ class _AnswerState extends State<Answer> {
             'assets/icons/answer_correct_placeholder.svg',
             semanticsLabel: 'Feed button',
             placeholderBuilder: (context) {
-              return Icon(Icons.error, color: Colors.deepOrange);
+              return Icon(Icons.error, color: Colors.grey);
             },
             height: 25,
           ),
@@ -231,7 +234,7 @@ class _AnswerState extends State<Answer> {
       );
     } else {
       if (this.widget.questionAuthorId ==
-          this.widget.witsOverflowData.getCurrentUser()?.uid) {
+          this.witsOverflowData.getCurrentUser()?.uid) {
         return GestureDetector(
           onTap: () {
             this.changeAnswerStatus(answerId: this.widget.id);
@@ -296,14 +299,16 @@ class _AnswerState extends State<Answer> {
                         TextButton(
                           key: Key('answer_${this.widget.id}_upvote_btn'),
                           onPressed: () {
-                            widget.witsOverflowData.voteAnswer(
-                              context: context,
-                              value: 1,
-                              answerId: this.widget.id,
-                              userId:
-                                  widget.witsOverflowData.getCurrentUser()!.uid,
-                              questionId: this.widget.questionId,
-                            );
+                            this.witsOverflowData.voteAnswer(
+                                  context: context,
+                                  value: 1,
+                                  answerId: this.widget.id,
+                                  userId: this
+                                      .witsOverflowData
+                                      .getCurrentUser()!
+                                      .uid,
+                                  questionId: this.widget.questionId,
+                                );
                           },
                           style: TextButton.styleFrom(
                             minimumSize: Size(0, 0),
@@ -332,14 +337,16 @@ class _AnswerState extends State<Answer> {
                         TextButton(
                           key: Key('answer_${this.widget.id}_downvote_btn'),
                           onPressed: () {
-                            widget.witsOverflowData.voteAnswer(
-                              context: context,
-                              answerId: this.widget.id,
-                              value: -1,
-                              userId:
-                                  widget.witsOverflowData.getCurrentUser()!.uid,
-                              questionId: this.widget.questionId,
-                            );
+                            this.witsOverflowData.voteAnswer(
+                                  context: context,
+                                  answerId: this.widget.id,
+                                  value: -1,
+                                  userId: this
+                                      .witsOverflowData
+                                      .getCurrentUser()!
+                                      .uid,
+                                  questionId: this.widget.questionId,
+                                );
                           },
                           style: TextButton.styleFrom(
                             minimumSize: Size(0, 0),

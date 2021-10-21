@@ -10,6 +10,7 @@ import 'package:wits_overflow/forms/question_answer_form.dart';
 import 'package:wits_overflow/forms/question_comment_form.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/question.dart';
+import 'package:wits_overflow/widgets/widgets.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 import 'package:wits_overflow/widgets/answers.dart';
 import 'package:wits_overflow/widgets/comments.dart';
@@ -127,18 +128,13 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                   return Text('Error occurred',
                       style: TextStyle(color: Colors.red));
                 } else {
-                  return CircularProgressIndicator(
-                    color: Color.fromRGBO(100, 100, 100, 0.5),
-                  );
+                  return getCircularProgressIndicator();
                 }
               });
         } else if (snapshot.hasError) {
           return Text('Error occurred', style: TextStyle(color: Colors.red));
         } else {
-          return CircularProgressIndicator(
-            color: Color.fromRGBO(100, 100, 100, 0.5),
-          );
-          // return Padding(padding: EdgeInsets.all(0));
+          return getCircularProgressIndicator();
         }
       },
     );
@@ -188,17 +184,13 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                   return Text('Error occurred',
                       style: TextStyle(color: Colors.red));
                 } else {
-                  return CircularProgressIndicator(
-                    color: Color.fromRGBO(100, 100, 100, 0.5),
-                  );
+                  return getCircularProgressIndicator();
                 }
               });
         } else if (commentsSnapshot.hasError) {
           return Text('Error occurred', style: TextStyle(color: Colors.red));
         } else {
-          return CircularProgressIndicator(
-            color: Color.fromRGBO(100, 100, 100, 0.5),
-          );
+          return getCircularProgressIndicator();
         }
       },
     );
@@ -294,9 +286,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                         return Text('Error occurred',
                             style: TextStyle(color: Colors.red));
                       } else {
-                        return CircularProgressIndicator(
-                          color: Color.fromRGBO(100, 100, 100, 0.5),
-                        );
+                        return getCircularProgressIndicator();
                       }
                     },
                   );
@@ -304,9 +294,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                   return Text('Error occurred',
                       style: TextStyle(color: Colors.red));
                 } else {
-                  return CircularProgressIndicator(
-                    color: Color.fromRGBO(100, 100, 100, 0.5),
-                  );
+                  return getCircularProgressIndicator();
                 }
               },
             ));
@@ -321,9 +309,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
         } else if (snapshot.hasError) {
           return Text('Error occurred', style: TextStyle(color: Colors.red));
         } else {
-          return CircularProgressIndicator(
-            color: Color.fromRGBO(100, 100, 100, 0.5),
-          );
+          return getCircularProgressIndicator();
         }
       },
     );

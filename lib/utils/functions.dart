@@ -28,19 +28,6 @@ String capitaliseChar(String char) {
   return result;
 }
 
-dynamic getField(Map<String, dynamic>? map, String field,
-    {dynamic onError, dynamic onNull}) {
-  // onError: string to return when field does not exist
-  if (map == null) {
-    return onNull;
-  }
-  try {
-    return map[field] == null ? onNull : map[field];
-  } catch (e) {
-    return onError;
-  }
-}
-
 String formatDateTime(DateTime datetime) {
   Map<int, String> months = {
     1: 'Jan',

@@ -1,47 +1,70 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wits_overflow/screens/notifications.dart';
+import 'package:wits_overflow/screens/notifications_screen.dart';
 // import 'package:wits_overflow/widgets/comments.dart';
 import 'package:wits_overflow/utils/functions.dart';
 
 import '../utils.dart';
 
 void main() {
-  group('Test comments widget', () {
+  group('Test notifications screen', () {
     late FakeFirebaseFirestore firestore;
     late MockFirebaseAuth auth;
     late Map<String, dynamic> question;
-    late List<Map<String, dynamic>> comments;
+    late Map<String, dynamic> answer;
+    // late List<Map<String, dynamic>> comments;
     late Map<String, dynamic> module;
     late Map<String, dynamic> course;
-    late Map<String, Map<String, dynamic>> commentsAuthors;
+    // late Map<String, Map<String, dynamic>> commentsAuthors;
+    // late List<Map<String, dynamic>> questionVotes;
+    late List<Map<String, dynamic>> answerVotes;
+    late Map<String, dynamic> questionAuthorInfo;
+    // late Map<String, dynamic> questionEditorInfo;
+    late Map<String, dynamic> answerAuthorInfo;
+    late Map<String, dynamic> answerEditorInfo;
 
-    setUp(() async {
-      firestore = FakeFirebaseFirestore();
+    int users = 0;
 
-      // authenticating a user
-      Map<String, dynamic> userInfo = {
-        'uid': 'testUid1',
-        'displayName': 'testFirstName testLastName',
-        'email': 'testEmail@domain.com',
+    Map<String, dynamic> createUserInfo() {
+      users += 1;
+      return {
+        'uid': 'testUid$users',
+        'id': 'testUid$users',
+        'displayName': 'testFirstName$users testLastName$users',
+        'email': 'testEmail$users@domain.com',
         'isAnonymous': false,
         'isEmailVerified': true,
       };
+    }
+
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+      // authenticating a user
+      questionAuthorInfo = createUserInfo();
+
+      // add user information to the database
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(questionAuthorInfo['uid'])
+          .set({
+        'displayName': questionAuthorInfo['displayName'],
+        'email': questionAuthorInfo['email'],
+      });
 
       auth = await loginUser(MockUser(
-        displayName: userInfo['displayName'],
-        email: userInfo['email'],
-        isEmailVerified: userInfo['isEmailVerified'],
-        uid: userInfo['uid'],
-        isAnonymous: userInfo['isAnonymous'],
+        displayName: questionAuthorInfo['displayName'],
+        email: questionAuthorInfo['email'],
+        isEmailVerified: questionAuthorInfo['isEmailVerified'],
+        uid: questionAuthorInfo['uid'],
+        isAnonymous: questionAuthorInfo['isAnonymous'],
       ));
 
-      User user = auth.currentUser!;
+      // User author = auth.currentUser!;
 
       // adding question to the database
       // 1- first by creating course and module
@@ -75,8 +98,8 @@ void main() {
       question = {
         'title': 'test question title 1',
         'body': 'test question body 1',
-        'createdAt': DateTime(2021, 3, 21, 34, 19),
-        'authorId': user.uid,
+        'createdAt': DateTime(2021, 3, 21, 10, 19),
+        'authorId': questionAuthorInfo['uid'],
         'tags': [
           'testTag1',
           'testTag2',
@@ -93,78 +116,159 @@ void main() {
         question['id'] = value.id;
       });
 
-      // TODO: comments should be sorted by date
-      // add comments to the question
-      comments = [
-        // 1
-        {
-          'body': 'test question comment 1',
-          'authorId': user.uid,
-          'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 24, 1)),
-        },
+      // add question comments
+      Map<String, dynamic> commentUser = createUserInfo();
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(commentUser['uid'])
+          .set({
+        'email': commentUser['email'],
+        'displayName': commentUser['displayName'],
+      });
 
+      Map<String, dynamic> questionComment = {
+        'body': 'test question comment 1',
+        'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 4, 12, 13)),
+        'authorId': commentUser['uid'],
+      };
+
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(question['id'])
+          .collection('comments')
+          .add(questionComment)
+          .then((value) {
+        questionComment['id'] = value.id;
+      });
+
+      // optional (we don't need to add question votes in order to increase the
+      // code coverage
+      // add question votes
+
+      answerAuthorInfo = createUserInfo();
+      answerEditorInfo = createUserInfo();
+
+      // add answer author information to the database
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(answerAuthorInfo['uid'])
+          .set({
+        'displayName': answerAuthorInfo['displayName'],
+        'email': answerAuthorInfo['email'],
+        'uid': answerAuthorInfo['uid'],
+      });
+
+      // add answer editor information to the database
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(answerEditorInfo['uid'])
+          .set({
+        'displayName': answerEditorInfo['displayName'],
+        'email': answerEditorInfo['email'],
+        'uid': answerEditorInfo['uid'],
+      });
+
+      // add answer to the database
+      answer = {
+        'accepted': true,
+        'body': 'test question answer 1',
+        'authorId': answerAuthorInfo['uid'],
+        'answeredAt': Timestamp.fromDate(DateTime(2021, 3, 21, 13, 59)),
+      };
+
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(question['id'])
+          .collection('answers')
+          .add(answer)
+          .then((value) {
+        answer['id'] = value.id;
+      });
+
+      // add answer comment
+      Map<String, dynamic> answerCommentAuthor = createUserInfo();
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(answerCommentAuthor['uid'])
+          .set({
+        'displayName': answerCommentAuthor['displayName'],
+        'email': answerCommentAuthor['email'],
+      });
+
+      Map<String, dynamic> answerComment = {
+        'body': 'test question answer comment body 1',
+        'authorId': answerCommentAuthor['uid'],
+        'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 1, 17, 4)),
+      };
+
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(question['id'])
+          .collection('answers')
+          .doc(answer['id'])
+          .collection('comments')
+          .add(answerComment)
+          .then((value) {
+        answerComment['id'] = value.id;
+      });
+
+      // save information of users will vote on the answer
+      List<Map<String, dynamic>> voteUsers = [];
+      for (int i = 4; i < 9; i++) {
+        Map<String, dynamic> userInfo = createUserInfo();
+        await firestore
+            .collection(COLLECTIONS['users'])
+            .doc(userInfo['uid'])
+            .set({
+          'email': userInfo['email'],
+          'displayName': userInfo['displayName'],
+        });
+        voteUsers.add(userInfo);
+      }
+
+      // add votes to the question
+      answerVotes = [
         // 2
         {
-          'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 24, 2)),
-          'body': 'test question comment 2',
-          'authorId': user.uid,
+          'value': 1,
+          'user': voteUsers[0]['uid'],
         },
 
         // 3
         {
-          'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 24, 3)),
-          'body': 'test question comment 3',
-          'authorId': user.uid,
+          'value': 1,
+          'user': voteUsers[1]['uid'],
         },
 
         // 4
         {
-          'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 24, 4)),
-          'body': 'test question comment 4',
-          'authorId': user.uid,
+          'value': 1,
+          'user': voteUsers[2]['uid'],
         },
 
         // 5
         {
-          'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 24, 5)),
-          'body': 'test question comment 5',
-          'authorId': user.uid,
+          'value': 1,
+          'user': voteUsers[3]['uid'],
         },
 
         // 6
         {
-          'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 24, 6)),
-          'body': 'test question comment 6',
-          'authorId': user.uid,
+          'value': -1,
+          'user': voteUsers[4]['uid'],
         },
-
-        // 7
-        {
-          'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 24, 7)),
-          'body': 'test question comment 7',
-          'authorId': user.uid,
-        },
-
-        // 8
-        {
-          'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 24, 8)),
-          'body': 'test question comment 8',
-          'authorId': user.uid,
-        }
       ];
 
-      commentsAuthors = {};
-      for (int i = 0; i < comments.length; i++) {
-        await firestore
+      for (int i = 0; i < answerVotes.length; i++) {
+        firestore
             .collection(COLLECTIONS['questions'])
             .doc(question['id'])
-            .collection('comments')
-            .add(comments[i])
+            .collection('answers')
+            .doc(answer['id'])
+            .collection('answerVotes')
+            .add(answerVotes[i])
             .then((value) {
-          comments[i]['id'] = value.id;
-          commentsAuthors.addAll({
-            value.id: userInfo,
-          });
+          answerVotes[i]['id'] = value.id;
         });
       }
     });
@@ -187,9 +291,6 @@ void main() {
 
       await widgetTester.pumpWidget(testWidget);
       await widgetTester.pump();
-
-      // navigate to
-      // await widgetTester.tap(find.byKey(Key('id_drawer_navigate_to_home')));
     });
   });
 }

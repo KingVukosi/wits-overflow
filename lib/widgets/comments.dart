@@ -214,7 +214,7 @@ class _CommentState extends State<Comment> {
         .witsOverflowData
         .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
     getImage();
-    print("Question Image: $questionImage");
+    // print("Question Image: $questionImage");
   }
 
   @override
