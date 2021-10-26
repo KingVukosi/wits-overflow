@@ -44,11 +44,15 @@ void main() {
     late Map<String, dynamic> answerAuthorInfo;
     late Map<String, dynamic> answerEditorInfo;
 
-    Map<String, dynamic> createUserInfo(int number) {
+    int users = 0;
+
+    Map<String, dynamic> createUserInfo() {
+      users += 1;
       return {
-        'uid': 'testUid$number',
-        'displayName': 'testFirstName$number testLastName$number',
-        'email': 'testEmail$number@domain.com',
+        'uid': 'testUid$users',
+        'id': 'testUid$users',
+        'displayName': 'testFirstName$users testLastName$users',
+        'email': 'testEmail$users@domain.com',
         'isAnonymous': false,
         'isEmailVerified': true,
       };
@@ -57,7 +61,7 @@ void main() {
     setUp(() async {
       firestore = FakeFirebaseFirestore();
       // authenticating a user
-      questionAuthorInfo = createUserInfo(1);
+      questionAuthorInfo = createUserInfo();
 
       // add user information to the database
       await firestore
@@ -128,8 +132,8 @@ void main() {
         question['id'] = value.id;
       });
 
-      answerAuthorInfo = createUserInfo(2);
-      answerEditorInfo = createUserInfo(3);
+      answerAuthorInfo = createUserInfo();
+      answerEditorInfo = createUserInfo();
 
       // add answer author information to the database
       await firestore
@@ -171,7 +175,7 @@ void main() {
       // save information of users will vote on the answer
       List<Map<String, dynamic>> voteUsers = [];
       for (int i = 4; i < 9; i++) {
-        Map<String, dynamic> userInfo = createUserInfo(i);
+        Map<String, dynamic> userInfo = createUserInfo();
         await firestore
             .collection(COLLECTIONS['users'])
             .doc(userInfo['uid'])
@@ -184,12 +188,6 @@ void main() {
 
       // add votes to the question
       votes = [
-        // // 1
-        // {
-        //   'value': 1,
-        //   'user': questionAuthorInfo['uid'],
-        // },
-
         // 2
         {
           'value': 1,
@@ -414,6 +412,43 @@ void main() {
       // tap the down upvote button
       await widgetTester.tap(find.byKey(
           Key('id_answer_navigate_to_answer_edit_form_${answer['id']}')));
+    });
+
+    testWidgets('change answer status', (WidgetTester widgetTester) async {
+      Answer answerWidget = Answer(
+        id: answer['id'],
+        body: answer['body'],
+        answeredAt: answer['answeredAt'],
+        votes: votes,
+        accepted: answer['accepted'] == null ? false : answer['accepted'],
+        authorId: answerAuthorInfo['uid'],
+        authorDisplayName: answerAuthorInfo['displayName'],
+        questionId: question['id'],
+        questionAuthorId: questionAuthorInfo['uid'],
+        editorDisplayName: answerEditorInfo['displayName'],
+        editedAt: Timestamp.fromDate(DateTime(2021, 3, 24, 1, 14)),
+        firestore: firestore,
+        auth: auth,
+      );
+
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              child: MaterialApp(
+                home: Scaffold(
+                    body: Center(
+                        child: Container(
+                            child: ListView(children: <Widget>[
+                  answerWidget,
+                ])))),
+              )));
+
+      await widgetTester.pumpWidget(testWidget);
+
+      // tap the down upvote button
+      await widgetTester
+          .tap(find.byKey(Key('id_answer_${answer['id']}_status')));
     });
   });
 

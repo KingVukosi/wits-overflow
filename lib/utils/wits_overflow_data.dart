@@ -1,6 +1,12 @@
 import 'dart:async';
+// import 'dart:io';
+/**/
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+// import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wits_overflow/utils/functions.dart';
 
 /// before any class methods can be called, you have to
@@ -295,9 +301,80 @@ class WitsOverflowData {
     return results;
   }
 
-  Future<DocumentReference<Map<String, dynamic>>> addQuestion(
-      Map<String, dynamic> data) async {
-    return questions.add(data);
+  Future<String?> uploadFile(XFile image) async {
+    // print('[uploadFile -> path = ${image.path}]');
+    // int index = _image.path.lastIndexOf('.');
+    // String ext = _image.path.substring(index, _image.path.length);
+    String path = image.name;
+    print('[UPLOADING IMAGE WITH PATH: $path]');
+    String? url;
+    Uint8List data = await image.readAsBytes();
+    firebase_storage.Reference ref =
+        firebase_storage.FirebaseStorage.instance.ref('images/$path');
+    // try {
+    // Upload raw data.
+    await ref.putData(data);
+    url = await ref.getDownloadURL();
+    return url;
+    // Uint8List? downloadedData = await ref.getData();
+    // prints -> Hello World!
+    // print(utf8.decode(downloadedData));
+    // }
+    // on firebase_core.FirebaseException catch (e) {
+    // e.g, e.code == 'canceled'
+    // }
+
+    // await FirebaseStorage.instance
+    //     .ref()
+    //     .child(path).putFile(image).then((p0) async {
+    //       url = await p0.ref.getDownloadURL();
+    // });
+
+    // return url;
+
+    // StorageUploadTask uploadTask = storageReference.putFile(_image);
+    // await uploadTask.onComplete;
+    // print('File Uploaded');
+    // String returnURL;
+    // await storageReference.getDownloadURL().then((fileURL) {
+    //   returnURL =  fileURL;
+    // });
+    // return returnURL;
+  }
+
+  Future<Map<String, dynamic>> addQuestion({
+    required String moduleId,
+    required String courseId,
+    required String title,
+    required String body,
+    required String authorId,
+    required DateTime createdAt,
+    required List<String> tags,
+    XFile? image,
+  }) async {
+    print('[ADD QUESTION]');
+    String? url;
+    if (image != null) {
+      url = await this.uploadFile(image);
+    }
+    print('[ADDED IMAGE]');
+
+    print('[ADDING QUESTION INFO]');
+    Map<String, dynamic> question = {
+      'authorId': authorId,
+      'moduleId': moduleId,
+      'courseId': courseId,
+      'title': title,
+      'body': body,
+      'createdAt': createdAt,
+      'tags': tags,
+      'image_url': url,
+    };
+
+    await this.questions.add(question).then((value) {
+      question['id'] = value.id;
+    });
+    return question;
   }
 
   Future<void> addFavouriteQuestion(
@@ -395,16 +472,23 @@ class WitsOverflowData {
     }
   }
 
-  Future<Map<String, dynamic>?> postQuestionComment(
-      {required String questionId,
-      required String body,
-      required String authorId,
-      DateTime? commentedAt}) async {
+  Future<Map<String, dynamic>?> postQuestionComment({
+    required String questionId,
+    required String body,
+    required String authorId,
+    DateTime? commentedAt,
+    XFile? image,
+  }) async {
+    String? url;
+    if (image != null) {
+      url = await this.uploadFile(image);
+    }
     Map<String, dynamic>? comment;
     Map<String, dynamic> data = {
       'body': body,
       'authorId': authorId,
       'commentedAt': commentedAt == null ? DateTime.now() : commentedAt,
+      'image_url': url,
     };
     await this
         .questions
@@ -418,17 +502,24 @@ class WitsOverflowData {
     return comment;
   }
 
-  Future<Map<String, dynamic>?> postQuestionAnswerComment(
-      {required String questionId,
-      required String answerId,
-      required String body,
-      required String authorId,
-      DateTime? commentedAt}) async {
+  Future<Map<String, dynamic>?> postQuestionAnswerComment({
+    required String questionId,
+    required String answerId,
+    required String body,
+    required String authorId,
+    DateTime? commentedAt,
+    XFile? image,
+  }) async {
+    String? url;
+    if (image != null) {
+      url = await this.uploadFile(image);
+    }
     Map<String, dynamic>? comment;
     Map<String, dynamic> data = {
       'body': body,
       'authorId': authorId,
       'commentedAt': commentedAt == null ? DateTime.now() : commentedAt,
+      'image_url': url,
     };
     await this
         .questions
@@ -444,16 +535,23 @@ class WitsOverflowData {
     return comment;
   }
 
-  Future<Map<String, dynamic>?> postAnswer(
-      {required String questionId,
-      required String authorId,
-      required String body,
-      DateTime? answeredAt}) async {
+  Future<Map<String, dynamic>?> postAnswer({
+    required String questionId,
+    required String authorId,
+    required String body,
+    DateTime? answeredAt,
+    XFile? image,
+  }) async {
     // TODO: check id user has already voted, if yes, then throw error
+    String? url;
+    if (image != null) {
+      url = await this.uploadFile(image);
+    }
     Map<String, dynamic>? answer;
     await this.questions.doc(questionId).collection('answers').add({
       'authorId': authorId,
       'body': body,
+      'image_url': url,
       'answeredAt': answeredAt == null ? DateTime.now() : answeredAt
     }).then((value) {
       answer = {

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wits_overflow/screens/question_and_answers_screen.dart';
+import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
 import '../utils.dart';
@@ -35,185 +36,268 @@ import '../utils.dart';
 ///
 
 void main() {
-  group('Test screens', () {
-    testWidgets('Test question and answers screen',
-        (WidgetTester tester) async {
-      // Populate the fake database.
-      final firestore = FakeFirebaseFirestore();
+  group('Test question and answers screen', () {
+    late FakeFirebaseFirestore firestore;
+    late MockFirebaseAuth auth;
+    late Map<String, dynamic> question;
+    late Map<String, dynamic> answer;
+    // late List<Map<String, dynamic>> comments;
+    late Map<String, dynamic> module;
+    late Map<String, dynamic> course;
+    // late Map<String, Map<String, dynamic>> commentsAuthors;
+    // late List<Map<String, dynamic>> questionVotes;
+    late List<Map<String, dynamic>> answerVotes;
+    late Map<String, dynamic> questionAuthorInfo;
+    // late Map<String, dynamic> questionEditorInfo;
+    late Map<String, dynamic> answerAuthorInfo;
+    late Map<String, dynamic> answerEditorInfo;
 
-      // add question author information to the database
-      String questionAuthorDisplayName = 'testFirstName1 testLastName1';
-      String questionAuthorEmail = 'testEmail@domain.com';
-      Map<String, dynamic> questionAuthor = {
-        'displayName': questionAuthorDisplayName,
-        'email': questionAuthorEmail,
+    int users = 0;
+
+    Map<String, dynamic> createUserInfo() {
+      users += 1;
+      return {
+        'uid': 'testUid$users',
+        'id': 'testUid$users',
+        'displayName': 'testFirstName$users testLastName$users',
+        'email': 'testEmail$users@domain.com',
+        'isAnonymous': false,
+        'isEmailVerified': true,
       };
-      await firestore.collection('users').add(questionAuthor).then((value) {
-        questionAuthor.addAll({'id': value.id});
+    }
+
+    setUp(() async {
+      firestore = FakeFirebaseFirestore();
+      // authenticating a user
+      questionAuthorInfo = createUserInfo();
+
+      // add user information to the database
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(questionAuthorInfo['uid'])
+          .set({
+        'displayName': questionAuthorInfo['displayName'],
+        'email': questionAuthorInfo['email'],
       });
 
-      final auth = await loginUser(
-        MockUser(
-          uid: questionAuthor['id'],
-          displayName: questionAuthor['displayName'],
-          email: questionAuthor['email'],
-          isAnonymous: false,
-          isEmailVerified: true,
-        ),
-      );
+      auth = await loginUser(MockUser(
+        displayName: questionAuthorInfo['displayName'],
+        email: questionAuthorInfo['email'],
+        isEmailVerified: questionAuthorInfo['isEmailVerified'],
+        uid: questionAuthorInfo['uid'],
+        isAnonymous: questionAuthorInfo['isAnonymous'],
+      ));
 
-      // add course
-      String courseName = 'computer science';
-      String courseCode = 'coms';
-      Map<String, dynamic> course = {
-        'name': courseName,
-        'code': courseCode,
+      // User author = auth.currentUser!;
+
+      // adding question to the database
+      // 1- first by creating course and module
+      // 2 - then finally add the question
+      course = {
+        'name': 'Computer Science',
+        'code': 'COMS',
       };
 
-      await firestore.collection('courses-2').add(course).then((value) {
-        course.addAll({'id': value.id});
+      await firestore
+          .collection(COLLECTIONS['courses'])
+          .add(course)
+          .then((value) {
+        course['id'] = value.id;
       });
 
-      // add module
-      String moduleName = 'software design';
-      String moduleCode = 'coms3009';
-      String moduleCourseId = course['id'];
-
-      Map<String, dynamic> module = {
-        'name': moduleName,
-        'code': moduleCode,
-        'courseId': moduleCourseId,
-      };
-      await firestore.collection('modules').add(module).then((value) {
-        module.addAll({'id': value.id});
-      });
-
-      // add question information to the database
-      String questionTitle = 'test question title 1';
-      String questionBody = 'test question body 1';
-      List<String> tags = ['tag_1', 'tag_2', 'tag_3'];
-      Timestamp createdAt = Timestamp.fromDate(DateTime(2021, 4, 21, 13, 14));
-
-      Map<String, dynamic> question = {
-        'title': questionTitle,
-        'body': questionBody,
-        'authorId': questionAuthor['id'],
-        'moduleId': module['id'],
+      module = {
+        'name': 'Software Design Project',
+        'code': 'COMS3011',
         'courseId': course['id'],
-        'createdAt': createdAt,
-        'tags': tags,
       };
-      await firestore.collection('questions-2').add(question).then((value) {
-        question.addAll({'id': value.id});
+
+      await firestore
+          .collection(COLLECTIONS['modules'])
+          .add(module)
+          .then((value) {
+        module['id'] = value.id;
       });
 
+      // 2 - add question to the database
+      question = {
+        'title': 'test question title 1',
+        'body': 'test question body 1',
+        'createdAt': DateTime(2021, 3, 21, 10, 19),
+        'authorId': questionAuthorInfo['uid'],
+        'tags': [
+          'testTag1',
+          'testTag2',
+          'testTag3',
+        ],
+        'courseId': course['id'],
+        'moduleId': module['id'],
+      };
+
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .add(question)
+          .then((value) {
+        question['id'] = value.id;
+      });
+
+      // add question comments
+      Map<String, dynamic> commentUser = createUserInfo();
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(commentUser['uid'])
+          .set({
+        'email': commentUser['email'],
+        'displayName': commentUser['displayName'],
+      });
+
+      Map<String, dynamic> questionComment = {
+        'body': 'test question comment 1',
+        'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 4, 12, 13)),
+        'authorId': commentUser['uid'],
+      };
+
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(question['id'])
+          .collection('comments')
+          .add(questionComment)
+          .then((value) {
+        questionComment['id'] = value.id;
+      });
+
+      // optional (we don't need to add question votes in order to increase the
+      // code coverage
       // add question votes
-      //  * add question votes users
-      //  * add question votes
 
-      // right now the code only cares about number of votes
-      // not who voted
-      // therefore its okay to
-      List<Map<String, dynamic>> questionVotes = [
-        {'value': 1},
-        {'value': 1},
-        {'value': 1},
-        {'value': 1},
-        {'value': -1},
-      ];
+      answerAuthorInfo = createUserInfo();
+      answerEditorInfo = createUserInfo();
 
-      for (var i = 0; i < questionVotes.length; i++) {
+      // add answer author information to the database
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(answerAuthorInfo['uid'])
+          .set({
+        'displayName': answerAuthorInfo['displayName'],
+        'email': answerAuthorInfo['email'],
+        'uid': answerAuthorInfo['uid'],
+      });
+
+      // add answer editor information to the database
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(answerEditorInfo['uid'])
+          .set({
+        'displayName': answerEditorInfo['displayName'],
+        'email': answerEditorInfo['email'],
+        'uid': answerEditorInfo['uid'],
+      });
+
+      // add answer to the database
+      answer = {
+        'accepted': true,
+        'body': 'test question answer 1',
+        'authorId': answerAuthorInfo['uid'],
+        'answeredAt': Timestamp.fromDate(DateTime(2021, 3, 21, 13, 59)),
+      };
+
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(question['id'])
+          .collection('answers')
+          .add(answer)
+          .then((value) {
+        answer['id'] = value.id;
+      });
+
+      // add answer comment
+      Map<String, dynamic> answerCommentAuthor = createUserInfo();
+      await firestore
+          .collection(COLLECTIONS['users'])
+          .doc(answerCommentAuthor['uid'])
+          .set({
+        'displayName': answerCommentAuthor['displayName'],
+        'email': answerCommentAuthor['email'],
+      });
+
+      Map<String, dynamic> answerComment = {
+        'body': 'test question answer comment body 1',
+        'authorId': answerCommentAuthor['uid'],
+        'commentedAt': Timestamp.fromDate(DateTime(2021, 3, 1, 17, 4)),
+      };
+
+      await firestore
+          .collection(COLLECTIONS['questions'])
+          .doc(question['id'])
+          .collection('answers')
+          .doc(answer['id'])
+          .collection('comments')
+          .add(answerComment)
+          .then((value) {
+        answerComment['id'] = value.id;
+      });
+
+      // save information of users will vote on the answer
+      List<Map<String, dynamic>> voteUsers = [];
+      for (int i = 4; i < 9; i++) {
+        Map<String, dynamic> userInfo = createUserInfo();
         await firestore
-            .collection('questions-2')
-            .doc(question['id'])
-            .collection('votes')
-            .add(questionVotes[i]);
-      }
-
-      // add question answers
-      //  * add question answer users
-      //  * add question answers
-      //  *
-      // one answers should be accepted
-
-      List<Map<String, dynamic>> answerAuthors = [
-        {
-          'displayName': 'answerFirstName1 answerLastName1',
-          'email': 'answerEmail1@domain.com',
-        },
-        {
-          'displayName': 'answerFirstName2 answerLastName2',
-          'email': 'answerEmail2@domain.com',
-        },
-        {
-          'displayName': 'answerFirstName3 answerLastName3',
-          'email': 'answerEmail3@domain.com',
-        },
-      ];
-
-      for (var i = 0; i < answerAuthors.length; i++) {
-        await firestore.collection('users').add(answerAuthors[i]).then((value) {
-          answerAuthors[i].addAll({'id': value.id});
+            .collection(COLLECTIONS['users'])
+            .doc(userInfo['uid'])
+            .set({
+          'email': userInfo['email'],
+          'displayName': userInfo['displayName'],
         });
+        voteUsers.add(userInfo);
       }
 
-      // add answers (with votes) to database
-      List<Map<String, dynamic>> answers = [
+      // add votes to the question
+      answerVotes = [
+        // 2
         {
-          'fields': {
-            'body': 'test answer body 1',
-            'authorId': answerAuthors[1]['id'],
-            'answeredAt': Timestamp.fromDate(DateTime(2021, 4, 30, 7, 11)),
-            'accepted': false,
-          },
-          'votes': <Map<String, dynamic>>[
-            {'value': 1},
-            {'value': 1},
-            {'value': 1},
-            {'value': 1},
-            {'value': -1},
-          ],
+          'value': 1,
+          'user': voteUsers[0]['uid'],
         },
+
+        // 3
         {
-          'fields': {
-            'body': 'test answer body 3',
-            'authorId': answerAuthors[1]['id'],
-            'answeredAt': Timestamp.fromDate(DateTime(2021, 5, 1, 21, 21)),
-            'accepted': false,
-          },
-          'votes': <Map<String, dynamic>>[
-            {'value': 1},
-            {'value': 1},
-          ],
+          'value': 1,
+          'user': voteUsers[1]['uid'],
         },
+
+        // 4
         {
-          'fields': {
-            'body': 'test answer body 3',
-            'authorId': answerAuthors[2]['id'],
-            'answeredAt': Timestamp.fromDate(DateTime(2021, 5, 23, 10, 5)),
-            'accepted': false,
-          },
-          'votes': <Map<String, dynamic>>[
-            {'value': 1},
-          ],
-        }
+          'value': 1,
+          'user': voteUsers[2]['uid'],
+        },
+
+        // 5
+        {
+          'value': 1,
+          'user': voteUsers[3]['uid'],
+        },
+
+        // 6
+        {
+          'value': -1,
+          'user': voteUsers[4]['uid'],
+        },
       ];
 
-      for (var i = 0; i < answers.length; i++) {
-        await firestore
-            .collection('questions-2')
+      for (int i = 0; i < answerVotes.length; i++) {
+        firestore
+            .collection(COLLECTIONS['questions'])
             .doc(question['id'])
             .collection('answers')
-            .add(answers[i]['fields'])
-            .then((value) async {
-          answers[i]['fields']['id'] = value.id;
-          List<Map<String, dynamic>> v = answers[i]['votes'];
-          for (int j = 0; j < v.length; j++) {
-            await value.collection('votes').add(v[j]);
-          }
+            .doc(answer['id'])
+            .collection('answerVotes')
+            .add(answerVotes[i])
+            .then((value) {
+          answerVotes[i]['id'] = value.id;
         });
       }
+    });
 
+    testWidgets('displays all valid information', (WidgetTester tester) async {
       Widget questionAndAnswersScreen = new QuestionAndAnswersScreen(
         question['id'],
         firestore: firestore,
@@ -234,10 +318,16 @@ void main() {
           ));
 
       await tester.pumpWidget(testWidget);
-      await tester.pump(Duration(seconds: 5));
+      await tester.pump(Duration(seconds: 30));
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      // find.byType(Text).evaluate().forEach((element) {
+      //   print('[QUESTION AND ANSWERS: text widget -> $element]');
+      // });
 
       // test question basics
-      // expect(find.textContaining(question['body']), findsOneWidget);
+      expect(find.textContaining(question['body']), findsOneWidget);
     });
   });
 }
