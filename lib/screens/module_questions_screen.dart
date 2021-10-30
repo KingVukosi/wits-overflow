@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wits_overflow/forms/quiz_create_form.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/question_summary.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
@@ -82,28 +83,53 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
     if (this._loading == true) {
       return Center(child: CircularProgressIndicator());
     }
+
+    List<Widget> children = [];
+    children.add(
+      Row(
+        children: [
+          TextButton(
+            child: Text('Create new quiz'),
+            onPressed: () {
+              Navigator.push(
+                this.context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return QuizCreateForm(
+                    moduleId: this.widget.moduleId,
+                    firestore: this.widget._firestore,
+                    auth: this.widget._auth,
+                  );
+                }),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    this.questions.forEach((question) {
+      List<Map<String, dynamic>> questionVotes =
+          this.questionVotes[question['id']] == null
+              ? []
+              : this.questionVotes[question['id']]!;
+      children.add(QuestionSummary(
+        title: question['title'],
+        questionId: question['id'],
+        createdAt: question['createdAt'],
+        answers: this.questionAnswers[question['id']]!,
+        authorDisplayName: this.questionAuthors[question['id']]?['displayName'],
+        tags: question['tags'],
+        votes: questionVotes,
+      ));
+    });
+    // Map<String, dynamic> question = this.questions[index];
+
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
       auth: this.widget._auth,
-      body: ListView.builder(
-          itemCount: this.questions.length,
-          itemBuilder: (context, index) {
-            Map<String, dynamic> question = this.questions[index];
-            List<Map<String, dynamic>> questionVotes =
-                this.questionVotes[question['id']] == null
-                    ? []
-                    : this.questionVotes[question['id']]!;
-            return QuestionSummary(
-              title: question['title'],
-              questionId: question['id'],
-              createdAt: question['createdAt'],
-              answers: this.questionAnswers[question['id']]!,
-              authorDisplayName: this.questionAuthors[question['id']]
-                  ?['displayName'],
-              tags: question['tags'],
-              votes: questionVotes,
-            );
-          }),
+      body: Column(
+        children: children,
+      ),
     );
   }
 }
