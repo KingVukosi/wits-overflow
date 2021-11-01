@@ -56,13 +56,17 @@ void showNotification(context, message, {type = 'primary'}) {
   } else if (type == 'warning') {
     bgColor = Colors.orange;
   } else {
-    bgColor = Colors.blue;
+    bgColor = Colors.black45;
   }
 
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(message),
-    backgroundColor: bgColor,
-  ));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+
+      // width: getContainerWidth(width: MediaQuery.of(context).size.width, maxWidth: 600),
+      content: Text(message),
+      backgroundColor: bgColor,
+    )
+  );
 }
 
 const Map COLLECTIONS = {
@@ -84,7 +88,7 @@ int countVotes(List<Map<String, dynamic>> votes) {
 /// helper function to add responsive
 double getContainerWidth({required double width, double maxWidth = 720}) {
   // mobile phones
-  late double w;
+  double w = maxWidth;
   if (width <= 600) {
     w = width * 97.5 / 100;
   } else if (600 < width && width <= 768) {
