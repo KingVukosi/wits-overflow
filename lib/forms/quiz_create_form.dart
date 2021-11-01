@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wits_overflow/screens/module_questions_screen.dart';
+import 'package:wits_overflow/screens/module_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
@@ -63,7 +63,6 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
         return SimpleDialog(
           title: Text('Question Type'),
           children: [
-
             SimpleDialogOption(
               child: const Text('Number Question'),
               onPressed: () {
@@ -99,7 +98,6 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                 });
               },
             ),
-
             SimpleDialogOption(
               child: Text(
                 'True or False Question',
@@ -133,7 +131,6 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                 });
               },
             ),
-
             SimpleDialogOption(
               child: Text(
                 'Single Answer Multiple Choice Question',
@@ -160,8 +157,7 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                   } else {
                     print(
                         '[RETURNED VALUE FROM SingleAnswerMCQCreateForm $question]');
-                    question.addAll(
-                        {'type': QuestionType.SingleAnswerMCQ});
+                    question.addAll({'type': QuestionType.SingleAnswerMCQ});
                     this.setState(() {
                       this.questions.insert(questionNum, question);
                     });
@@ -169,7 +165,6 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                 });
               },
             ),
-
             SimpleDialogOption(
               child: Text(
                 'Multiple Answers Multiple Choice Question',
@@ -195,8 +190,7 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                   } else {
                     print(
                         '[RETURNED VALUE FROM MultipleAnswersMCQCreateForm $question]');
-                    question.addAll(
-                        {'type': QuestionType.MultipleAnswersMCQ});
+                    question.addAll({'type': QuestionType.MultipleAnswersMCQ});
                     this.setState(() {
                       this.questions.insert(questionNum, question);
                     });
@@ -204,18 +198,13 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                 });
               },
             ),
-
           ],
         );
       },
     );
   }
 
-
-  Future<void> _publishQuiz() async{
-
-
-
+  Future<void> _publishQuiz() async {
     DateTime dueDateTime = DateTime(
       this._pickedDueDate!.year,
       this._pickedDueDate!.month,
@@ -224,20 +213,6 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
       this._pickedDueTime!.hour,
     );
 
-    if(DateTime.now().microsecondsSinceEpoch < DateTime(2021, 11, 1, 17, 25).microsecondsSinceEpoch){
-      // FirebaseFirestore.instance.collection('quizzes').getDocuments().then((snapshot) {
-      //   for (DocumentSnapshot ds in snapshot.documents){
-      //     ds.reference.delete();
-      //   });
-      // });
-    // FirebaseFirestore.instance.collection('quizzes').get().then((value) => null)
-      this.widget._firestore.collection('quizzes').get().then((snapshot) {
-        for (DocumentSnapshot ds in snapshot.docs){
-          ds.reference.delete();
-        }
-      });
-    }
-
     await this.widget._firestore.collection('quizzes').add({
       'dueDate': dueDateTime,
       'title': this.titleController.text,
@@ -245,89 +220,34 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
       'author': this.widget._auth.currentUser!.uid,
       'moduleId': this.widget.moduleId,
     }).then((DocumentReference quiz) async {
-        // int i = 0;
-        // Future.wait(this.questions.map((question){
-        //   question = question as Map<String, dynamic>;
-        //   question.addAll({'number': i});
-        //
-        //   if(question['type'] == QuestionType.NumberQuestion){
-        //     question['type'] = 'NumberQuestion';
-        //   }
-        //   else if(question['type'] == QuestionType.TrueOrFalse){
-        //     question['type'] = 'TrueOrFalse';
-        //   }
-        //   else if(question['type'] == QuestionType.SingleAnswerMCQ){
-        //     question['type'] = 'SingleAnswerMCQ';
-        //   }
-        //   else if(question['type'] == QuestionType.MultipleAnswersMCQ){
-        //     question['type'] = 'MultipleAnswersMCQ';
-        //   }
-        //   i++;
-        //   return quiz.collection('questions').add(question);
-        // }).toList()).then((List<DocumentReference<Map<String, dynamic>>> sQuestions){
-        //   showNotification(context, 'Successfully added quiz to the database', type: 'success');
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (BuildContext context){
-        //         return ModuleQuestionsScreen(moduleId: this.widget.moduleId);
-        //       }
-        //     ),
-        //   );
-        // });
-
-      for(int i = 0; i < this.questions.length; i++){
+      for (int i = 0; i < this.questions.length; i++) {
         Map<String, dynamic> question = this.questions[i];
 
-        // print('0 -> [TRAVERSING QUESTIONS -> $i, question -> $question]');
         int number = i + 1;
-        // Map<String, dynamic> m = {'number': number};
         question['number'] = number;
-        // question.addAll(m);
 
-        print('1 -> [TRAVERSING QUESTIONS -> $i, question -> $question]');
-        if(question['type'] == QuestionType.NumberQuestion){
-
-          print('2 -> [TRAVERSING QUESTIONS -> $i, question -> $question]');
+        if (question['type'] == QuestionType.NumberQuestion) {
           question.update('type', (value) => 'NumberQuestion');
-          // question['type'] = 'NumberQuestion';
-        }
-        else if(question['type'] == QuestionType.TrueOrFalse){
-          // question['type'] = 'TrueOrFalse';
-          print('2 -> [TRAVERSING QUESTIONS -> $i, question -> $question]');
+        } else if (question['type'] == QuestionType.TrueOrFalse) {
           question.update('type', (value) => 'TrueOrFalse');
-        }
-        else if(question['type'] == QuestionType.SingleAnswerMCQ){
-          // question['type'] = 'SingleAnswerMCQ';
-          print('2 -> [TRAVERSING QUESTIONS -> $i, question -> $question]');
+        } else if (question['type'] == QuestionType.SingleAnswerMCQ) {
           question.update('type', (value) => 'SingleAnswerMCQ');
-        }
-        else if(question['type'] == QuestionType.MultipleAnswersMCQ){
-          // question['type'] = 'MultipleAnswersMCQ';
-          print('2 -> [TRAVERSING QUESTIONS -> $i, question -> $question]');
+        } else if (question['type'] == QuestionType.MultipleAnswersMCQ) {
           question.update('type', (value) => 'MultipleAnswersMCQ');
         }
-        print('3 -> [TRAVERSING QUESTIONS -> $i, question -> $question]');
         await quiz.collection('questions').add(question);
-        // int i = 1;
-        //     .onError((error, stackTrace){
-        //   showNotification(context, 'Error occurred while submitting data', type: 'error');
-        //   return null;
-        // });
       }
     });
 
-    showNotification(context, 'Successfully added quiz to database', type: 'success');
+    showNotification(context, 'Successfully added quiz to database',
+        type: 'success');
     await Future.delayed(Duration(seconds: 3));
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (BuildContext context){
-          return ModuleQuestionsScreen(moduleId: this.widget.moduleId);
-        }
-      ),
+      MaterialPageRoute(builder: (BuildContext context) {
+        return ModuleQuestionsScreen(moduleId: this.widget.moduleId);
+      }),
     );
-
   }
 
   @override
@@ -351,7 +271,7 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
     if (question['type'] == QuestionType.SingleAnswerMCQ) {
       question['choices'].forEach((String choice) {
         late ListTile choiceListTile;
-        if(question['answer'] == choice){
+        if (question['answer'] == choice) {
           choiceListTile = ListTile(
             title: RichText(
               text: TextSpan(
@@ -363,14 +283,12 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                       style: TextStyle(
                         color: Colors.blue,
                         fontSize: 10,
-                      )
-                  ),
+                      )),
                 ],
               ),
             ),
           );
-        }
-        else{
+        } else {
           choiceListTile = ListTile(
             title: Text(
               choice,
@@ -382,11 +300,10 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
           choiceListTile,
         );
       });
-    }
-    else if(question['type'] == QuestionType.MultipleAnswersMCQ){
+    } else if (question['type'] == QuestionType.MultipleAnswersMCQ) {
       question['choices'].forEach((String choice) {
         late ListTile choiceListTile;
-        if((question['answers'] as List).contains(choice)){
+        if ((question['answers'] as List).contains(choice)) {
           choiceListTile = ListTile(
             title: RichText(
               text: TextSpan(
@@ -398,14 +315,12 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                       style: TextStyle(
                         color: Colors.blue,
                         fontSize: 10,
-                      )
-                  ),
+                      )),
                 ],
               ),
             ),
           );
-        }
-        else{
+        } else {
           choiceListTile = ListTile(
             title: Text(
               choice,
@@ -416,37 +331,31 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
           choiceListTile,
         );
       });
-    }
-    else if (question['type'] == QuestionType.NumberQuestion) {
-
+    } else if (question['type'] == QuestionType.NumberQuestion) {
       children.add(
         Container(
-          child: ListTile(
-            title: RichText(
-              text: TextSpan(
-                text: '${question['answer']} ',
-                style: TextStyle(color: Colors.blue),
-                children: const <TextSpan>[
-                  TextSpan(
+            child: ListTile(
+          title: RichText(
+            text: TextSpan(
+              text: '${question['answer']} ',
+              style: TextStyle(color: Colors.blue),
+              children: const <TextSpan>[
+                TextSpan(
                     text: '(correct answer)',
                     style: TextStyle(
                       color: Colors.blue,
                       fontSize: 10,
-                    )
-                  ),
-                ],
-              ),
+                    )),
+              ],
             ),
-          )
-        ),
+          ),
+        )),
       );
-    }
-    else if (question['type'] == QuestionType.TrueOrFalse){
+    } else if (question['type'] == QuestionType.TrueOrFalse) {
       late ListTile choiceListTile;
       List<bool> answers = [true, false];
       answers.forEach((answer) {
-        if(question['answer'] == answer){
-
+        if (question['answer'] == answer) {
           choiceListTile = ListTile(
             title: RichText(
               text: TextSpan(
@@ -458,31 +367,31 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                       style: TextStyle(
                         color: Colors.blue,
                         fontSize: 10,
-                      )
-                  ),
+                      )),
                 ],
               ),
             ),
           );
-        }
-        else{
+        } else {
           choiceListTile = ListTile(
-            title: Text(
-              '${answer == true ? 'True' : 'False'}',
-            )
-          );
+              title: Text(
+            '${answer == true ? 'True' : 'False'}',
+          ));
         }
         children.add(choiceListTile);
       });
-
     }
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Colors.grey, width: 0.5, ),
+        border: Border.all(
+          color: Colors.grey,
+          width: 0.5,
+        ),
       ),
       margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
-      width: getContainerWidth(width: MediaQuery.of(context).size.width, maxWidth: 900),
+      width: getContainerWidth(
+          width: MediaQuery.of(context).size.width, maxWidth: 900),
       child: Column(
         children: children,
       ),
@@ -499,43 +408,45 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
       lastDate: DateTime(2030, 12, 23, 59, 59, 999999),
     );
 
-    if (date != null){
+    if (date != null) {
       time = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
       );
 
-      if(time != null){
+      if (time != null) {
         this.setState(() {
           this._pickedDueDate = date;
           this._pickedDueTime = time;
-          this._dateTimeController.text = '${this._pickedDueDate!.year}-${this._pickedDueDate!.month}-${this._pickedDueDate!.day} ${this._pickedDueTime!.hour}:${this._pickedDueTime!.minute}';
+          this._dateTimeController.text =
+              '${this._pickedDueDate!.year}-${this._pickedDueDate!.month}-${this._pickedDueDate!.day} ${this._pickedDueTime!.hour}:${this._pickedDueTime!.minute}';
         });
       }
     }
   }
 
-  Widget _getQuestionsDivider(int position){
+  Widget _getQuestionsDivider(int position) {
     return Container(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Flexible(
-          child: Container(
+            child: Container(
               height: 1,
               color: Colors.grey,
               alignment: Alignment.center,
-              child: Divider(color: Colors.blue, ),
+              child: Divider(
+                color: Colors.blue,
+              ),
             ),
           ),
           TextButton(
-            child: Row(
-              children: [Icon(Icons.add), Text('Add question at $position')],
-            ),
-            onPressed: () {
-              this._addQuestion(position);
-            }
-          ),
+              child: Row(
+                children: [Icon(Icons.add), Text('Add question at $position')],
+              ),
+              onPressed: () {
+                this._addQuestion(position);
+              }),
         ],
       ),
     );
@@ -557,8 +468,8 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
               ),
             ),
             ElevatedButton(
-              onPressed: (){
-                if(this._formKey.currentState!.validate()){
+              onPressed: () {
+                if (this._formKey.currentState!.validate()) {
                   this._publishQuiz();
                 }
               },
@@ -567,7 +478,6 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
           ],
         ),
       ),
-
       Container(
         width: getContainerWidth(width: MediaQuery.of(context).size.width),
         child: Form(
@@ -602,7 +512,6 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                   },
                   child: Container(
                     child: TextFormField(
-
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(),
                         labelText: 'Due date & time',
@@ -629,7 +538,7 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
     ];
 
     children.add(
-        this._getQuestionsDivider(0),
+      this._getQuestionsDivider(0),
     );
 
     for (int i = 0; i < this.questions.length; i++) {
@@ -643,17 +552,17 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
     }
 
     return MaterialApp(
-      home: WitsOverflowScaffold(
-        auth: this.widget._auth,
-        firestore: this.widget._firestore,
-        body: Container(
-          width: getContainerWidth(width: MediaQuery.of(context).size.width, maxWidth: 720),
-          child: ListView(
-
-            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-            children: children,
-          ),
+        home: WitsOverflowScaffold(
+      auth: this.widget._auth,
+      firestore: this.widget._firestore,
+      body: Container(
+        width: getContainerWidth(
+            width: MediaQuery.of(context).size.width, maxWidth: 720),
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+          children: children,
         ),
+      ),
     ));
   }
 }
@@ -674,20 +583,20 @@ class _SingleAnswerMCQCreateFormState extends State<SingleAnswerMCQCreateForm> {
   late FocusNode editChoiceFocusNode;
 
   String? _answer;
-  
+
   @override
-  void dispose(){
+  void dispose() {
     this.editChoiceFocusNode.dispose();
     super.dispose();
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     this.editChoiceFocusNode = FocusNode();
   }
-  
-  void _addChoice(){
+
+  void _addChoice() {
     this.setState(() {
       String choice = this.editChoiceController.text;
       this.choices.add(choice);
@@ -746,9 +655,7 @@ class _SingleAnswerMCQCreateFormState extends State<SingleAnswerMCQCreateForm> {
       // alignment: AlignmentGeometry.,
       // width: MediaQuery.of(context).size.height * 90 / 100,
       width: getContainerWidth(width: MediaQuery.of(context).size.width),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
+      child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
         // a form to add a choice to a list of choices
         Container(
           alignment: Alignment.centerLeft,
@@ -761,19 +668,18 @@ class _SingleAnswerMCQCreateFormState extends State<SingleAnswerMCQCreateForm> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Flexible(
-                      child: ElevatedButton(
-                        child: Text('Add Question'),
-                        onPressed: () {
-
-                          if(this._formKey.currentState!.validate()){
-                            Navigator.pop(context, {
-                              'type': QuestionType.SingleAnswerMCQ,
-                              'body': this.questionBodyController.text,
-                              'choices': this.choices.toList(),
-                              'answer': this._answer,
-                            });
-                          }
-                        },
+                        child: ElevatedButton(
+                      child: Text('Add Question'),
+                      onPressed: () {
+                        if (this._formKey.currentState!.validate()) {
+                          Navigator.pop(context, {
+                            'type': QuestionType.SingleAnswerMCQ,
+                            'body': this.questionBodyController.text,
+                            'choices': this.choices.toList(),
+                            'answer': this._answer,
+                          });
+                        }
+                      },
                     ))
                   ],
                 ),
@@ -796,7 +702,7 @@ class _SingleAnswerMCQCreateFormState extends State<SingleAnswerMCQCreateForm> {
                           if (value == null || value.isEmpty) {
                             return 'Give question body';
                           }
-                          if(this.choices.length < 2){
+                          if (this.choices.length < 2) {
                             return 'Give at least two choice';
                           }
                           return null;
@@ -825,8 +731,8 @@ class _SingleAnswerMCQCreateFormState extends State<SingleAnswerMCQCreateForm> {
                           border: UnderlineInputBorder(),
                           labelText: 'Choice',
                           helperText: '(Enter choice)',
-                          helperStyle: TextStyle(color: Colors.grey, fontSize: 10),
-
+                          helperStyle:
+                              TextStyle(color: Colors.grey, fontSize: 10),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -851,7 +757,7 @@ class _SingleAnswerMCQCreateFormState extends State<SingleAnswerMCQCreateForm> {
                       ),
                       onPressed: () {
                         // once this button is pressed, a question choice should be added
-                        if(this._choiceFormKey.currentState!.validate()){
+                        if (this._choiceFormKey.currentState!.validate()) {
                           this._addChoice();
                         }
                       }),
@@ -898,82 +804,80 @@ class _NumberQuestionCreateFormState extends State<NumberQuestionCreateForm> {
 
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
-      width: getContainerWidth(width: MediaQuery.of(context).size.width),
-      child: Column(
-        children: [
-          Container(
-            child: Form(
-              key: this._formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    key: Key('id_edit_number_question_body'),
-                    controller: this.questionBodyController,
-                    maxLines: 15,
-                    minLines: 10,
-                    decoration: InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: 'Question',
-                      helperText:
-                          '(Give question a body, add \'?\ at the end)',
-                      helperStyle:
-                          TextStyle(color: Colors.grey, fontSize: 10),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Give question body';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  Container(
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Give correct answer';
-                        }
-                        return null;
-                      },
-                      controller: this._answer,
+        padding: EdgeInsets.all(10),
+        width: getContainerWidth(width: MediaQuery.of(context).size.width),
+        child: Column(
+          children: [
+            Container(
+              child: Form(
+                key: this._formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      key: Key('id_edit_number_question_body'),
+                      controller: this.questionBodyController,
+                      maxLines: 15,
+                      minLines: 10,
                       decoration: InputDecoration(
-                        labelText: 'Correct value',
+                        border: UnderlineInputBorder(),
+                        labelText: 'Question',
                         helperText:
-                            '(Give the correct number value)',
+                            '(Give question a body, add \'?\ at the end)',
                         helperStyle:
                             TextStyle(color: Colors.grey, fontSize: 10),
                       ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
-                    ),
-                  ),
-
-                  /// submit button
-                  Container(
-                    padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                    child: ElevatedButton(
-                      child: Text('Add Question'),
-                      onPressed: () {
-                        if(this._formKey.currentState!.validate()){
-                          Navigator.pop(context, {
-                            'body': this.questionBodyController.text,
-                            'answer': double.parse(this._answer.text),
-                            'type': QuestionType.NumberQuestion,
-                          });
-
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Give question body';
                         }
+                        return null;
                       },
                     ),
-                  ),
-                ],
+
+                    Container(
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Give correct answer';
+                          }
+                          return null;
+                        },
+                        controller: this._answer,
+                        decoration: InputDecoration(
+                          labelText: 'Correct value',
+                          helperText: '(Give the correct number value)',
+                          helperStyle:
+                              TextStyle(color: Colors.grey, fontSize: 10),
+                        ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
+                    ),
+
+                    /// submit button
+                    Container(
+                      padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+                      child: ElevatedButton(
+                        child: Text('Add Question'),
+                        onPressed: () {
+                          if (this._formKey.currentState!.validate()) {
+                            Navigator.pop(context, {
+                              'body': this.questionBodyController.text,
+                              'answer': double.parse(this._answer.text),
+                              'type': QuestionType.NumberQuestion,
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ));
+          ],
+        ));
   }
 }
 
@@ -989,7 +893,8 @@ class TrueOrFalseQuestionCreateForm extends StatefulWidget {
   }
 }
 
-class _TrueOrFalseQuestionCreateFormState extends State<TrueOrFalseQuestionCreateForm> {
+class _TrueOrFalseQuestionCreateFormState
+    extends State<TrueOrFalseQuestionCreateForm> {
   final _formKey = GlobalKey<FormState>();
   bool _answer = true;
   TextEditingController questionBodyController = TextEditingController();
@@ -1002,9 +907,7 @@ class _TrueOrFalseQuestionCreateFormState extends State<TrueOrFalseQuestionCreat
         child: Form(
           key: _formKey,
           // key: Key('id_true_or_false_question_create_form'),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             // Container(
             //   child: Text('True or False Question'),
             // ),
@@ -1069,20 +972,20 @@ class _TrueOrFalseQuestionCreateFormState extends State<TrueOrFalseQuestionCreat
               ),
             ),
             Container(
-              padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-              child: Align(
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  child: Text('Add Question'),
-                  onPressed: () {
-                    if(this._formKey.currentState!.validate()) {
-                      Navigator.pop(context, {
-                        'body': this.questionBodyController.text,
-                        'answer': this._answer,
-                      });
-                    }
-                }),
-              ))
+                padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: ElevatedButton(
+                      child: Text('Add Question'),
+                      onPressed: () {
+                        if (this._formKey.currentState!.validate()) {
+                          Navigator.pop(context, {
+                            'body': this.questionBodyController.text,
+                            'answer': this._answer,
+                          });
+                        }
+                      }),
+                ))
           ]),
         ));
   }
@@ -1097,7 +1000,8 @@ class MultipleAnswersMCQCreateForm extends StatefulWidget {
 }
 
 /// I tried not to use checkboxes, instead I used the radio widget
-class _MultipleAnswersMCQCreateFormCreateFormState  extends State<MultipleAnswersMCQCreateForm> {
+class _MultipleAnswersMCQCreateFormCreateFormState
+    extends State<MultipleAnswersMCQCreateForm> {
   final _formKey = GlobalKey<FormState>();
   final _choiceFormKey = GlobalKey<FormState>();
   TextEditingController questionBodyController = TextEditingController();
@@ -1109,12 +1013,12 @@ class _MultipleAnswersMCQCreateFormCreateFormState  extends State<MultipleAnswer
   late FocusNode editChoiceFocusNode;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     this.editChoiceFocusNode = FocusNode();
   }
 
-  void _addChoice(){
+  void _addChoice() {
     this.setState(() {
       String choice = this.editChoiceController.text;
       this.choices.add(choice);
@@ -1126,7 +1030,7 @@ class _MultipleAnswersMCQCreateFormCreateFormState  extends State<MultipleAnswer
   }
 
   @override
-  void dispose(){
+  void dispose() {
     this.editChoiceFocusNode.dispose();
     super.dispose();
   }
@@ -1181,69 +1085,65 @@ class _MultipleAnswersMCQCreateFormCreateFormState  extends State<MultipleAnswer
           Container(
             child: Form(
               key: this._formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // a form to add a choice to a list of choices
+              child:
+                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                // a form to add a choice to a list of choices
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Flexible(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Flexible(
                         child: ElevatedButton(
-                          child: Text('Add Question'),
-                          onPressed: () {
-                            if(this._formKey.currentState!.validate()){
-                              List<String> answers = [];
-                              for(int i = 0; i < this.choices.length; i++){
-                                if(this._answers[i] == true){
-                                  answers.add(this.choices.elementAt(i));
-                                }
-                              }
-                              Navigator.pop(context, {
-                                'body': this.questionBodyController.text,
-                                'type': QuestionType.MultipleAnswersMCQ,
-                                'choices': this.choices.toList(),
-                                'answers': answers,
-                              });
+                      child: Text('Add Question'),
+                      onPressed: () {
+                        if (this._formKey.currentState!.validate()) {
+                          List<String> answers = [];
+                          for (int i = 0; i < this.choices.length; i++) {
+                            if (this._answers[i] == true) {
+                              answers.add(this.choices.elementAt(i));
                             }
-                            else{
-                              showNotification(context, 'Invalid form data', type: 'error');
-                              print('[FORM VALIDATION -> ERROR]');
-                            }
-                          },
-                        )
-                      )
-                    ],
-                  ),
+                          }
+                          Navigator.pop(context, {
+                            'body': this.questionBodyController.text,
+                            'type': QuestionType.MultipleAnswersMCQ,
+                            'choices': this.choices.toList(),
+                            'answers': answers,
+                          });
+                        } else {
+                          showNotification(context, 'Invalid form data',
+                              type: 'error');
+                          print('[FORM VALIDATION -> ERROR]');
+                        }
+                      },
+                    ))
+                  ],
+                ),
 
-                  TextFormField(
-                    key: Key('id_edit_body'),
-                    controller: this.questionBodyController,
-                    minLines: 2,
-                    maxLines: 10,
-                    decoration: InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: 'Question Body',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Give question body';
-                      }
-                      if(this.choices.length < 2){
-                        return 'Give at least two choice';
-                      }
-                      if(!this._answers.contains(true)){
-                        return 'Choose at least one correct answer';
-                      }
-                      return null;
-                    },
+                TextFormField(
+                  key: Key('id_edit_body'),
+                  controller: this.questionBodyController,
+                  minLines: 2,
+                  maxLines: 10,
+                  decoration: InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: 'Question Body',
                   ),
-
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Give question body';
+                    }
+                    if (this.choices.length < 2) {
+                      return 'Give at least two choice';
+                    }
+                    if (!this._answers.contains(true)) {
+                      return 'Choose at least one correct answer';
+                    }
+                    return null;
+                  },
+                ),
               ]),
             ),
           ),
-
           Container(
             child: Form(
               key: this._choiceFormKey,
@@ -1277,37 +1177,32 @@ class _MultipleAnswersMCQCreateFormCreateFormState  extends State<MultipleAnswer
                     child: Align(
                       alignment: Alignment.center,
                       child: ElevatedButton(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [Icon(Icons.add), Text('Add choice')],
-                        ),
-                        onPressed: () {
-                          // once this button is pressed, a question choice should be added
-                          if(this._choiceFormKey.currentState!.validate()){
-                            this._addChoice();
-                          }
-                        }),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [Icon(Icons.add), Text('Add choice')],
+                          ),
+                          onPressed: () {
+                            // once this button is pressed, a question choice should be added
+                            if (this._choiceFormKey.currentState!.validate()) {
+                              this._addChoice();
+                            }
+                          }),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-
           this.choices.length > 0
               ? Container(
-              margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                  '(Click/Tap to choose correct answers)',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 11,
-                  )
-              )
-          )
+                  margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  alignment: Alignment.centerLeft,
+                  child: Text('(Click/Tap to choose correct answers)',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 11,
+                      )))
               : Padding(padding: EdgeInsets.all(0)),
-
           Container(
             child: Column(
               children: wChoices,

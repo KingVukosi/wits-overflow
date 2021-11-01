@@ -59,14 +59,11 @@ void showNotification(context, message, {type = 'primary'}) {
     bgColor = Colors.black45;
   }
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-
-      // width: getContainerWidth(width: MediaQuery.of(context).size.width, maxWidth: 600),
-      content: Text(message),
-      backgroundColor: bgColor,
-    )
-  );
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    // width: getContainerWidth(width: MediaQuery.of(context).size.width, maxWidth: 600),
+    content: Text(message),
+    backgroundColor: bgColor,
+  ));
 }
 
 const Map COLLECTIONS = {

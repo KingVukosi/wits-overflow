@@ -3,7 +3,7 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wits_overflow/screens/module_questions_screen.dart';
+import 'package:wits_overflow/screens/module_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 

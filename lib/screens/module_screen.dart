@@ -88,20 +88,22 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
     children.add(
       Row(
         children: [
-          TextButton(
-            child: Text('Create new quiz'),
-            onPressed: () {
-              Navigator.push(
-                this.context,
-                MaterialPageRoute(builder: (BuildContext context) {
-                  return QuizCreateForm(
-                    moduleId: this.widget.moduleId,
-                    firestore: this.widget._firestore,
-                    auth: this.widget._auth,
-                  );
-                }),
-              );
-            },
+          Flexible(
+            child: TextButton(
+              child: Text('Create new quiz'),
+              onPressed: () {
+                Navigator.push(
+                  this.context,
+                  MaterialPageRoute(builder: (BuildContext context) {
+                    return QuizCreateForm(
+                      moduleId: this.widget.moduleId,
+                      firestore: this.widget._firestore,
+                      auth: this.widget._auth,
+                    );
+                  }),
+                );
+              },
+            ),
           ),
         ],
       ),
