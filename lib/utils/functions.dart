@@ -1,4 +1,6 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 String toTitleCase(String string) {
@@ -28,19 +30,6 @@ String capitaliseChar(String char) {
   return result;
 }
 
-dynamic getField(Map<String, dynamic>? map, String field,
-    {dynamic onError, dynamic onNull}) {
-  // onError: string to return when field does not exist
-  if (map == null) {
-    return onNull;
-  }
-  try {
-    return map[field] == null ? onNull : map[field];
-  } catch (e) {
-    return onError;
-  }
-}
-
 String formatDateTime(DateTime datetime) {
   Map<int, String> months = {
     1: 'Jan',
@@ -67,10 +56,11 @@ void showNotification(context, message, {type = 'primary'}) {
   } else if (type == 'warning') {
     bgColor = Colors.orange;
   } else {
-    bgColor = Colors.blue;
+    bgColor = Colors.black45;
   }
 
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    // width: getContainerWidth(width: MediaQuery.of(context).size.width, maxWidth: 600),
     content: Text(message),
     backgroundColor: bgColor,
   ));
@@ -90,4 +80,22 @@ int countVotes(List<Map<String, dynamic>> votes) {
     count += votes[i]['value'] as int;
   }
   return count;
+}
+
+/// helper function to add responsive
+double getContainerWidth({required double width, double maxWidth = 720}) {
+  // mobile phones
+  double w = maxWidth;
+  if (width <= 600) {
+    w = width * 97.5 / 100;
+  } else if (600 < width && width <= 768) {
+    w = min(width * 95 / 100, 720);
+  } else if (768 < width && width <= 992) {
+    w = min(width * 90 / 100, maxWidth);
+  } else if (992 < width && width <= 1200) {
+    w = min(width * 85 / 100, maxWidth);
+  } else {
+    w = min(width * 80 / 100, maxWidth);
+  }
+  return w;
 }

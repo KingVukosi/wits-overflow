@@ -200,64 +200,94 @@ void main() {
       }
     });
 
-    // testWidgets('when list of questions is empty', (WidgetTester tester) async{
-    //
-    //   await firestore.collection(COLLECTIONS['questions']).get().then((fQuestions){
-    //     for(int i = 0; i < fQuestions.docs.length; i++){
-    //       fQuestions.docs.elementAt(i).reference.delete();
-    //     }
-    //   });
-    //
-    //   WitsOverflowData witsOverflowData = WitsOverflowData();
-    //   witsOverflowData.initialize(firestore: firestore, auth: auth);
-    //
-    //   Future<List<Map<String, dynamic>>> futureQuestions = witsOverflowData.fetchQuestions();
-    //
-    //   QuestionSummaries questionSummaries = QuestionSummaries(
-    //     futureQuestions: futureQuestions,
-    //     firestore: firestore,
-    //     auth: auth,
-    //   );
-    //
-    //   Widget testWidget = new MediaQuery(
-    //       data: new MediaQueryData(),
-    //       child: new Directionality(
-    //           textDirection: TextDirection.rtl,
-    //           child: MaterialApp(
-    //             home: WitsOverflowScaffold(
-    //               firestore: firestore,
-    //               auth: auth,
-    //               body: questionSummaries,
-    //             ),
-    //           )
-    //       )
-    //   );
-    //
-    //   await tester.pumpWidget(testWidget);
-    //   await tester.pump();
-    //
-    //   for(int i = 0; i < questions.length; i++){
-    //
-    //     final titleFinder = find.text(questions[i]['title']);
-    //
-    //     // final votesFinder = find.textContaining('5'); //.text('votes');
-    //
-    //     // List<String> tags = questions[i]['tags'];
-    //     final badgeOneFinder = find.textContaining(questions[i]['tags'][0]);
-    //     final badgeTwoFinder = find.textContaining(questions[i]['tags'][1]);
-    //     final badgeThreeFinder = find.textContaining(questions[i]['tags'][2]);
-    //
-    //     // final createdAtFinder = find.text(correctDataFormat);
-    //
-    //     expect(titleFinder, findsNothing);
-    //     // expect(votesFinder, findsOneWidget);
-    //
-    //     expect(badgeOneFinder, findsNothing);
-    //     expect(badgeTwoFinder, findsNothing);
-    //     expect(badgeThreeFinder, findsNothing);
-    //
-    //     // expect(createdAtFinder, findsOneWidget);
-    //   }
-    // });
+    testWidgets('search keyword in body', (WidgetTester tester) async {
+      SearchResults searchResults = SearchResults(
+        keyword: 'body',
+        firestore: firestore,
+        auth: auth,
+      );
+
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(
+            size: Size(5000, 5000),
+          ),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              // child: searchResults
+              child: MaterialApp(
+                home: searchResults,
+              )));
+
+      await tester.pumpWidget(testWidget);
+      await tester.pump(Duration(seconds: 5));
+      await tester.pump();
+
+      // print('[questionSummaries: $searchResults]');
+      for (int i = 0; i < questions.length; i++) {
+        final titleFinder = find.text(questions[i]['title']);
+
+        // final votesFinder = find.textContaining('5'); //.text('votes');
+
+        // List<String> tags = questions[i]['tags'];
+        final badgeOneFinder = find.textContaining(questions[i]['tags'][0]);
+        final badgeTwoFinder = find.textContaining(questions[i]['tags'][1]);
+        final badgeThreeFinder = find.textContaining(questions[i]['tags'][2]);
+
+        // final createdAtFinder = find.text(correctDataFormat);
+        expect(titleFinder, findsOneWidget);
+        // expect(votesFinder, findsOneWidget);
+
+        expect(badgeOneFinder, findsOneWidget);
+        expect(badgeTwoFinder, findsOneWidget);
+        expect(badgeThreeFinder, findsOneWidget);
+
+        // expect(createdAtFinder, findsOneWidget);
+      }
+    });
+
+    testWidgets('search keyword in question tags', (WidgetTester tester) async {
+      SearchResults searchResults = SearchResults(
+        keyword: 'testTag1',
+        firestore: firestore,
+        auth: auth,
+      );
+
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(
+            size: Size(5000, 5000),
+          ),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              // child: searchResults
+              child: MaterialApp(
+                home: searchResults,
+              )));
+
+      await tester.pumpWidget(testWidget);
+      await tester.pump(Duration(seconds: 5));
+      await tester.pump();
+
+      // print('[questionSummaries: $searchResults]');
+      // for (int i = 0; i < questions.length; i++) {
+      final titleFinder = find.text(questions[0]['title']);
+
+      // final votesFinder = find.textContaining('5'); //.text('votes');
+
+      // List<String> tags = questions[0['tags'];
+      final badgeOneFinder = find.textContaining(questions[0]['tags'][0]);
+      final badgeTwoFinder = find.textContaining(questions[0]['tags'][1]);
+      final badgeThreeFinder = find.textContaining(questions[0]['tags'][2]);
+
+      // final createdAtFinder = find.text(correctDataFormat);
+      expect(titleFinder, findsOneWidget);
+      // expect(votesFinder, findsOneWidget);
+
+      expect(badgeOneFinder, findsOneWidget);
+      expect(badgeTwoFinder, findsOneWidget);
+      expect(badgeThreeFinder, findsOneWidget);
+
+      // expect(createdAtFinder, findsOneWidget);
+      // }
+    });
   });
 }
