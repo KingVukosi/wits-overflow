@@ -335,6 +335,7 @@ class _QuestionSummariesState extends State<QuestionSummaries> {
     }
 
     return SingleChildScrollView(
+      padding: EdgeInsets.all(25),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
