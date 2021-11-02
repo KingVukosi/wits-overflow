@@ -281,7 +281,31 @@ void main() {
           ));
 
       await tester.pumpWidget(testWidget);
-      await tester.pump(Duration(seconds: 10));
+      // await tester.pump(Duration(seconds: 10));
+
+      expect(find.byKey(ValueKey("Splash_wits_logo")), findsOneWidget);
+
+      // expect(tester.takeException(), isInstanceOf<FlutterError>());
+    });
+
+    testWidgets('Find text on splash screen', (WidgetTester tester) async {
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(),
+          child: new Directionality(
+            textDirection: TextDirection.rtl,
+            child: MaterialApp(
+                home: SplashScreen(
+              firestore: firestore,
+              auth: auth,
+            )),
+          ));
+
+      await tester.pumpWidget(testWidget);
+      // await tester.pump(Duration(seconds: 10));
+
+      expect(find.byKey(ValueKey("Splash_text")), findsOneWidget);
+
+      // expect(tester.takeException(), isInstanceOf<FlutterError>());
     });
   });
 }
