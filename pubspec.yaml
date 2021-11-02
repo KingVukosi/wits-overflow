@@ -31,6 +31,7 @@ dependencies:
   firebase_analytics: ^5.0.2
   cloud_firestore: ^2.5.1
   google_sign_in: ^5.1.0
+  firebase_storage: ^10.0.5
 
   # Local storage
   flutter_secure_storage: ^4.2.0
@@ -45,13 +46,14 @@ dependencies:
   # Environmental Variables
   flutter_dotenv: ^4.0.0-nullsafety.0
 
+  image_picker: ^0.8.4+2
 
   meta: ^1.3.0
   provider: ^5.0.0-nullsafety.3
   animated_splash_screen: ^1.1.0
   page_transition: ^2.0.1-nullsafety.0
-  okito: ^1.2.8
   
+  url_launcher: ^6.0.12
 
 dev_dependencies:
   flutter_test:

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wits_overflow/screens/notifications.dart';
+import 'package:wits_overflow/screens/notifications_screen.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
 // import 'package:wits_overflow/widgets/favourites_tab.dart';
 // import 'package:wits_overflow/widgets/my_posts_tab.dart';
@@ -72,6 +72,7 @@ class HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
+              key: Key('id_navigate_notifications'),
               color: Colors.black,
               icon: Icon(Icons.notifications),
               onPressed: () {
