@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
@@ -7,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wits_overflow/screens/Splash_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
 // import 'package:wits_overflow/widgets/question.dart';
-// expect(tester.takeException(), isInstanceOf<FirebaseException>());
+
 import '../utils.dart';
 
 void main() {
@@ -282,7 +281,31 @@ void main() {
           ));
 
       await tester.pumpWidget(testWidget);
-      await tester.pump(Duration(seconds: 10));
+      // await tester.pump(Duration(seconds: 10));
+
+      expect(find.byKey(ValueKey("Splash_wits_logo")), findsOneWidget);
+
+      // expect(tester.takeException(), isInstanceOf<FlutterError>());
+    });
+
+    testWidgets('Find text on splash screen', (WidgetTester tester) async {
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(),
+          child: new Directionality(
+            textDirection: TextDirection.rtl,
+            child: MaterialApp(
+                home: SplashScreen(
+              firestore: firestore,
+              auth: auth,
+            )),
+          ));
+
+      await tester.pumpWidget(testWidget);
+      // await tester.pump(Duration(seconds: 10));
+
+      expect(find.byKey(ValueKey("Splash_text")), findsOneWidget);
+
+      // expect(tester.takeException(), isInstanceOf<FlutterError>());
     });
   });
 }
