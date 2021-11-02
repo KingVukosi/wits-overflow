@@ -3,7 +3,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wits_overflow/screens/Splash_screen.dart';
+import 'package:wits_overflow/screens/splash_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
 // import 'package:wits_overflow/widgets/question.dart';
 
