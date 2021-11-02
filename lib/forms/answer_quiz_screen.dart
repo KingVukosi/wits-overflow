@@ -101,67 +101,75 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
 		 */
     if (question['type'] == 'TrueOrFalse') {
       // print('[BUILDING TRUE OR FALSE QUESTION]');
-      return Container(
-        padding: EdgeInsets.all(5),
-        margin: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          border: Border.all(width: 0.5, color: Colors.grey),
-        ),
-        child: Form(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Container(
-                        child: Text('${index + 1}. ',
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w700)),
-                      ),
-                    ),
-                    Flexible(
-                      child: Container(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          question['body'],
+      return Flexible(
+        child: Container(
+          padding: EdgeInsets.all(5),
+          margin: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            border: Border.all(width: 0.5, color: Colors.grey),
+          ),
+          child: Form(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Container(
+                          child: Text('${index + 1}. ',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w700)),
                         ),
                       ),
+                      Flexible(
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            question['body'],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                    child: Column(
+                  children: [
+                    RadioListTile<bool>(
+                      title: Text('True'),
+                      value: true,
+                      groupValue: this._answers[index],
+                      onChanged: (bool? value) {
+                        if (value != null) {
+                          setState(() {
+                            this._answers[index] = true;
+                          });
+                          
+                        }
+                      },
+                    ),
+                    RadioListTile<bool>(
+                      title: Text('False'),
+                      value: false,
+                      groupValue: this._answers[index],
+                      onChanged: (bool? value) {
+                        if (value != null) {
+                          setState(() {
+                            this._answers[index] = false;
+                          });
+                          
+                        }
+                      },
                     ),
                   ],
-                ),
-              ),
-              Container(
-                  child: Column(
-                children: [
-                  RadioListTile<bool>(
-                    title: Text('True'),
-                    value: true,
-                    groupValue: this._answers[index],
-                    onChanged: (bool? value) {
-                      if (value != null) {
-                        this._answers[index] = false;
-                      }
-                    },
-                  ),
-                  RadioListTile<bool>(
-                    title: Text('False'),
-                    value: false,
-                    groupValue: this._answers[index],
-                    onChanged: (bool? value) {
-                      if (value != null) {
-                        this._answers[index] = false;
-                      }
-                    },
-                  ),
-                ],
-              )),
-            ],
+                )),
+              ],
+            ),
           ),
         ),
       );
@@ -185,7 +193,9 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
               groupValue: this._answers[index],
               onChanged: (String? value) {
                 if (value != null) {
-                  this._answers[index] = value;
+                  setState(() {
+                    this._answers[index] = value;
+                  });
                 }
               }),
         );
@@ -316,19 +326,19 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
         // ),
       );
     }
-
+    children.add(TextButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Submit")));
     // print('2 -> [ANSWER QUIZ FORM ->RETURNING WITS OVERFLOW]');
 
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
       auth: this.widget._auth,
       body: Container(
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.all(10),
-        child: Column(
-          children: children,
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.all(10),
+          child: Column(
+            children: children,
+          ),
         ),
-      ),
     );
   }
 }

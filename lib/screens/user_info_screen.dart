@@ -126,26 +126,36 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       body: SingleChildScrollView(
         child: Center(
           child: Container(
-            width: 700,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  // color: Colors.blue,
+                  blurRadius: 10.0,
+                  spreadRadius: 2.0,
+                )
+              ],
+            ),
+            width: 500,
             child: Column(
               children: [
                 SizedBox(height: 10),
                 Container(
-                  width: 700,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 0.3,
-                    ),
-                    // borderRadius: BorderRadius.circular(6),
+                  width: 200,
+                  child: Image.asset(
+                    'assets/images/wits_logo_transparent.png',
+                    scale: 2,
                   ),
+                ),
+                Container(
+                  width: 500,
                   padding: EdgeInsets.only(
                       top: 10.0, left: 20, right: 20, bottom: 10),
                   child: Text(
                     "PERSONAL INFORMATION",
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
                 ),
@@ -155,10 +165,14 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     Container(
                       width: 100,
                       height: 100,
-                      margin: EdgeInsets.only(right: 100, top: 70, left: 0),
+                      margin: EdgeInsets.only(right: 50, top: 30, left: 90),
                       decoration: BoxDecoration(
+                        color: Colors.grey[100],
                         shape: BoxShape.circle,
-                        image: DecorationImage(image: image, fit: BoxFit.fill),
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                FirebaseAuth.instance.currentUser!.photoURL!),
+                            fit: BoxFit.fill),
                       ),
                     ),
                     Column(
@@ -168,28 +182,18 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           height: 20,
                         ),
                         Container(
-                          height: 40,
-                          width: 100,
-                          child: Text(
-                            "Name",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Container(
-                            //alignment: Alignment.center,
                             padding: EdgeInsets.only(
                                 top: 17, bottom: 5, left: 10, right: 10),
                             height: 50,
-                            width: 290,
+                            width: 230,
                             decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
                               border: Border.all(
                                 color: Colors.black,
                                 width: 0.3,
                               ),
-                              //borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               authorName,
@@ -201,22 +205,14 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           height: 30,
                         ),
                         Container(
-                          height: 40,
-                          width: 100,
-                          child: Text(
-                            'Email',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Container(
                             padding: EdgeInsets.only(
                                 top: 17, bottom: 5, left: 10, right: 10),
                             height: 50,
-                            width: 290,
+                            width: 230,
                             decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
                               border: Border.all(
                                 color: Colors.black,
                                 width: 0.3,
@@ -238,21 +234,14 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     children: [
                       SizedBox(height: 50),
                       Container(
-                        width: 700,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 0.3,
-                          ),
-                          //borderRadius: BorderRadius.circular(6),
-                        ),
+                        width: 500,
                         padding: EdgeInsets.only(
                             top: 10, left: 20, right: 20, bottom: 10),
                         child: Text(
                           "PROFILE HISTORY",
                           style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.normal,
                           ),
                         ),
                       ),
@@ -265,34 +254,31 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         children: [
                           SizedBox(height: 30),
                           Container(
-                            padding: EdgeInsets.only(left: 0),
+                            padding: EdgeInsets.only(left: 90),
                             child: Text(
                               "questions asked",
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                           SizedBox(height: 10),
                           Container(
-                            padding: EdgeInsets.only(left: 0),
+                            padding: EdgeInsets.only(left: 90),
                             child: Text(
                               "questions answered",
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                           SizedBox(height: 10),
                           Container(
-                            padding: EdgeInsets.only(left: 0),
+                            padding: EdgeInsets.only(left: 90),
                             child: Text(
                               "favourite courses",
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
