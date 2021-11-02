@@ -111,19 +111,19 @@ class _AnswerState extends State<Answer> {
         .witsOverflowData
         .initialize(firestore: this.widget._firestore, auth: this.widget._auth);
     getImage();
-    // print("Question Image: $questionImage");
   }
 
   void changeAnswerStatus({required String answerId}) async {
     // if the user is the author of the question
 
     // retrieve answer from database
-    if (this.widget.authorId == this.witsOverflowData.getCurrentUser()?.uid) {
+    if (this.widget.questionAuthorId ==
+        this.witsOverflowData.getCurrentUser()?.uid) {
       CollectionReference<Map<String, dynamic>> questionAnswersCollection = this
           .widget
           ._firestore
           .collection(COLLECTIONS['questions'])
-          .doc(this.widget.id)
+          .doc(this.widget.questionId)
           .collection('answers');
       DocumentSnapshot<Map<String, dynamic>> answer =
           await questionAnswersCollection.doc(answerId).get();
@@ -175,11 +175,12 @@ class _AnswerState extends State<Answer> {
     });
   }
 
-  Widget getAnswerStatus() {
+  Widget getAnswerStatusWidget() {
+    double height = MediaQuery.of(context).size.width * 4 / 100;
     if (this.widget.accepted == true) {
       // if answer is correct
       return GestureDetector(
-        key: Key('id_ans\wer_${this.widget.id}_status'),
+        key: Key('id_answer_${this.widget.id}_status'),
         onTap: () {
           this.changeAnswerStatus(answerId: this.widget.id);
         },
@@ -189,47 +190,7 @@ class _AnswerState extends State<Answer> {
           placeholderBuilder: (context) {
             return Icon(Icons.error, color: Colors.grey);
           },
-          height: 25,
-        ),
-      );
-    } else {
-      if (this.widget.authorId == this.witsOverflowData.getCurrentUser()?.uid) {
-        return GestureDetector(
-          onTap: () {
-            this.changeAnswerStatus(answerId: this.widget.id);
-          },
-          child: SvgPicture.asset(
-            'assets/icons/answer_correct_placeholder.svg',
-            semanticsLabel: 'Feed button',
-            placeholderBuilder: (context) {
-              return Icon(Icons.error, color: Colors.grey);
-            },
-            height: 25,
-          ),
-        );
-      } else {
-        return Padding(
-          padding: EdgeInsets.all(0),
-        );
-      }
-    }
-  }
-
-  Widget getAnswerStatusWidget() {
-    /// return appropriate widget depending on whether the answer is accepted or not
-    if (this.widget.accepted == true) {
-      // // if answer is correct
-      return GestureDetector(
-        onTap: () {
-          this.changeAnswerStatus(answerId: this.widget.id);
-        },
-        child: SvgPicture.asset(
-          'assets/icons/answer_correct.svg',
-          semanticsLabel: 'Feed button',
-          placeholderBuilder: (context) {
-            return Icon(Icons.error, color: Colors.deepOrange);
-          },
-          height: 25,
+          height: height,
         ),
       );
     } else {
@@ -243,9 +204,9 @@ class _AnswerState extends State<Answer> {
             'assets/icons/answer_correct_placeholder.svg',
             semanticsLabel: 'Feed button',
             placeholderBuilder: (context) {
-              return Icon(Icons.error, color: Colors.deepOrange);
+              return Icon(Icons.error, color: Colors.grey);
             },
-            height: 25,
+            height: height,
           ),
         );
       } else {
@@ -256,6 +217,49 @@ class _AnswerState extends State<Answer> {
     }
   }
 
+  // Widget getAnswerStatusWidget() {
+  //   /// return appropriate widget depending on whether the answer is accepted or not
+  //
+  //   double height = MediaQuery.of(context).size.width * (5/100);
+  //   if (this.widget.accepted == true) {
+  //     // // if answer is correct
+  //     return GestureDetector(
+  //       onTap: () {
+  //         this.changeAnswerStatus(answerId: this.widget.id);
+  //       },
+  //       child: SvgPicture.asset(
+  //         'assets/icons/answer_correct.svg',
+  //         semanticsLabel: 'Feed button',
+  //         placeholderBuilder: (context) {
+  //           return Icon(Icons.error, color: Colors.deepOrange);
+  //         },
+  //         height: height,
+  //       ),
+  //     );
+  //   } else {
+  //     if (this.widget.questionAuthorId ==
+  //         this.witsOverflowData.getCurrentUser()?.uid) {
+  //       return GestureDetector(
+  //         onTap: () {
+  //           this.changeAnswerStatus(answerId: this.widget.id);
+  //         },
+  //         child: SvgPicture.asset(
+  //           'assets/icons/answer_correct_placeholder.svg',
+  //           semanticsLabel: 'Feed button',
+  //           placeholderBuilder: (context) {
+  //             return Icon(Icons.error, color: Colors.deepOrange);
+  //           },
+  //           height: height,
+  //         ),
+  //       );
+  //     } else {
+  //       return Padding(
+  //         padding: EdgeInsets.all(0),
+  //       );
+  //     }
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     if (this.isBusy) {
@@ -263,6 +267,8 @@ class _AnswerState extends State<Answer> {
         child: CircularProgressIndicator(),
       );
     }
+
+    double height = MediaQuery.of(context).size.width * (2 / 100);
 
     return Container(
       decoration: BoxDecoration(
@@ -292,9 +298,12 @@ class _AnswerState extends State<Answer> {
                 /// answer up vote button, down vote button, votes vote button
                 Expanded(
                   flex: 0,
+                  //   color: Color.fromRGBO(239, 240, 241, 1),
                   child: Container(
-                    color: Color.fromRGBO(239, 240, 241, 1),
+                    // height:
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         TextButton(
                           key: Key('answer_${this.widget.id}_upvote_btn'),
@@ -322,16 +331,24 @@ class _AnswerState extends State<Answer> {
                               return Icon(Icons.error,
                                   color: Colors.deepOrange);
                             },
-                            height: 12.5,
+                            height: height,
                           ),
                         ),
 
-                        Text(
-                          countVotes(this.widget.votes).toString(),
-                          style: TextStyle(
-                              // backgroundColor: Colors.black12,
-                              // fontSize: 20,
-                              ),
+                        Container(
+                          padding: EdgeInsets.fromLTRB(
+                            0,
+                            MediaQuery.of(context).size.width * 1 / 100,
+                            0,
+                            MediaQuery.of(context).size.width * 1 / 100,
+                          ),
+                          child: Text(
+                            countVotes(this.widget.votes).toString(),
+                            style: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 2.4 / 100,
+                            ),
+                          ),
                         ),
 
                         TextButton(
@@ -360,12 +377,12 @@ class _AnswerState extends State<Answer> {
                               return Icon(Icons.error,
                                   color: Colors.deepOrange);
                             },
-                            height: 12.5,
+                            height: height,
                           ),
                         ),
 
                         // answer status
-                        getAnswerStatus(),
+                        getAnswerStatusWidget(),
                       ],
                     ),
                   ),
@@ -373,6 +390,7 @@ class _AnswerState extends State<Answer> {
 
                 /// answer body
                 Expanded(
+                  flex: 1,
                   child: Container(
                     padding: EdgeInsets.all(5),
                     child: Text(

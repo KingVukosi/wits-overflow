@@ -48,160 +48,89 @@ class WitsOverflowScaffold extends StatelessWidget {
     } else {
       image = NetworkImage(this._auth.currentUser?.photoURL!);
     }
-    // if (this._floatingActionButton != null) {
-    //   return GestureDetector(
-    //     onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-    //     child: Scaffold(
-    //         appBar: AppBar(
-    //             elevation: 1,
-    //             title: Text(
-    //               'Wits Overflow',
-    //               style: TextStyle(
-    //                 fontSize: 15,
-    //                 color: Colors.white,
-    //               ),
-    //             ),
-    //             actions: [
-    //               Container(
-    //                 margin: EdgeInsets.only(right: 20, top: 4.5),
-    //                 width: 250,
-    //                 child: TextField(
-    //                   decoration: InputDecoration(
-    //                     filled: true,
-    //                     fillColor: Colors.white,
-    //                     prefixIcon: Icon(Icons.search),
-    //                     border: UnderlineInputBorder(
-    //                       borderRadius: BorderRadius.circular(40),
-    //                     ),
-    //                     hintText: "Search",
-    //                   ),
-    //                 ),
-    //               ),
-    //               Container(
-    //                 margin: EdgeInsets.only(right: 30),
-    //                 child: BackButton(
-    //                   color: Colors.white,
-    //                 ),
-    //               ),
-    //               TextButton(
-    //                   child: Text(
-    //                     this.witsOverflowData.getCurrentUser()!.displayName!,
-    //                     style: TextStyle(color: Colors.white, fontSize: 15),
-    //                   ),
-    //                   onPressed: () {
-    //                     Navigator.push(
-    //                       context,
-    //                       MaterialPageRoute(
-    //                           builder: (context) => UserInfoScreen()),
-    //                     );
-    //                   }),
-    //               GestureDetector(
-    //                 onTap: () => {
-    //                   Navigator.push(
-    //                       context,
-    //                       MaterialPageRoute(
-    //                           builder: (context) => UserInfoScreen())),
-    //                 },
-    //                 child: Container(
-    //                   width: 25,
-    //                   height: 25,
-    //                   margin: EdgeInsets.only(right: 10, left: 20),
-    //                   decoration: BoxDecoration(
-    //                     shape: BoxShape.circle,
-    //                     image:
-    //                         DecorationImage(image: image, fit: BoxFit.contain),
-    //                   ),
-    //                 ),
-    //               ),
-    //             ]),
-    //         drawer: SideDrawer(courses: this._courses, modules: this._modules),
-    //         body: Row(children: [
-    //           SideDrawer(courses: this._courses, modules: this._modules),
-    //           Expanded(child: this.body)
-    //         ])),
-    //   );
-    // }
-    // else {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-          appBar: AppBar(
-              elevation: 1,
-              title: Text(
-                'Wits Overflow',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white,
+    return MaterialApp(
+      home: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+            appBar: AppBar(
+                elevation: 1,
+                title: Text(
+                  'Wits Overflow',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              actions: [
-                Container(
-                  margin: EdgeInsets.only(right: 5, top: 4.5),
-                  width: 250,
-                  child: TextField(
-                    onSubmitted: (String keyword) {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return SearchResults(keyword: keyword);
-                      }));
-                    },
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: Icon(Icons.search),
-                      border: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(40),
+                actions: [
+                  Container(
+                    margin: EdgeInsets.only(right: 5, top: 4.5),
+                    width: 250,
+                    child: TextField(
+                      onSubmitted: (String keyword) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return SearchResults(keyword: keyword);
+                        }));
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: Icon(Icons.search),
+                        border: UnderlineInputBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        hintText: "Search",
                       ),
-                      hintText: "Search",
                     ),
                   ),
-                ),
-                // Container(
-                //   margin: EdgeInsets.only(right: 30),
-                //   child: BackButton(
-                //     color: Colors.white,
-                //   ),
-                // ),
-                // TextButton(
-                //     child: Text(
-                //       this.witsOverflowData.getCurrentUser()!.displayName!,
-                //       style: TextStyle(color: Colors.white, fontSize: 15),
-                //     ),
-                //     onPressed: () {
-                //       Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //             builder: (context) => UserInfoScreen()),
-                //       );
-                //     }),
-                GestureDetector(
-                  onTap: () => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => UserInfoScreen())),
-                  },
-                  child: Container(
-                    width: 25,
-                    height: 25,
-                    margin: EdgeInsets.only(right: 10, left: 20),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(image: image, fit: BoxFit.contain),
+                  // Container(
+                  //   margin: EdgeInsets.only(right: 30),
+                  //   child: BackButton(
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  // TextButton(
+                  //     child: Text(
+                  //       this.witsOverflowData.getCurrentUser()!.displayName!,
+                  //       style: TextStyle(color: Colors.white, fontSize: 15),
+                  //     ),
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //             builder: (context) => UserInfoScreen()),
+                  //       );
+                  //     }),
+                  GestureDetector(
+                    onTap: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => UserInfoScreen())),
+                    },
+                    child: Container(
+                      width: 25,
+                      height: 25,
+                      margin: EdgeInsets.only(right: 10, left: 20),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image:
+                            DecorationImage(image: image, fit: BoxFit.contain),
+                      ),
                     ),
                   ),
-                ),
-              ]),
-          // drawer: SideDrawer(courses: this._courses, modules: this._modules, firestore: this._firestore, auth: this._auth,),
-          body: Row(children: [
-            SideDrawer(
-              courses: this._courses,
-              modules: this._modules,
-              firestore: this._firestore,
-              auth: this._auth,
-            ),
-            Expanded(child: this.body)
-          ])),
+                ]),
+            // drawer: SideDrawer(courses: this._courses, modules: this._modules, firestore: this._firestore, auth: this._auth,),
+            body: Row(children: [
+              SideDrawer(
+                courses: this._courses,
+                modules: this._modules,
+                firestore: this._firestore,
+                auth: this._auth,
+              ),
+              Expanded(child: this.body)
+            ])),
+      ),
     );
     // }
   }

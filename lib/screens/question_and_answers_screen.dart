@@ -52,10 +52,10 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
 
   Future<void> getData() async {
     this.question = (await witsOverflowData.fetchQuestion(this.widget.id))!;
+    print('[FETCHED QUESTION -> ${this.question}]');
 
     await witsOverflowData.fetchQuestionAnswers(this.widget.id).then((value) {
       if (value != null) {
-        // print('[QUESTION : $question]');
         this.questionAnswers = value;
       }
     });
@@ -257,10 +257,6 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                           commentsAuthors
                               .addAll({comments[i]['id']: snapshot.data![i]});
                         }
-                        print('[BUILDING ANSWER WIDGETS ->\n'
-                            'ANSWERS[$i]: ${answers[i]}\n'
-                            'AUTHOR: $author\n'
-                            'EDITOR: $editor]\n');
                         return Answer(
                           id: answers[i]['id'],
                           body: answers[i]['body'],
@@ -370,7 +366,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Expanded(
+                    Flexible(
                       child: Text(
                         '${this.questionAnswers.length.toString()} Answers',
                         style: TextStyle(
@@ -378,7 +374,7 @@ class _QuestionState extends State<QuestionAndAnswersScreen> {
                         ),
                       ),
                     ),
-                    Expanded(
+                    Flexible(
                       child: TextButton(
                         onPressed: () {
                           Navigator.push(

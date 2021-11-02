@@ -42,12 +42,12 @@ class UserCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // user information
-              Expanded(
+              Flexible(
                 child: Container(
                   child: Row(
                     children: [
                       // user avatar image
-                      Expanded(
+                      Flexible(
                         child: Container(
                             child: Image(
                                 height: 25,
@@ -57,7 +57,7 @@ class UserCard extends StatelessWidget {
                       ),
 
                       // user information (display name, metadata)
-                      Expanded(
+                      Flexible(
                         child: Column(
                           children: [
                             // user display name
@@ -79,7 +79,7 @@ class UserCard extends StatelessWidget {
               ),
 
               // datetime
-              Expanded(
+              Flexible(
                 child: Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -95,6 +95,8 @@ class UserCard extends StatelessWidget {
                       Text(
                         formatDateTime(this.createdAt.toDate()),
                         style: TextStyle(
+                          // color: Colors.grey,
+                          // fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

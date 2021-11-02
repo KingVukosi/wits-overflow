@@ -236,6 +236,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
 
         /// question body
         Container(
+          margin: EdgeInsets.fromLTRB(50, 0, 0, 0),
           width: double.infinity,
           decoration: BoxDecoration(
             border: Border(
@@ -254,11 +255,13 @@ class _QuestionWidgetState extends State<QuestionWidget> {
         Padding(
           padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
+                    Flexible(
                       child: SizedBox(
                         width: 50,
                         height: 25,
@@ -282,7 +285,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                         ),
                       ),
                     ),
-                    Expanded(
+                    Flexible(
                       child: SizedBox(
                         width: 50,
                         height: 25,
@@ -316,7 +319,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                         ),
                       ),
                     ),
-                    Expanded(
+                    Flexible(
                       child: SizedBox(
                         width: 50,
                         height: 25,
