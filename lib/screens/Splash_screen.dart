@@ -1,11 +1,23 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wits_overflow/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   // This widget is the root of your application.
+
+  late final _firestore;
+  late final _auth;
+
+  SplashScreen({firestore, auth}) {
+    this._firestore =
+        firestore == null ? FirebaseFirestore.instance : firestore;
+    this._auth = auth == null ? FirebaseAuth.instance : auth;
+  }
+
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -16,7 +28,11 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(
         Duration(seconds: 5),
         () => Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeScreen())));
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomeScreen(
+                    firestore: this.widget._firestore,
+                    auth: this.widget._auth))));
 
     return Scaffold(
       body: Center(

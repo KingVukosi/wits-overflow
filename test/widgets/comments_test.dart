@@ -13,39 +13,9 @@ import '../utils.dart';
 void main() {
   group("Test related to comment widget", () {});
 
-  group('Test comment widget', () {
-    /// test the comment widget
-    testWidgets('display author display name, comment & post date time',
-        (WidgetTester tester) async {
-      final String body = 'test comment body 1';
-      final Timestamp commentedAt =
-          Timestamp.fromDate(DateTime(2021, 2, 12, 14, 13));
-      Widget testWidget = new MediaQuery(
-          data: new MediaQueryData(),
-          child: new Directionality(
-              textDirection: TextDirection.rtl,
-              child: Comment(
-                body: body,
-                commentedAt: commentedAt,
-                displayName: 'testFirstName1 testLastName1',
-              )));
-
-      await tester.pumpWidget(testWidget);
-
-      expect(
-        find.byWidgetPredicate(
-          (Widget widget) {
-            return widget is RichText &&
-                (widget.text.toPlainText().contains(body) == true) &&
-                (widget.text
-                    .toPlainText()
-                    .contains('testFirstName1 testLastName1'));
-          },
-        ),
-        findsOneWidget,
-      );
-    });
-  });
+  // group('Test comment widget', () {
+  //
+  // });
 
   /// testing a list of comments
   group('Test comments widget', () {
@@ -205,6 +175,40 @@ void main() {
       }
     });
 
+    /// test the comment widget
+    testWidgets('display author display name, comment & post date time',
+        (WidgetTester tester) async {
+      final String body = 'test comment body 1';
+      final Timestamp commentedAt =
+          Timestamp.fromDate(DateTime(2021, 2, 12, 14, 13));
+      Widget testWidget = new MediaQuery(
+          data: new MediaQueryData(),
+          child: new Directionality(
+              textDirection: TextDirection.rtl,
+              child: Comment(
+                firestore: firestore,
+                auth: auth,
+                body: body,
+                commentedAt: commentedAt,
+                displayName: 'testFirstName1 testLastName1',
+              )));
+
+      await tester.pumpWidget(testWidget);
+
+      expect(
+        find.byWidgetPredicate(
+          (Widget widget) {
+            return widget is RichText &&
+                (widget.text.toPlainText().contains(body) == true) &&
+                (widget.text
+                    .toPlainText()
+                    .contains('testFirstName1 testLastName1'));
+          },
+        ),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('by default, display the first 5 comments only',
         (WidgetTester tester) async {
       // whether the user is redirected to
@@ -214,6 +218,8 @@ void main() {
       };
 
       Comments commentsWidget = Comments(
+        firestore: firestore,
+        auth: auth,
         comments: comments,
         commentsAuthors: commentsAuthors,
         onAddComments: onAddComments,
@@ -269,6 +275,8 @@ void main() {
       };
 
       Comments commentsWidget = Comments(
+        firestore: firestore,
+        auth: auth,
         comments: comments,
         commentsAuthors: commentsAuthors,
         onAddComments: onAddComments,
@@ -313,6 +321,8 @@ void main() {
       };
 
       Comments commentsWidget = Comments(
+        firestore: firestore,
+        auth: auth,
         comments: comments.sublist(0, 4),
         commentsAuthors: commentsAuthors,
         onAddComments: onAddComments,
