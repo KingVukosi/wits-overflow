@@ -179,6 +179,7 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pump(Duration(seconds: 5));
       await tester.pump();
+      await tester.pumpAndSettle();
 
       // print('[questionSummaries: $questionSummaries]');
       for (int i = 0; i < questions.length; i++) {
