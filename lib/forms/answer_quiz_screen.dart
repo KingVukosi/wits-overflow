@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class AnswerQuizForm extends StatefulWidget {
   late final _firestore;
@@ -57,6 +58,9 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
         } else if (this.questions[i]['type'] == 'NumberQuestion') {
           this._answers.add(null);
           this._editors.addAll({1: TextEditingController()});
+        } else if (this.questions[i]['type'] == 'SingleAnswerTypedQuestion') {
+          this._answers.add(null);
+          this._editors.addAll({1: TextEditingController()});
         } else if (this.questions[i]['type'] == 'SingleAnswerMCQ') {
           this._answers.add(null);
         } else {
@@ -90,16 +94,127 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
   }
 
   Widget _buildQuestionWidget(Map<String, dynamic> question, index) {
-    // print(
-    //     '[BUILD QUESTION QUESTION WIDGET -> question: $question, index: $index, answers: ${this._answers}]');
-    /*
+    if (question['type'] == 'NumberQuestion') {
+      Widget widget = Container(
+          padding: EdgeInsets.all(5),
+          margin: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            border: Border.all(width: 0.5, color: Colors.grey),
+          ),
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${index + 1} ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text('${question['body']}'),
+                  ],
+                ),
+              ),
+              TextFormField(
+                key: Key('id_edit_body'),
+                controller: this._editors[index],
+                // minLines: 2,
+                // maxLines: 10,
+                decoration: InputDecoration(
+                  // border: BoxBorder.all(color: Colors.grey, width: 0.5),
+                  labelText: '',
+                  helperText: '(Enter your answer above)',
+                  helperStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 10,
+                  ),
+                ),
+                validator: (value) {
+                  // if (value == null || value.isEmpty) {
+                  //   return 'Give question body';
+                  // }
+                  // if (this.choices.length < 2) {
+                  //   return 'Give at least two choice';
+                  // }
+                  // if (!this._answers.contains(true)) {
+                  //   return 'Choose at least one correct answer';
+                  // }
+                  // return null;
+                },
+                onChanged: (text) {
+                  this._answers[index] = text;
+                },
+              ),
+            ],
+          ));
 
-		TrueOrFalse,
-  	SingleAnswerMCQ,
-  	MultipleAnswersMCQ,
-  	NumberQuestion
-		 */
-    if (question['type'] == 'TrueOrFalse') {
+      return widget;
+    } else if (question['type'] == 'SingleAnswerTypedQuestion') {
+      Widget widget = Container(
+          padding: EdgeInsets.all(5),
+          margin: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            border: Border.all(width: 0.5, color: Colors.grey),
+          ),
+          child: Column(
+            children: [
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${index + 1} ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text('${question['body']}'),
+                  ],
+                ),
+              ),
+              TextFormField(
+                key: Key('id_edit_body2'),
+                controller: this._editors[index],
+                // minLines: 2,
+                // maxLines: 10,
+                decoration: InputDecoration(
+                  // border: BoxBorder.all(color: Colors.grey, width: 0.5),
+                  labelText: '',
+                  helperText: '(Enter your answer above)',
+                  helperStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 10,
+                  ),
+                ),
+                validator: (value) {
+                  // if (value == null || value.isEmpty) {
+                  //   return 'Give question body';
+                  // }
+                  // if (this.choices.length < 2) {
+                  //   return 'Give at least two choice';
+                  // }
+                  // if (!this._answers.contains(true)) {
+                  //   return 'Choose at least one correct answer';
+                  // }
+                  // return null;
+                },
+                onChanged: (text) {
+                  this._answers[index] = text;
+                },
+              ),
+            ],
+          ));
+
+      return widget;
+    } else if (question['type'] == 'TrueOrFalse') {
       // print('[BUILDING TRUE OR FALSE QUESTION]');
       return Flexible(
         child: Container(
@@ -149,7 +264,6 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
                           setState(() {
                             this._answers[index] = true;
                           });
-                          
                         }
                       },
                     ),
@@ -162,7 +276,6 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
                           setState(() {
                             this._answers[index] = false;
                           });
-                          
                         }
                       },
                     ),
@@ -235,67 +348,60 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
 
       return widget;
     } else if (question['type'] == 'MultipleAnswersMCQ') {
-      return Padding(padding: EdgeInsets.all(50));
-    }
-    // number question
-    else {
+      List<String?> choices = [];
+      for (int i = 0; i < question['choices'].length; i++) {
+        choices.add(question['choices'][i] as String);
+      }
+
+      List<Widget> wChoices = [];
+
+      wChoices.add(
+        MultiSelectDialogField(
+          items: choices.map((e) => MultiSelectItem(e, e!)).toList(),
+          listType: MultiSelectListType.CHIP,
+          onConfirm: (values) {
+            setState(() {
+              this._answers[index] = values;
+            });
+          },
+        ),
+      );
+
       Widget widget = Container(
-          padding: EdgeInsets.all(5),
-          margin: EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            border: Border.all(width: 0.5, color: Colors.grey),
-          ),
-          child: Column(
-            children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${index + 1} ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                      ),
+        padding: EdgeInsets.all(5),
+        margin: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          border: Border.all(width: 0.5, color: Colors.grey),
+        ),
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    '${index + 1} ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
                     ),
-                    Text('${question['body']}'),
-                  ],
-                ),
-              ),
-              TextFormField(
-                key: Key('id_edit_body'),
-                controller: this._editors[index],
-                // minLines: 2,
-                // maxLines: 10,
-                decoration: InputDecoration(
-                  // border: BoxBorder.all(color: Colors.grey, width: 0.5),
-                  labelText: '',
-                  helperText: '(Enter you answer above)',
-                  helperStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 10,
                   ),
-                ),
-                validator: (value) {
-                  // if (value == null || value.isEmpty) {
-                  //   return 'Give question body';
-                  // }
-                  // if (this.choices.length < 2) {
-                  //   return 'Give at least two choice';
-                  // }
-                  // if (!this._answers.contains(true)) {
-                  //   return 'Choose at least one correct answer';
-                  // }
-                  return null;
-                },
+                  Text('${question['body']}'),
+                ],
               ),
-            ],
-          ));
+            ),
+            Container(
+              child: Column(children: wChoices),
+            ),
+          ],
+        ),
+      );
 
       return widget;
-      // return Padding(padding: EdgeInsets.all(50));
+    } else {
+      return Padding(padding: EdgeInsets.all(50));
     }
   }
 
@@ -326,19 +432,41 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
         // ),
       );
     }
-    children.add(TextButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Submit")));
+    children.add(TextButton(
+        onPressed: () {
+          postAnswer();
+          Navigator.of(context).pop();
+        },
+        child: Text("Submit")));
     // print('2 -> [ANSWER QUIZ FORM ->RETURNING WITS OVERFLOW]');
 
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
       auth: this.widget._auth,
       body: Container(
-          padding: EdgeInsets.all(10),
-          margin: EdgeInsets.all(10),
-          child: Column(
-            children: children,
-          ),
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.all(10),
+        child: Column(
+          children: children,
         ),
+      ),
     );
+  }
+
+  void postAnswer() async {
+    // for (int i = 0; i < this._answers.length; i++) {
+    //   print(this._answers[i].toString());
+    // }
+    DocumentReference<Map<String, dynamic>> quizRef =
+        this.widget._firestore.collection('quizzes').doc(this.widget.quizId);
+    Map<String, dynamic> finalAnswers = {};
+
+    finalAnswers['author'] = this.widget._auth.currentUser!.uid;
+
+    for (int i = 0; i < this._answers.length; i++) {
+      finalAnswers[i.toString()] = this._answers[i].toString();
+    }
+
+    await quizRef.collection('answeredQuizzes').add(finalAnswers);
   }
 }
