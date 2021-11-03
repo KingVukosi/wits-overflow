@@ -12,6 +12,7 @@ import 'package:wits_overflow/forms/answer_quiz_screen.dart';
 import 'package:wits_overflow/forms/quiz_create_form.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
+import 'package:wits_overflow/widgets/AnsweredQuizzes.dart';
 import 'package:wits_overflow/widgets/question_summary.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
@@ -46,6 +47,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
   // tabs
   late QuestionSummaries questionsTab;
   late QuizzesTab quizzesTab;
+  late AnsweredQuizzes answeredQuizzesTab;
 
   late Map<String, dynamic> module;
 
@@ -128,6 +130,11 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
       auth: this.widget._auth,
     );
 
+    this.answeredQuizzesTab = AnsweredQuizzes(
+      firestore: this.widget._firestore,
+      auth: this.widget._auth,
+    );
+
     this.getData();
   }
 
@@ -146,6 +153,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
       tabs: [
         Tab(text: 'Questions'),
         Tab(text: 'Quizzes'),
+        Tab(text: 'Answered Quizzes'),
       ],
     ));
 
@@ -197,7 +205,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
         children: [
           Flexible(
             child: DefaultTabController(
-              length: 2,
+              length: 3,
               child: Scaffold(
                 appBar: AppBar(
                   shadowColor: Colors.white,
@@ -228,6 +236,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
                     tabs: [
                       Tab(text: 'Questions'),
                       Tab(text: 'Quizzes'),
+                      Tab(text: 'Answered Quizzes'),
                       // Tab(text: 'My Posts'),
                     ],
                   ),
@@ -243,6 +252,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
                   children: [
                     this.questionsTab,
                     this.quizzesTab,
+                    this.answeredQuizzesTab,
                   ],
                 ),
               ),

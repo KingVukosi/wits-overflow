@@ -417,19 +417,6 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
     for (int i = 0; i < this.questions.length; i++) {
       children.add(
         this._buildQuestionWidget(this.questions[i], i),
-
-        // Container(
-        //   child: Column(
-        //     children: [
-        //       Container(
-        //         // question body
-        //
-        //         // child: Text(this.questions[i]['body']),
-        //       ),
-        //       // Container(),
-        //     ],
-        //   ),
-        // ),
       );
     }
     children.add(TextButton(
@@ -438,16 +425,27 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
           Navigator.of(context).pop();
         },
         child: Text("Submit")));
-    // print('2 -> [ANSWER QUIZ FORM ->RETURNING WITS OVERFLOW]');
 
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
       auth: this.widget._auth,
-      body: Container(
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.all(10),
-        child: Column(
-          children: children,
+      body: DefaultTextStyle(
+        style: Theme.of(context).textTheme.bodyText2!,
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints viewportConstraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: viewportConstraints.maxHeight,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: children,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
