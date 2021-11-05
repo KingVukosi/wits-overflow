@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
+import 'package:wits_overflow/utils/functions.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class AnswerQuizForm extends StatefulWidget {
@@ -25,9 +26,12 @@ class AnswerQuizForm extends StatefulWidget {
 class _AnswerQuizForm extends State<AnswerQuizForm> {
   bool _loading = true;
   late Map<String, dynamic> quiz;
+  late Map<String, dynamic> module;
+  List<String> admins = [];
   late List<Map<String, dynamic>> questions = [];
   late List<dynamic> _answers = [];
   Map<int, TextEditingController> _editors = {};
+  late String userUid;
 
   void getData() async {
     // print('[ANSWER QUIZ FORM GET DATA]');
@@ -72,6 +76,30 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
         }
       }
     });
+
+    // get module information
+    await this
+        .widget
+        ._firestore
+        .collection(COLLECTIONS['modules'])
+        .doc(this.quiz['moduleId'])
+        .get()
+        .then((value) {
+      print('[MODULE : ${value.data()}]');
+      Map<String, dynamic>? data = value.data();
+      if (data != null) {
+        this.module = data;
+        this.module['id'] = value.id;
+        List<dynamic>? a = this.module['admins'];
+        if (a != null) {
+          for (int i = 0; i < this.module['admins'].length; i++) {
+            this.admins.add(this.module['admins'][i]);
+          }
+        }
+      }
+    });
+
+    this.userUid = this.widget._auth.currentUser!.uid;
 
     this.setState(() {
       this._loading = false;
@@ -419,12 +447,15 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
         this._buildQuestionWidget(this.questions[i], i),
       );
     }
-    children.add(TextButton(
-        onPressed: () {
-          postAnswer();
-          Navigator.of(context).pop();
-        },
-        child: Text("Submit")));
+
+    if (!this.admins.contains(this.userUid)) {
+      children.add(ElevatedButton(
+          onPressed: () {
+            postAnswer();
+            Navigator.of(context).pop();
+          },
+          child: Text("Submit")));
+    }
 
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
@@ -465,6 +496,7 @@ class _AnswerQuizForm extends State<AnswerQuizForm> {
       finalAnswers[i.toString()] = this._answers[i].toString();
     }
 
+    finalAnswers['answeredAt'] = DateTime.now();
     await quizRef.collection('answeredQuizzes').add(finalAnswers);
   }
 }

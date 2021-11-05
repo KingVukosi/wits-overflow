@@ -50,10 +50,12 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
   late AnsweredQuizzes answeredQuizzesTab;
 
   late Map<String, dynamic> module;
+  late String userUid;
 
   WitsOverflowData witsOverflowData = new WitsOverflowData();
 
   void getData() async {
+    this.userUid = FirebaseAuth.instance.currentUser!.uid;
     await this
         .widget
         ._firestore
@@ -144,18 +146,18 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
       return Center(child: CircularProgressIndicator());
     }
 
-    List<Widget> children = [];
+    // List<Widget> children = [];
 
-    children.add(TabBar(
-      isScrollable: true,
-      labelColor: Colors.black,
-      indicatorColor: Colors.black,
-      tabs: [
-        Tab(text: 'Questions'),
-        Tab(text: 'Quizzes'),
-        Tab(text: 'Answered Quizzes'),
-      ],
-    ));
+    // children.add(TabBar(
+    //   isScrollable: true,
+    //   labelColor: Colors.black,
+    //   indicatorColor: Colors.black,
+    //   tabs: [
+    //     Tab(text: 'Questions'),
+    //     Tab(text: 'Quizzes'),
+    //     Tab(text: 'Answered Quizzes'),
+    //   ],
+    // ));
 
     // children.add(
     //   Row(
@@ -198,6 +200,32 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
     // });
     // Map<String, dynamic> question = this.questions[index];
 
+    List<String> adminsUid = [];
+    if (this.module['admins'] != null) {
+      List<dynamic> moduleAdminsUids = this.module['admins'];
+      for (int i = 0; i < moduleAdminsUids.length; i++) {
+        adminsUid.add(moduleAdminsUids[i]);
+      }
+    }
+
+    List<Widget> tabsHeader = [
+      Tab(text: 'Questions'),
+      Tab(text: 'Quizzes'),
+    ];
+
+    List<Widget> tabs = [
+      this.questionsTab,
+      this.quizzesTab,
+    ];
+
+    int num_tabs = 2;
+
+    if (adminsUid.contains(this.userUid)) {
+      tabsHeader.add(Tab(text: 'Answered Quizzes'));
+      tabs.add(this.answeredQuizzesTab);
+      num_tabs = 3;
+    }
+
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
       auth: this.widget._auth,
@@ -205,7 +233,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
         children: [
           Flexible(
             child: DefaultTabController(
-              length: 3,
+              length: num_tabs,
               child: Scaffold(
                 appBar: AppBar(
                   shadowColor: Colors.white,
@@ -233,12 +261,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
                     isScrollable: true,
                     labelColor: Colors.black,
                     indicatorColor: Colors.black,
-                    tabs: [
-                      Tab(text: 'Questions'),
-                      Tab(text: 'Quizzes'),
-                      Tab(text: 'Answered Quizzes'),
-                      // Tab(text: 'My Posts'),
-                    ],
+                    tabs: tabsHeader,
                   ),
                   title: Text(
                     this.module['name'],
@@ -249,11 +272,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
                   ),
                 ),
                 body: TabBarView(
-                  children: [
-                    this.questionsTab,
-                    this.quizzesTab,
-                    this.answeredQuizzesTab,
-                  ],
+                  children: tabs,
                 ),
               ),
             ),
