@@ -55,7 +55,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
   WitsOverflowData witsOverflowData = new WitsOverflowData();
 
   void getData() async {
-    this.userUid = FirebaseAuth.instance.currentUser!.uid;
+    this.userUid = this.widget._auth.currentUser!.uid;
     await this
         .widget
         ._firestore
@@ -218,12 +218,12 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
       this.quizzesTab,
     ];
 
-    int num_tabs = 2;
+    int numTabs = 2;
 
     if (adminsUid.contains(this.userUid)) {
       tabsHeader.add(Tab(text: 'Answered Quizzes'));
       tabs.add(this.answeredQuizzesTab);
-      num_tabs = 3;
+      numTabs = 3;
     }
 
     return WitsOverflowScaffold(
@@ -233,7 +233,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
         children: [
           Flexible(
             child: DefaultTabController(
-              length: num_tabs,
+              length: numTabs,
               child: Scaffold(
                 appBar: AppBar(
                   shadowColor: Colors.white,
