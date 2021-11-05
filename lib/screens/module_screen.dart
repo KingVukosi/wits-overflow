@@ -12,6 +12,7 @@ import 'package:wits_overflow/forms/answer_quiz_screen.dart';
 import 'package:wits_overflow/forms/quiz_create_form.dart';
 import 'package:wits_overflow/utils/functions.dart';
 import 'package:wits_overflow/utils/wits_overflow_data.dart';
+import 'package:wits_overflow/widgets/AnsweredQuizzes.dart';
 import 'package:wits_overflow/widgets/question_summary.dart';
 import 'package:wits_overflow/widgets/wits_overflow_scaffold.dart';
 
@@ -46,12 +47,15 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
   // tabs
   late QuestionSummaries questionsTab;
   late QuizzesTab quizzesTab;
+  late AnsweredQuizzes answeredQuizzesTab;
 
   late Map<String, dynamic> module;
+  late String userUid;
 
   WitsOverflowData witsOverflowData = new WitsOverflowData();
 
   void getData() async {
+    this.userUid = this.widget._auth.currentUser!.uid;
     await this
         .widget
         ._firestore
@@ -128,6 +132,11 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
       auth: this.widget._auth,
     );
 
+    this.answeredQuizzesTab = AnsweredQuizzes(
+      firestore: this.widget._firestore,
+      auth: this.widget._auth,
+    );
+
     this.getData();
   }
 
@@ -137,17 +146,18 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
       return Center(child: CircularProgressIndicator());
     }
 
-    List<Widget> children = [];
+    // List<Widget> children = [];
 
-    children.add(TabBar(
-      isScrollable: true,
-      labelColor: Colors.black,
-      indicatorColor: Colors.black,
-      tabs: [
-        Tab(text: 'Questions'),
-        Tab(text: 'Quizzes'),
-      ],
-    ));
+    // children.add(TabBar(
+    //   isScrollable: true,
+    //   labelColor: Colors.black,
+    //   indicatorColor: Colors.black,
+    //   tabs: [
+    //     Tab(text: 'Questions'),
+    //     Tab(text: 'Quizzes'),
+    //     Tab(text: 'Answered Quizzes'),
+    //   ],
+    // ));
 
     // children.add(
     //   Row(
@@ -190,6 +200,32 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
     // });
     // Map<String, dynamic> question = this.questions[index];
 
+    List<String> adminsUid = [];
+    if (this.module['admins'] != null) {
+      List<dynamic> moduleAdminsUids = this.module['admins'];
+      for (int i = 0; i < moduleAdminsUids.length; i++) {
+        adminsUid.add(moduleAdminsUids[i]);
+      }
+    }
+
+    List<Widget> tabsHeader = [
+      Tab(text: 'Questions'),
+      Tab(text: 'Quizzes'),
+    ];
+
+    List<Widget> tabs = [
+      this.questionsTab,
+      this.quizzesTab,
+    ];
+
+    int numTabs = 2;
+
+    if (adminsUid.contains(this.userUid)) {
+      tabsHeader.add(Tab(text: 'Answered Quizzes'));
+      tabs.add(this.answeredQuizzesTab);
+      numTabs = 3;
+    }
+
     return WitsOverflowScaffold(
       firestore: this.widget._firestore,
       auth: this.widget._auth,
@@ -197,7 +233,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
         children: [
           Flexible(
             child: DefaultTabController(
-              length: 2,
+              length: numTabs,
               child: Scaffold(
                 appBar: AppBar(
                   shadowColor: Colors.white,
@@ -225,11 +261,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
                     isScrollable: true,
                     labelColor: Colors.black,
                     indicatorColor: Colors.black,
-                    tabs: [
-                      Tab(text: 'Questions'),
-                      Tab(text: 'Quizzes'),
-                      // Tab(text: 'My Posts'),
-                    ],
+                    tabs: tabsHeader,
                   ),
                   title: Text(
                     this.module['name'],
@@ -240,10 +272,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
                   ),
                 ),
                 body: TabBarView(
-                  children: [
-                    this.questionsTab,
-                    this.quizzesTab,
-                  ],
+                  children: tabs,
                 ),
               ),
             ),

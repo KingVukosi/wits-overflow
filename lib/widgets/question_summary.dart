@@ -157,7 +157,7 @@ class QuestionSummary extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(this.title,
-                                    maxLines: 2,
+                                    // maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 16,

@@ -36,7 +36,8 @@ enum QuestionType {
   TrueOrFalse,
   SingleAnswerMCQ,
   MultipleAnswersMCQ,
-  NumberQuestion
+  NumberQuestion,
+  SingleAnswerTypedQuestion
 }
 
 class _QuizCreateFormState extends State<QuizCreateForm> {
@@ -60,6 +61,7 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
     showDialog(
       context: this.context,
       builder: (BuildContext context) {
+        // Single number
         return SimpleDialog(
           title: Text('Question Type'),
           children: [
@@ -98,6 +100,44 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                 });
               },
             ),
+            // Single Typed Answer
+            SimpleDialogOption(
+              child: const Text('Single Typed Answer Question'),
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    // show the true or false modal form
+                    return SimpleDialog(
+                      title: Text(
+                        'Single Typed Answer Question',
+                        style: this.widget.modalHeaderStyle,
+                      ),
+                      children: [
+                        new SingleTypedAnswerQuestionCreateForm(),
+                      ],
+                    );
+                  },
+                ).then((question) {
+                  if (question == null) {
+                    print(
+                        '[RETURNED VALUE FROM SingleTypedAnswerQuestionCreateForm IS NULL]');
+                  } else {
+                    print(
+                        '[RETURNED VALUE FROM SingleTypedAnswerQuestionCreateForm $question]');
+                    question.addAll(
+                        {'type': QuestionType.SingleAnswerTypedQuestion});
+                    this.setState(() {
+                      this
+                          .questions
+                          .insert(questionNum, question); //add(question);
+                    });
+                  }
+                });
+              },
+            ),
+            // True or false question
             SimpleDialogOption(
               child: Text(
                 'True or False Question',
@@ -131,6 +171,7 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                 });
               },
             ),
+            // Single answer mcq
             SimpleDialogOption(
               child: Text(
                 'Single Answer Multiple Choice Question',
@@ -165,6 +206,7 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
                 });
               },
             ),
+            // MAQ
             SimpleDialogOption(
               child: Text(
                 'Multiple Answers Multiple Choice Question',
@@ -228,6 +270,8 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
 
         if (question['type'] == QuestionType.NumberQuestion) {
           question.update('type', (value) => 'NumberQuestion');
+        } else if (question['type'] == QuestionType.SingleAnswerTypedQuestion) {
+          question.update('type', (value) => 'SingleAnswerTypedQuestion');
         } else if (question['type'] == QuestionType.TrueOrFalse) {
           question.update('type', (value) => 'TrueOrFalse');
         } else if (question['type'] == QuestionType.SingleAnswerMCQ) {
@@ -332,6 +376,26 @@ class _QuizCreateFormState extends State<QuizCreateForm> {
         );
       });
     } else if (question['type'] == QuestionType.NumberQuestion) {
+      children.add(
+        Container(
+            child: ListTile(
+          title: RichText(
+            text: TextSpan(
+              text: '${question['answer']} ',
+              style: TextStyle(color: Colors.blue),
+              children: const <TextSpan>[
+                TextSpan(
+                    text: '(correct answer)',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 10,
+                    )),
+              ],
+            ),
+          ),
+        )),
+      );
+    } else if (question['type'] == QuestionType.SingleAnswerTypedQuestion) {
       children.add(
         Container(
             child: ListTile(
@@ -866,6 +930,99 @@ class _NumberQuestionCreateFormState extends State<NumberQuestionCreateForm> {
                             Navigator.pop(context, {
                               'body': this.questionBodyController.text,
                               'answer': double.parse(this._answer.text),
+                              'type': QuestionType.NumberQuestion,
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+}
+
+class SingleTypedAnswerQuestionCreateForm extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _SingleTypedAnswerCreateFormState();
+  }
+}
+
+class _SingleTypedAnswerCreateFormState
+    extends State<SingleTypedAnswerQuestionCreateForm> {
+  TextEditingController _answer = new TextEditingController();
+  TextEditingController questionBodyController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(10),
+        width: getContainerWidth(width: MediaQuery.of(context).size.width),
+        child: Column(
+          children: [
+            Container(
+              child: Form(
+                key: this._formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      key: Key('id_edit_typed answer_question_body'),
+                      controller: this.questionBodyController,
+                      maxLines: 15,
+                      minLines: 10,
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Question',
+                        helperText:
+                            '(Give question a body, add \'?\ at the end)',
+                        helperStyle:
+                            TextStyle(color: Colors.grey, fontSize: 10),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Give question body';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    Container(
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Give correct answer';
+                          }
+                          return null;
+                        },
+                        controller: this._answer,
+                        decoration: InputDecoration(
+                          labelText: 'Correct value',
+                          helperText:
+                              '(Give the correct single typed answer value)',
+                          helperStyle:
+                              TextStyle(color: Colors.grey, fontSize: 10),
+                        ),
+                        keyboardType: TextInputType.text,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.singleLineFormatter
+                        ],
+                      ),
+                    ),
+
+                    /// submit button
+                    Container(
+                      padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+                      child: ElevatedButton(
+                        child: Text('Add Question'),
+                        onPressed: () {
+                          if (this._formKey.currentState!.validate()) {
+                            Navigator.pop(context, {
+                              'body': this.questionBodyController.text,
+                              'answer': this._answer.text,
                               'type': QuestionType.NumberQuestion,
                             });
                           }
