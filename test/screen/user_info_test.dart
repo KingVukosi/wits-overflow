@@ -1,18 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+// import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 // import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 // import 'package:wits_overflow/screens/user_info_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
 
-import '../utils.dart';
+// import '../utils.dart';
 
 void main() {
   group('Test user info screen', () {
     late FakeFirebaseFirestore firestore;
-    late MockFirebaseAuth auth;
+    // late MockFirebaseAuth auth;
     late Map<String, dynamic> question;
     late Map<String, dynamic> answer;
     // late List<Map<String, dynamic>> comments;
@@ -48,13 +48,13 @@ void main() {
         'email': questionAuthorInfo['email'],
       });
 
-      auth = await loginUser(MockUser(
-        displayName: questionAuthorInfo['displayName'],
-        email: questionAuthorInfo['email'],
-        isEmailVerified: questionAuthorInfo['isEmailVerified'],
-        uid: questionAuthorInfo['uid'],
-        isAnonymous: questionAuthorInfo['isAnonymous'],
-      ));
+      // auth = await loginUser(MockUser(
+      //   displayName: questionAuthorInfo['displayName'],
+      //   email: questionAuthorInfo['email'],
+      //   isEmailVerified: questionAuthorInfo['isEmailVerified'],
+      //   uid: questionAuthorInfo['uid'],
+      //   isAnonymous: questionAuthorInfo['isAnonymous'],
+      // ));
 
       // User author = auth.currentUser!;
 
