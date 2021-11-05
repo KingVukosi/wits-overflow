@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wits_overflow/screens/user_info_screen.dart';
+// import 'package:wits_overflow/screens/user_info_screen.dart';
 import 'package:wits_overflow/utils/functions.dart';
 
 import '../utils.dart';
@@ -234,26 +234,26 @@ void main() {
     //   await tester.pump(Duration(seconds: 5));
     //   await tester.pump();
 
-      // print('[questionSummaries: $searchResults]');
-      // for(int i = 0; i < questions.length; i++){
-      //
-      //   final titleFinder = find.text(questions[i]['title']);
-      //
-      //   // final votesFinder = find.textContaining('5'); //.text('votes');
-      //
-      //   // List<String> tags = questions[i]['tags'];
-      //   final badgeOneFinder = find.textContaining(questions[i]['tags'][0]);
-      //   final badgeTwoFinder = find.textContaining(questions[i]['tags'][1]);
-      //   final badgeThreeFinder = find.textContaining(questions[i]['tags'][2]);
-      //
-      //   // final createdAtFinder = find.text(correctDataFormat);
-      //   expect(titleFinder, findsOneWidget);
-      //   // expect(votesFinder, findsOneWidget);
-      //
-      //   expect(badgeOneFinder, findsOneWidget);
-      //   expect(badgeTwoFinder, findsOneWidget);
-      //   expect(badgeThreeFinder, findsOneWidget);
-      //
-    });
+    // print('[questionSummaries: $searchResults]');
+    // for(int i = 0; i < questions.length; i++){
+    //
+    //   final titleFinder = find.text(questions[i]['title']);
+    //
+    //   // final votesFinder = find.textContaining('5'); //.text('votes');
+    //
+    //   // List<String> tags = questions[i]['tags'];
+    //   final badgeOneFinder = find.textContaining(questions[i]['tags'][0]);
+    //   final badgeTwoFinder = find.textContaining(questions[i]['tags'][1]);
+    //   final badgeThreeFinder = find.textContaining(questions[i]['tags'][2]);
+    //
+    //   // final createdAtFinder = find.text(correctDataFormat);
+    //   expect(titleFinder, findsOneWidget);
+    //   // expect(votesFinder, findsOneWidget);
+    //
+    //   expect(badgeOneFinder, findsOneWidget);
+    //   expect(badgeTwoFinder, findsOneWidget);
+    //   expect(badgeThreeFinder, findsOneWidget);
+    //
+    // });
   });
 }
