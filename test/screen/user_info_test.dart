@@ -215,24 +215,24 @@ void main() {
       }
     });
 
-    testWidgets('displays user information', (WidgetTester tester) async {
-      UserInfoScreen userInfoScreen =
-          UserInfoScreen(firestore: firestore, auth: auth);
+    // testWidgets('displays user information', (WidgetTester tester) async {
+    //   UserInfoScreen userInfoScreen =
+    //       UserInfoScreen(firestore: firestore, auth: auth);
 
-      Widget testWidget = new MediaQuery(
-          data: new MediaQueryData(
-            size: Size(5000, 5000),
-          ),
-          child: new Directionality(
-              textDirection: TextDirection.rtl,
-              // child: searchResults
-              child: MaterialApp(
-                home: userInfoScreen,
-              )));
+    //   Widget testWidget = new MediaQuery(
+    //       data: new MediaQueryData(
+    //         size: Size(5000, 5000),
+    //       ),
+    //       child: new Directionality(
+    //           textDirection: TextDirection.rtl,
+    //           // child: searchResults
+    //           child: MaterialApp(
+    //             home: userInfoScreen,
+    //           )));
 
-      await tester.pumpWidget(testWidget);
-      await tester.pump(Duration(seconds: 5));
-      await tester.pump();
+    //   await tester.pumpWidget(testWidget);
+    //   await tester.pump(Duration(seconds: 5));
+    //   await tester.pump();
 
       // print('[questionSummaries: $searchResults]');
       // for(int i = 0; i < questions.length; i++){
