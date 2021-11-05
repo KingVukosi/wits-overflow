@@ -113,12 +113,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     authorName = this.witsOverflowData.getCurrentUser()!.displayName!;
     authorEmail = this.witsOverflowData.getCurrentUser()!.email!;
 
-    // late var image;
-    // if (this.widget._auth.currentUser?.photoURL == null) {
-    //   image = ExactAssetImage('assets/images/default_avatar.png');
-    // } else {
-    //   image = NetworkImage(this.widget._auth.currentUser?.photoURL!);
-    // }
+    late var image;
+    if (this.widget._auth.currentUser?.photoURL == null) {
+      image = ExactAssetImage('assets/images/default_avatar.png');
+    } else {
+      image = NetworkImage(this.widget._auth.currentUser?.photoURL!);
+    }
 
     return UserInfoScaffold(
       firestore: this.widget._firestore,
