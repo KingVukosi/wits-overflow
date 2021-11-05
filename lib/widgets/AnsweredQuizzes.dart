@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AnsweredQuizzes extends StatefulWidget {
   late final _firestore;
-  late final _auth;
+  // late final _auth;
 
   AnsweredQuizzes({firestore, auth}) {
     this._firestore =
         firestore == null ? FirebaseFirestore.instance : firestore;
-    this._auth = auth == null ? FirebaseAuth.instance : auth;
+    // this._auth = auth == null ? FirebaseAuth.instance : auth;
   }
 
   @override
@@ -147,7 +147,7 @@ class _AnsweredQuizzesState extends State<AnsweredQuizzes> {
   }
 }
 
-/**************************************************************************************************************/
+///**************************************************************************************************************/
 // Dropdown quiz selector
 
 class DropdownQuiz extends StatefulWidget {
@@ -254,7 +254,7 @@ class _DropdownQuizState extends State<DropdownQuiz> {
   }
 }
 
-/**************************************************************************************************************/
+///**************************************************************************************************************/
 // Quiz answer display elements
 
 class QuizElement extends StatelessWidget {
