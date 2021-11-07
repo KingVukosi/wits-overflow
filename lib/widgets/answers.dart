@@ -400,32 +400,33 @@ class _AnswerState extends State<Answer> {
                     ),
                   ),
                 ),
+
+                this.questionImage == null
+                    ? Padding(padding: EdgeInsets.all(0))
+                    : Container(
+                        height: 80, width: 80, child: this.questionImage),
+                this.questionImage == null
+                    ? Padding(padding: EdgeInsets.all(0))
+                    : Center(
+                        child: new RichText(
+                          text: new TextSpan(
+                            children: [
+                              new TextSpan(
+                                text: 'Click To Download Image',
+                                style: new TextStyle(
+                                    color: Colors.blue, fontSize: 20),
+                                recognizer: new TapGestureRecognizer()
+                                  ..onTap = () {
+                                    launch(this.widget.imageURL!);
+                                  },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
               ],
             ),
           ),
-
-          this.questionImage == null
-              ? Padding(padding: EdgeInsets.all(0))
-              : Container(child: this.questionImage),
-          this.questionImage == null
-              ? Padding(padding: EdgeInsets.all(0))
-              : Center(
-                  child: new RichText(
-                    text: new TextSpan(
-                      children: [
-                        new TextSpan(
-                          text: 'Click To Download Image',
-                          style:
-                              new TextStyle(color: Colors.blue, fontSize: 20),
-                          recognizer: new TapGestureRecognizer()
-                            ..onTap = () {
-                              launch(this.widget.imageURL!);
-                            },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
 
           Container(
             child: Row(

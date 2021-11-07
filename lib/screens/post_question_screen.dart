@@ -33,6 +33,7 @@ class PostQuestionScreen extends StatefulWidget {
 }
 
 class _PostQuestionScreenState extends State<PostQuestionScreen> {
+  bool isBusy = true;
   late final Future<List<Map<String, dynamic>>> coursesFuture;
 
   late List<Map<String, dynamic>>? _courses;
@@ -110,6 +111,10 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
   }
 
   void _addQuestion() {
+    setState(() {
+      isBusy = true;
+    });
+
     if (_validQuestion()) {
       witsOverflowData.addQuestion(
           createdAt: DateTime.now(),
@@ -134,6 +139,10 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
         _notify("Error occurred");
       });
     }
+
+    setState(() {
+      isBusy = false;
+    });
   }
 
   void _selectCourse(String? courseId) {
@@ -170,6 +179,9 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
     modulesFuture = witsOverflowData.fetchModules(this._selectedCourseId);
     coursesFuture = witsOverflowData.fetchCourses();
     super.initState();
+    setState(() {
+      this.isBusy = false;
+    });
   }
 
   Future getImage(bool gallery) async {
@@ -190,6 +202,16 @@ class _PostQuestionScreenState extends State<PostQuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.isBusy) {
+      return WitsOverflowScaffold(
+        auth: this.widget._auth,
+        firestore: this.widget._firestore,
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     late Widget imageView;
 
     if (this._image != null) {
