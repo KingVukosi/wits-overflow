@@ -97,38 +97,38 @@ jobs:
       #     docker_options: "--no-cache"
       #     process_type: web
 
-      # Setup Java environment in order to build the Android app.
-      - name: Setup the Java environment to build the Android app
-        uses: actions/setup-java@v1
-        with:
-          java-version: '12.x'
+#       # Setup Java environment in order to build the Android app.
+#       - name: Setup the Java environment to build the Android app
+#         uses: actions/setup-java@v1
+#         with:
+#           java-version: '12.x'
     
-      # Build android apk 
-      - name: Build the Android app
-        run: flutter build apk -t lib/startup/main_pre.dart --split-per-abi
+#       # Build android apk 
+#       - name: Build the Android app
+#         run: flutter build apk -t lib/startup/main_pre.dart --split-per-abi
 
-      # Upload output to artifacts
-      - name: Upload the APK files as build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-apk
-          path: |
-            app/build/app/outputs/flutter-apk/*
+#       # Upload output to artifacts
+#       - name: Upload the APK files as build artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: release-apk
+#           path: |
+#             app/build/app/outputs/flutter-apk/*
 
-      # - uses: actions/download-artifact@v2
-      #   with:
-      #     name: release-apk
-      #     path: app/release
+#       # - uses: actions/download-artifact@v2
+#       #   with:
+#       #     name: release-apk
+#       #     path: app/release
 
-      # - name: Display structure of downloaded files
-      #   run: ls -R
-      #   working-directory: app/release
+#       # - name: Display structure of downloaded files
+#       #   run: ls -R
+#       #   working-directory: app/release
 
-      # Create a release with the APK files
-      - name: Generate a pre-release
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: true
-          automatic_release_tag: "v_${{ github.run_id }}_${{ github.run_number }}"
-          files: app/build/app/outputs/flutter-apk/*
+#       # Create a release with the APK files
+#       - name: Generate a pre-release
+#         uses: "marvinpinto/action-automatic-releases@latest"
+#         with:
+#           repo_token: "${{ secrets.GITHUB_TOKEN }}"
+#           prerelease: true
+#           automatic_release_tag: "v_${{ github.run_id }}_${{ github.run_number }}"
+#           files: app/build/app/outputs/flutter-apk/*
