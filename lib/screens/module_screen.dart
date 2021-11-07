@@ -51,6 +51,7 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
 
   late Map<String, dynamic> module;
   late String userUid;
+  late bool userIsAdmin = false;
 
   WitsOverflowData witsOverflowData = new WitsOverflowData();
 
@@ -78,9 +79,21 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
         .get()
         .then((value) {
       Map<String, dynamic>? data = value.data();
-      // print('[MODULE -> moduleId: ${this.widget.moduleId} module: $data]');
+
       this.module = data!;
       this.module.addAll({'id': value.id});
+
+      List<String> admins = [];
+      if (this.module['admins'] != null) {
+        for (int i = 0; i < this.module['admins'].length; i++) {
+          admins.add(this.module['admins'][i]);
+        }
+      }
+
+      if (admins.contains(this.userUid)) {
+        this.userIsAdmin = true;
+      }
+
       // this.module = value.data();
     });
 
@@ -240,21 +253,24 @@ class _ModuleQuestionsScreenState extends State<ModuleQuestionsScreen> {
                   backgroundColor: Colors.white,
                   actions: [
                     Flexible(
-                      child: TextButton(
-                        child: Text('Create new quiz'),
-                        onPressed: () {
-                          Navigator.push(
-                            this.context,
-                            MaterialPageRoute(builder: (BuildContext context) {
-                              return QuizCreateForm(
-                                moduleId: this.widget.moduleId,
-                                firestore: this.widget._firestore,
-                                auth: this.widget._auth,
-                              );
-                            }),
-                          );
-                        },
-                      ),
+                      child: this.userIsAdmin == true
+                          ? TextButton(
+                              child: Text('Create new quiz'),
+                              onPressed: () {
+                                Navigator.push(
+                                  this.context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) {
+                                    return QuizCreateForm(
+                                      moduleId: this.widget.moduleId,
+                                      firestore: this.widget._firestore,
+                                      auth: this.widget._auth,
+                                    );
+                                  }),
+                                );
+                              },
+                            )
+                          : Padding(padding: EdgeInsets.all(0)),
                     )
                   ],
                   bottom: TabBar(
