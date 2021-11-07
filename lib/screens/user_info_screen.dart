@@ -113,12 +113,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     authorName = this.witsOverflowData.getCurrentUser()!.displayName!;
     authorEmail = this.witsOverflowData.getCurrentUser()!.email!;
 
-    // late var image;
-    // if (this.widget._auth.currentUser?.photoURL == null) {
-    //   image = ExactAssetImage('assets/images/default_avatar.png');
-    // } else {
-    //   image = NetworkImage(this.widget._auth.currentUser?.photoURL!);
-    // }
+    late var image;
+    if (this.widget._auth.currentUser?.photoURL == null) {
+      image = ExactAssetImage('assets/images/default_avatar.png');
+    } else {
+      image = NetworkImage(this.widget._auth.currentUser?.photoURL!);
+    }
 
     return UserInfoScaffold(
       firestore: this.widget._firestore,
@@ -169,10 +169,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       decoration: BoxDecoration(
                         color: Colors.grey[100],
                         shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                FirebaseAuth.instance.currentUser!.photoURL!),
-                            fit: BoxFit.fill),
+                        image: DecorationImage(image: image, fit: BoxFit.fill),
                       ),
                     ),
                     Column(
@@ -249,45 +246,49 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 30),
-                          Container(
-                            padding: EdgeInsets.only(left: 90),
-                            child: Text(
-                              "questions asked",
-                              style: TextStyle(
-                                fontSize: 15,
+                    Flexible(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 30),
+                            Container(
+                              padding: EdgeInsets.only(left: 90),
+                              child: Text(
+                                "questions asked",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          Container(
-                            padding: EdgeInsets.only(left: 90),
-                            child: Text(
-                              "questions answered",
-                              style: TextStyle(
-                                fontSize: 15,
+                            SizedBox(height: 10),
+                            Container(
+                              padding: EdgeInsets.only(left: 90),
+                              child: Text(
+                                "questions answered",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          Container(
-                            padding: EdgeInsets.only(left: 90),
-                            child: Text(
-                              "favourite courses",
-                              style: TextStyle(
-                                fontSize: 15,
+                            SizedBox(height: 10),
+                            Container(
+                              padding: EdgeInsets.only(left: 90),
+                              child: Text(
+                                "favourite courses",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                        ]),
-                    SizedBox(
-                      width: 240,
+                            SizedBox(height: 10),
+                          ]),
                     ),
-                    Column(
+                    Flexible(
+                        child: SizedBox(
+                      width: 240,
+                    )),
+                    Flexible(
+                        child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         SizedBox(height: 50),
@@ -313,7 +314,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         ),
                         SizedBox(height: 10),
                       ],
-                    )
+                    )),
                   ],
                 ),
                 SizedBox(height: 30),

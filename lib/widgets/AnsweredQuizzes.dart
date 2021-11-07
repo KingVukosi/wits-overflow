@@ -147,7 +147,6 @@ class _AnsweredQuizzesState extends State<AnsweredQuizzes> {
   }
 }
 
-///**************************************************************************************************************/
 // Dropdown quiz selector
 
 class DropdownQuiz extends StatefulWidget {
@@ -254,7 +253,6 @@ class _DropdownQuizState extends State<DropdownQuiz> {
   }
 }
 
-///**************************************************************************************************************/
 // Quiz answer display elements
 
 class QuizElement extends StatelessWidget {
