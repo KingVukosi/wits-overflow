@@ -389,7 +389,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
 
         this.questionImage == null
             ? Padding(padding: EdgeInsets.all(0))
-            : Container(child: this.questionImage),
+            : Container(height: 80, width: 80, child: this.questionImage),
         this.questionImage == null
             ? Padding(padding: EdgeInsets.all(0))
             : Center(

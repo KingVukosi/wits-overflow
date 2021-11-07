@@ -106,7 +106,11 @@ class _QuestionAnswerCommentFormState extends State<QuestionAnswerCommentForm> {
     } else {
       showNotification(this.context, 'Successfully posted your comment');
 
-      // wait three seconds and navigate to the question and answers screen
+      setState(() {
+        isBusy = false;
+      });
+
+      // wait for four seconds and navigate to the question and answers screen
       await Future.delayed(Duration(seconds: 4)).then((value) {
         Navigator.push(context, MaterialPageRoute(
           builder: (context) {
@@ -119,10 +123,6 @@ class _QuestionAnswerCommentFormState extends State<QuestionAnswerCommentForm> {
         ));
       });
     }
-
-    setState(() {
-      isBusy = false;
-    });
   }
 
   @override
