@@ -40,9 +40,9 @@ jobs:
       - name: Build the web app
         run: flutter build web -t lib/startup/main_prod.dart
 
-#       # Deploy on firebase hosting
-#       - name: Deploy Web App to Firebase Hosting (Production Environment)
-#         run: firebase deploy
+      # # Deploy on firebase hosting
+      # - name: Deploy Web App to Firebase Hosting (Production Environment)
+      #   run: firebase deploy
       
       # # Deploy to Heroku
       # - name: Deploy Web App to Heroku (Production Environment)
