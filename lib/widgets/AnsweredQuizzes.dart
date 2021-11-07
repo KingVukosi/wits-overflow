@@ -265,13 +265,16 @@ class QuizElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String newAnswer = this.answer.substring(0, this.answer.lastIndexOf(','));
+    newAnswer = newAnswer.substring(1, newAnswer.length);
+
     return new Container(
       decoration: new BoxDecoration(
           border: new Border.all(width: 1.0, color: Colors.grey),
           color: Colors.white70),
       margin: new EdgeInsets.symmetric(vertical: 1.0),
       child: new ListTile(
-        title: new Text(this.answer),
+        title: new Text(newAnswer),
         subtitle: new Text(this.questionNumber),
       ),
     );
